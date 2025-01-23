@@ -1,0 +1,40 @@
+# @name login
+POST http://localhost:8081/realms/klcs/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password
+&username=uoul
+&password=passme
+&client_id=klcs
+
+# -----------------------------------------------------------
+# ShopAdmin Endpoints
+# -----------------------------------------------------------
+
+### Get shops
+# @name getShops
+@token = {{login.response.body.access_token}}
+
+GET http://localhost:8082/api/v1/shops
+Authorization: Bearer {{token}}
+
+### Get shop details
+# @name getShopDetails
+@token = {{login.response.body.access_token}}
+@shopId = {{getShops.response.body.*.Id}}
+
+GET http://localhost:8082/api/v1/shops/{{shopId}}
+Authorization: Bearer {{token}}
+
+### Place order
+# @name getShopDetails
+@token = {{login.response.body.access_token}}
+
+POST http://localhost:8082/api/v1/orders
+Authorization: Bearer {{token}}
+
+{
+    "Type": "CASH",
+    "Description": "Meine erste Bestellung",
+    "Articles": null
+}

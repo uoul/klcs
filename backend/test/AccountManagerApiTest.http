@@ -1,0 +1,63 @@
+# @name login
+POST http://localhost:8081/realms/klcs/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password
+&username=uoul
+&password=passme
+&client_id=klcs
+
+### create account
+# @name createAccount
+@token = {{login.response.body.access_token}}
+
+POST http://localhost:8082/api/v1/accounts
+Authorization: Bearer {{token}}
+
+{
+    "HolderName": "Max Mustermann",
+	"Locked": true
+}
+
+### update account
+# @name updateAccount
+@token = {{login.response.body.access_token}}
+@accountId = {{createAccount.response.body.Id}}
+
+PATCH http://localhost:8082/api/v1/accounts/{{accountId}}
+Authorization: Bearer {{token}}
+
+{
+    "Id": "{{accountId}}",
+    "HolderName": "Max Mustermann",
+	"Locked": false
+}
+
+### get account details
+# @name getAccountDetails
+@token = {{login.response.body.access_token}}
+@accountId = {{createAccount.response.body.Id}}
+
+GET http://localhost:8082/api/v1/accounts/{{accountId}}
+Authorization: Bearer {{token}}
+
+
+### post to account balance
+# @name postToAccount
+@token = {{login.response.body.access_token}}
+@accountId = {{getAccountDetails.response.body.Id}}
+
+POST http://localhost:8082/api/v1/accounts/{{accountId}}/balance
+Authorization: Bearer {{token}}
+
+{
+    "Amount": 2000
+}
+
+### close account
+# @name postToAccount
+@token = {{login.response.body.access_token}}
+@accountId = {{getAccountDetails.response.body.Id}}
+
+DELETE http://localhost:8082/api/v1/accounts/{{accountId}}/balance
+Authorization: Bearer {{token}}

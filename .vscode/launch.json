@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Backend",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/backend/oos-core/main.go",
+            "env": {
+                "KLCS_JWKS_URI": "http://localhost:8081/realms/klcs/protocol/openid-connect/certs",
+                "KLCS_HTTP_PORT": "8082",
+                "KLCS_LOG_LVL": "TRACE",
+                "KLCS_DB_HOST": "localhost",
+                "KLCS_DB_PORT": "5432",
+                "KLCS_DB_USER": "postgres",
+                "KLCS_DB_PW": "passme",
+                "KLCS_DB_NAME": "postgres",
+                "KLCS_DB_SSL": "disable"
+            }
+        },
+        {
+            "name": "Run Frontend webserver",
+            "command": "ng serve",
+            "request": "launch",
+            "type": "node-terminal",
+            "cwd": "${workspaceFolder}/frontend/klcs"
+        },
+        {
+            "name": "Debug Frontend",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost:4200",
+            "webRoot": "${workspaceFolder}/frontend/klcs"
+        }
+    ]
+}

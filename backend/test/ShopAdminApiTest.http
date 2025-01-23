@@ -1,0 +1,144 @@
+# @name login
+POST http://localhost:8081/realms/klcs/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password
+&username=uoul
+&password=passme
+&client_id=klcs
+
+# -----------------------------------------------------------
+# ShopAdmin Endpoints
+# -----------------------------------------------------------
+
+### GetUsers
+# @name getUsers
+@token = {{login.response.body.access_token}}
+
+GET http://localhost:8082/api/v1/users
+Authorization: Bearer {{token}}
+
+### Get shops
+# @name getShops
+@token = {{login.response.body.access_token}}
+
+GET http://localhost:8082/api/v1/shops
+Authorization: Bearer {{token}}
+
+### Get articles for shop
+# @name getArticlesForShop
+@token = {{login.response.body.access_token}}
+@shopId = {{getShops.response.body.*.Id}}
+
+GET http://localhost:8082/api/v1/shops/{{shopId}}/articles
+Authorization: Bearer {{token}}
+
+### Create article for shop
+# @name createArticle
+@token = {{login.response.body.access_token}}
+@shopId = {{getShops.response.body.*.Id}}
+
+POST http://localhost:8082/api/v1/shops/{{shopId}}/articles
+Authorization: Bearer {{token}}
+
+{
+	"Name": "Article_1",
+	"Description": "Best article_1 ever",
+	"Price": 1700,
+	"Category": "Category 1"
+}
+
+### Get article
+# @name getArticle
+@token = {{login.response.body.access_token}}
+@articleId = {{createArticle.response.body.Id}}
+
+GET http://localhost:8082/api/v1/articles/{{articleId}}
+Authorization: Bearer {{token}}
+
+
+### update article
+# @name updateArticle
+@token = {{login.response.body.access_token}}
+@articleId = {{getArticle.response.body.Id}}
+
+PATCH http://localhost:8082/api/v1/articles/{{articleId}}
+Authorization: Bearer {{token}}
+
+{
+    "Id": "{{getArticle.response.body.Id}}",
+    "Name": "{{getArticle.response.body.Name}} UPDATED",
+    "Description": "{{getArticle.response.body.Description}}",
+    "Price": 2000,
+    "Category": "{{getArticle.response.body.Category}}",
+    "StockAmount": null
+}
+
+### Delete article
+# @name deleteArticle
+@token = {{login.response.body.access_token}}
+@articleId = {{getArticle.response.body.Id}}
+
+DELETE http://localhost:8082/api/v1/articles/{{articleId}}
+Authorization: Bearer {{token}}
+
+### get printers
+# @name getPrinters
+@token = {{login.response.body.access_token}}
+@shopId = {{getShops.response.body.*.Id}}
+
+GET http://localhost:8082/api/v1/shops/{{shopId}}/printers
+Authorization: Bearer {{token}}
+
+### create printer
+# @name createPrinter
+@token = {{login.response.body.access_token}}
+@shopId = {{getShops.response.body.*.Id}}
+
+POST http://localhost:8082/api/v1/shops/{{shopId}}/printers
+Authorization: Bearer {{token}}
+
+{
+    "Name": "Printer_1"
+}
+
+### get shop users
+# @name getShopUsers
+@token = {{login.response.body.access_token}}
+@shopId = {{getShops.response.body.*.Id}}
+
+GET http://localhost:8082/api/v1/shops/{{shopId}}/users
+Authorization: Bearer {{token}}
+
+### get roles
+# @name getRoles
+@token = {{login.response.body.access_token}}
+
+GET http://localhost:8082/api/v1/roles
+Authorization: Bearer {{token}}
+
+### assign user shop role
+# @name assignUserShopRole
+@token = {{login.response.body.access_token}}
+@shopId = {{getShops.response.body.*.Id}}
+@userId = {{getShopUsers.response.body.*.Id}}
+
+
+POST http://localhost:8082/api/v1/shops/{{shopId}}/users/{{userId}}/roles
+Authorization: Bearer {{token}}
+
+{
+    "Id": "{{getRoles.response.body.*.Id}}"
+}
+
+### delete user shop role
+# @name assignUserShopRole
+@token = {{login.response.body.access_token}}
+@shopId = {{getShops.response.body.*.Id}}
+@userId = {{getShopUsers.response.body.*.Id}}
+@roleId = {{getRoles.response.body.*.Id}}
+
+
+DELETE http://localhost:8082/api/v1/shops/{{shopId}}/users/{{userId}}/roles/{{roleId}}
+Authorization: Bearer {{token}}
+

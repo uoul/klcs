@@ -1,0 +1,75 @@
+# @name login
+POST http://localhost:8081/realms/klcs/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password
+&username=user1
+&password=passme
+&client_id=klcs
+
+# -----------------------------------------------------------
+# SysAdmin Endpoints
+# -----------------------------------------------------------
+
+### GetShops
+# @name getShops
+@token = {{login.response.body.access_token}}
+
+GET http://localhost:8082/api/v1/admin/shops
+Authorization: Bearer {{token}}
+
+### CreateShop
+# @name createShop
+@token = {{login.response.body.access_token}}
+
+POST http://localhost:8082/api/v1/admin/shops
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "Name": "FS9"
+}
+
+### UpdateShop
+# @name updateShop
+@token = {{login.response.body.access_token}}
+@shopId = {{createShop.response.body.Id}}
+
+PATCH http://localhost:8082/api/v1/admin/shops/{{shopId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "Id": "{{shopId}}",
+    "Name": "FSZ8"
+}
+
+### DeleteShop
+# @name deleteShop
+@token = {{login.response.body.access_token}}
+@shopId = {{createShop.response.body.Id}}
+
+DELETE http://localhost:8082/api/v1/admin/shops/{{shopId}}
+Authorization: Bearer {{token}}
+
+### GetUsers
+# @name getUsers
+@token = {{login.response.body.access_token}}
+
+GET http://localhost:8082/api/v1/users
+Authorization: Bearer {{token}}
+
+### Add user as shopadmin
+# @name addUserAsAdmin
+@token = {{login.response.body.access_token}}
+@shopId = {{createShop.response.body.Id}}
+
+POST http://localhost:8082/api/v1/admin/shops/{{shopId}}/admins
+Authorization: Bearer {{token}}
+
+{
+    "Id": "{{getUsers.response.body.*.Id}}",
+    "Username": "{{getUsers.response.body.*.Username}}",
+    "Name": "{{getUsers.response.body.*.Name}}"
+}
+
