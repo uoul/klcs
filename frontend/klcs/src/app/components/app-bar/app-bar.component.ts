@@ -1,5 +1,6 @@
 import { Component, OnInit, Signal, signal } from '@angular/core';
 import { SideNavService } from '../../services/side-nav/side-nav.service';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'klcs-app-bar',
@@ -11,6 +12,7 @@ export class AppBarComponent {
 
   constructor(
     protected sideNav: SideNavService,
+    protected authService: AuthService,
   ){}
   
   toggleMenu() {

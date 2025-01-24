@@ -4,6 +4,8 @@ import { AppBarComponent } from "./components/app-bar/app-bar.component";
 import { SideNavComponent } from "./components/side-nav/side-nav.component";
 import { OAuthService } from 'angular-oauth2-oidc';
 import { authCodeFlowConfig } from './config/authConfig';
+import { AuthService } from './services/auth/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'klcs-root',
@@ -11,6 +13,7 @@ import { authCodeFlowConfig } from './config/authConfig';
     RouterOutlet, 
     AppBarComponent, 
     SideNavComponent,
+    CommonModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
@@ -20,6 +23,7 @@ export class AppComponent {
 
   constructor(
     private oauthService: OAuthService,
+    protected authService: AuthService,
   ){
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();
