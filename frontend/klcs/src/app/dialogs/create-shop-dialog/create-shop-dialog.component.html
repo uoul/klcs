@@ -1,0 +1,19 @@
+<dialog [id]="dialogId" class="modal" (close)="dialogClosed.emit(true)">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">Create new shop</h3>
+    <form method="dialog" (submit)="createShop()">
+      <label class="form-control w-full max-w-xs">
+        <div class="label">
+          <span class="label-text">Name</span>
+        </div>
+        <input name="shopName" type="text" placeholder="Type here" class="input input-bordered w-full max-w-xs" [(ngModel)]="shopName"/>
+      </label>
+      <div class="modal-action">
+        <button class="btn btn-primary">Save</button>
+        <form method="dialog" (submit)="init()">
+          <button class="btn btn-outline btn-neutral">Close</button>
+        </form>
+      </div>
+    </form>
+  </div>
+</dialog>

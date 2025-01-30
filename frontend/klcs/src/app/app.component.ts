@@ -3,9 +3,9 @@ import { RouterOutlet } from '@angular/router';
 import { AppBarComponent } from "./components/app-bar/app-bar.component";
 import { SideNavComponent } from "./components/side-nav/side-nav.component";
 import { OAuthService } from 'angular-oauth2-oidc';
-import { authCodeFlowConfig } from './config/authConfig';
 import { AuthService } from './services/auth/auth.service';
 import { CommonModule } from '@angular/common';
+import { KlcsConfig } from './config/KlcsConfig';
 
 @Component({
   selector: 'klcs-root',
@@ -25,7 +25,7 @@ export class AppComponent {
     private oauthService: OAuthService,
     protected authService: AuthService,
   ){
-    this.oauthService.configure(authCodeFlowConfig);
+    this.oauthService.configure(KlcsConfig.OAuth);
     this.oauthService.setupAutomaticSilentRefresh();
     this.oauthService.loadDiscoveryDocumentAndLogin();
   }

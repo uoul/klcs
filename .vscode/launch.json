@@ -9,15 +9,15 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/backend/oos-core/main.go",
+            "program": "${workspaceFolder}/backend/core/main.go",
             "env": {
-                "KLCS_JWKS_URI": "http://localhost:8081/realms/klcs/protocol/openid-connect/certs",
+                "KLCS_JWKS_URI": "http://flamboyant_dewdney:8080/realms/klcs/protocol/openid-connect/certs",
                 "KLCS_HTTP_PORT": "8082",
                 "KLCS_LOG_LVL": "TRACE",
-                "KLCS_DB_HOST": "localhost",
+                "KLCS_DB_HOST": "klcs-pg",
                 "KLCS_DB_PORT": "5432",
-                "KLCS_DB_USER": "postgres",
-                "KLCS_DB_PW": "passme",
+                "KLCS_DB_USER": "admin",
+                "KLCS_DB_PW": "admin",
                 "KLCS_DB_NAME": "postgres",
                 "KLCS_DB_SSL": "disable"
             }

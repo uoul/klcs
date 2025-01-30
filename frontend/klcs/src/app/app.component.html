@@ -1,11 +1,9 @@
 @if (authService.isLoggedIn() | async) {
   <div class="flex flex-col w-screen h-screen">
     <klcs-app-bar></klcs-app-bar>
-    <div class="flex flex-grow w-full">
-      <div class="flex">
-        <klcs-side-nav></klcs-side-nav>
-        <router-outlet class="flex flex-grow"/>
-      </div>
+    <div class="flex-grow flex">
+      <klcs-side-nav></klcs-side-nav>
+      <router-outlet />
     </div>
   </div>
 } @else {
