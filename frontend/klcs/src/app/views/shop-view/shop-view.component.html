@@ -1,1 +1,27 @@
-<p>shop-view works!</p>
+<div class="w-full h-full overflow-auto">
+  @if (_isAdmin()) {
+    <div role="tablist" class="tabs tabs-bordered m-2">
+      <input type="radio" name="my_tabs_2" role="tab" class="tab text-lg whitespace-nowrap" checked aria-label="Sell" />
+      <div role="tabpanel" class="tab-content border-t-2">
+        <klcs-cashdesk />
+      </div>
+    
+      <input type="radio" name="my_tabs_2" role="tab" class="tab text-lg whitespace-nowrap" checked aria-label="Articles" />
+      <div role="tabpanel" class="tab-content">
+        <klcs-shop-articles [categories]="_articles" (articlesChanged)="refresh()"/>
+      </div>
+  
+      <input type="radio" name="my_tabs_2" role="tab" class="tab text-lg whitespace-nowrap" checked aria-label="Printers" />
+      <div role="tabpanel" class="tab-content">
+        <klcs-shop-printers />
+      </div>
+  
+      <input type="radio" name="my_tabs_2" role="tab" class="tab text-lg whitespace-nowrap" checked aria-label="Users" />
+      <div role="tabpanel" class="tab-content">
+        <klcs-shop-users />
+      </div>
+    </div>
+  } @else {
+    <klcs-cashdesk />
+  }
+</div>

@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS klcs.account (
 CREATE TABLE IF NOT EXISTS klcs.article (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
-    description VARCHAR(200),
+    description VARCHAR(200) DEFAULT '',
     price INTEGER NOT NULL, -- price in cents
     category VARCHAR(30),
     stock_amount INTEGER,
