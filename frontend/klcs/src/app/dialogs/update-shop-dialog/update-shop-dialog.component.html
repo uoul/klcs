@@ -1,15 +1,15 @@
-<dialog [id]="dialogId" class="modal" (close)="dialogClosed.emit()">
+<dialog [id]="dialogId()" class="modal" (close)="dialogClosed.emit()">
   <div class="modal-box">
-    <h3 class="text-lg font-bold">Edit shop</h3>
-    <form method="dialog" (submit)="updateShop()">
+    <h3 class="text-lg font-bold">Edit {{ shop().Name }}</h3>
+    <form #f="ngForm" method="dialog" (submit)="updateShop()">
       <label class="form-control w-full max-w-xs">
         <div class="label">
           <span class="label-text">Name</span>
         </div>
-        <input name="shopName" type="text" placeholder="Type here" class="input input-bordered w-full max-w-xs" [(ngModel)]="shop().Name" />
+        <input name="shopName" type="text" placeholder="Type here" class="input input-bordered w-full max-w-xs" [(ngModel)]="shop().Name" required/>
       </label>
       <div class="modal-action">
-        <button class="btn btn-primary">Save</button>
+        <button class="btn btn-primary" [disabled]="f.invalid">Save</button>
         <form method="dialog">
           <button class="btn btn-outline btn-neutral">Close</button>
         </form>

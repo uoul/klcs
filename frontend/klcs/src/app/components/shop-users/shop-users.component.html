@@ -1,1 +1,27 @@
-<p>shop-users works!</p>
+<div class="w-full h-full flex flex-col">
+  <table class="table">
+    <thead>
+      <tr>
+        <td>Name</td>
+        <td>User</td>
+        <td>Roles</td>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of users(); track $index) {
+        <tr>
+          <td>{{ user.Name }}</td>
+          <td>{{ user.Username }}</td>
+          <td class="lg:flex">
+            @for (role of roles(); track $index) {
+              <div class="flex items-center mr-3">
+                <input [id]="role.Id" type="checkbox" [checked]="userHasRole(user, role)" class="checkbox" class="checkbox checkbox-secondary" (change)="setUserRole(user, role, $event)" [disabled]="currentUser().username === user.Username && role.Name === klcsConfig.ShopRoleAdmin" />
+                <label [for]="role.Id" class="label">{{ role.Name }}</label>
+              </div>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

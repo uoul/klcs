@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, Input, Output, signal, Signal, WritableSignal } from '@angular/core';
+import { Component, computed, EventEmitter, input, Input, InputSignal, output, Output, OutputEmitterRef, signal, Signal, WritableSignal } from '@angular/core';
 import { ArticleDetails } from '../../domain/ArticleDetails';
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
 import { Printer } from '../../domain/Printer';
@@ -15,12 +15,12 @@ import { FormsModule } from '@angular/forms';
 export class UpdateArticleDialogComponent {
   nonePrinter: Printer = { Id: "", Name: "-" };
   
-  @Input() dialogId!: string;
-  @Input() printers: Signal<Printer[]> = signal([this.nonePrinter]);
-  @Input() article: Signal<ArticleDetails> = signal(new ArticleDetails());
+  dialogId: InputSignal<string> = input.required<string>();
+  printers: InputSignal<Printer[]> = input([this.nonePrinter]);
+  article: InputSignal<ArticleDetails> = input(new ArticleDetails());
 
-  @Output() dialogClosed: EventEmitter<boolean> = new EventEmitter();
-  @Output() articleUpdated: EventEmitter<ArticleDetails> = new EventEmitter();
+  dialogClosed: OutputEmitterRef<void> = output();
+  articleUpdated: OutputEmitterRef<ArticleDetails> = output();
 
   _uiArticle = computed(() => {
     const details = this.article()

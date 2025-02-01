@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, signal, Signal, WritableSignal } from '@angular/core';
+import { Component, EventEmitter, input, Input, InputSignal, OnInit, output, Output, OutputEmitterRef, signal, Signal, WritableSignal } from '@angular/core';
 import { Article } from '../../domain/Article';
 import { CommonModule } from '@angular/common';
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
@@ -20,8 +20,8 @@ import { UpdateArticleDialogComponent } from "../../dialogs/update-article-dialo
   styleUrl: './shop-articles.component.css'
 })
 export class ShopArticlesComponent {
-  @Input() categories: Signal<Map<string, Article[]>> = signal(new Map());
-  @Output() articlesChanged: EventEmitter<void> = new EventEmitter();
+  categories: InputSignal<Map<string, Article[]>> = input.required<Map<string, Article[]>>();
+  articlesChanged: OutputEmitterRef<void> = output();
 
   protected readonly CREATE_DIALOG_ID = "create-article-dialog"
   protected readonly EDIT_DIALOG_ID = "edit-article-dialog"

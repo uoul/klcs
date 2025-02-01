@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, input, InputSignal, model, ModelSignal, output, OutputEmitterRef } from '@angular/core';
 import { KlcsAdminApiService } from '../../services/klcs-admin-api/klcs-admin-api.service';
 import { FormsModule } from '@angular/forms';
 import { Shop } from '../../domain/Shop';
@@ -12,20 +12,19 @@ import { Shop } from '../../domain/Shop';
   styleUrl: './create-shop-dialog.component.css'
 })
 export class CreateShopDialogComponent {
-  @Input() dialogId!: string;
-  @Output() dialogClosed: EventEmitter<boolean> = new EventEmitter();
-  @Output() shopCreated: EventEmitter<Shop> = new EventEmitter();
+  dialogId: InputSignal<string> = input.required<string>();
+  dialogClosed: OutputEmitterRef<void> = output()
+  shopCreated: OutputEmitterRef<Shop> = output()
 
-  shopName: string = ""
+  _shop: ModelSignal<Shop> = model(new Shop(undefined, ""))
 
   constructor(
     private klcsAdminApi: KlcsAdminApiService,
   ){}
 
   createShop() {
-    if(this.shopName.length > 0) {
-      const shop: Shop = new Shop(undefined, this.shopName);
-      const sub = this.klcsAdminApi.createShop(shop).subscribe({
+    if(this._shop().Name.length > 0) {
+      const sub = this.klcsAdminApi.createShop(this._shop()).subscribe({
         next: val => this.shopCreated.emit(val),
         error: err => console.error(err),
         complete: () => sub.unsubscribe()
@@ -35,7 +34,6 @@ export class CreateShopDialogComponent {
   }
 
   init(){
-    this.shopName = "";
+    this._shop.set(new Shop(undefined, ""))
   }
-
 }

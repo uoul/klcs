@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, Input, Output, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, computed, EventEmitter, input, Input, InputSignal, output, Output, OutputEmitterRef, Signal, signal, WritableSignal } from '@angular/core';
 import { ArticleDetails } from '../../domain/ArticleDetails';
 import { mergeMap } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -17,11 +17,11 @@ import { Printer } from '../../domain/Printer';
 export class CreateArticleDialogComponent {
   nonePrinter: Printer = { Id: "", Name: "-" };
 
-  @Input() dialogId!: string;
-  @Input() printers: Signal<Printer[]> = signal([this.nonePrinter]);
+  dialogId: InputSignal<string> = input.required<string>();
+  printers: InputSignal<Printer[]> = input([this.nonePrinter]);
 
-  @Output() dialogClosed: EventEmitter<boolean> = new EventEmitter();
-  @Output() articleCreated: EventEmitter<ArticleDetails> = new EventEmitter();
+  dialogClosed: OutputEmitterRef<void> = output();
+  articleCreated: OutputEmitterRef<ArticleDetails> = output();
 
   articleDetails: ArticleDetails = new ArticleDetails()
   priceUi: number = 0.0;

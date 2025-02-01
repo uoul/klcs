@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, computed, OnInit, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Route } from '@angular/router';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
 import { mergeMap, Observable } from 'rxjs';
@@ -27,8 +27,8 @@ export class ShopViewComponent implements OnInit {
 
   shop: WritableSignal<ShopDetails> = signal(new ShopDetails());
 
-  _articles: WritableSignal<Map<string, Article[]>> = signal(new Map());
-  _isAdmin: WritableSignal<boolean> = signal(false);
+  articles = computed(() => this.shop().Categories);
+  isAdmin = computed(() => this.shop().UserRoles.find(r => r == KlcsConfig.ShopRoleAdmin) ? true : false);
 
   constructor(
     private route: ActivatedRoute,
@@ -43,11 +43,7 @@ export class ShopViewComponent implements OnInit {
     const sub = this.route.paramMap.pipe(
       mergeMap(params => this.sellerApi.getShopDetails(params.get("shopId") ?? ""))
     ).subscribe({
-      next: resp => {
-        this.shop.set(resp)
-        this._articles.set(this.shop().Categories)
-        this._isAdmin.set(this.shop().UserRoles.find(r => r == KlcsConfig.ShopRoleAdmin) ? true : false)
-      },
+      next: resp => this.shop.set(resp),
       error: err => console.error(err),
       complete: () => sub.unsubscribe(),
     })

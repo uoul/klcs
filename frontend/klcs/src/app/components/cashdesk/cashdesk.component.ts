@@ -8,5 +8,5 @@ import { Article } from '../../domain/Article';
   styleUrl: './cashdesk.component.css'
 })
 export class CashdeskComponent {
-  @Input() articles: Signal<Map<string, Article[]>> = signal(new Map());
+
 }

@@ -1,7 +1,5 @@
 import { Component, OnInit, signal, WritableSignal } from '@angular/core';
-import { Observable, subscribeOn } from 'rxjs';
 import { Shop } from '../../domain/Shop';
-import { CommonModule } from '@angular/common';
 import { CreateShopDialogComponent } from "../../dialogs/create-shop-dialog/create-shop-dialog.component";
 import { KlcsAdminApiService } from '../../services/klcs-admin-api/klcs-admin-api.service';
 import { UpdateShopDialogComponent } from "../../dialogs/update-shop-dialog/update-shop-dialog.component";
@@ -9,7 +7,6 @@ import { UpdateShopDialogComponent } from "../../dialogs/update-shop-dialog/upda
 @Component({
   selector: 'klcs-admin-view',
   imports: [
-    CommonModule,
     CreateShopDialogComponent,
     UpdateShopDialogComponent
 ],
@@ -21,10 +18,8 @@ export class AdminViewComponent implements OnInit {
   readonly CREATE_DIALOG_ID = "create-dialog";
   readonly EDIT_DIALOG_ID = "create-edit";
 
-  shops: Observable<Shop[]> = new Observable(); 
+  shops: WritableSignal<Shop[]> = signal([]); 
   _currentSelectedShop: WritableSignal<Shop> = signal(new Shop());
-
-  J = JSON;
   
   constructor(
     private klcsAdminApi: KlcsAdminApiService,
@@ -59,6 +54,10 @@ export class AdminViewComponent implements OnInit {
   }
 
   refresh(){
-    this.shops = this.klcsAdminApi.getShops();
+    const sub = this.klcsAdminApi.getShops().subscribe({
+      next: s => this.shops.set(s),
+      error: err => console.error(err),
+      complete: () => sub.unsubscribe(),
+    })
   }
 }

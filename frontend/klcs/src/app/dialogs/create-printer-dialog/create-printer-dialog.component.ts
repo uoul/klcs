@@ -1,6 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal, WritableSignal } from '@angular/core';
-import { Shop } from '../../domain/Shop';
-import { KlcsAdminApiService } from '../../services/klcs-admin-api/klcs-admin-api.service';
+import { Component, input, InputSignal, output, OutputEmitterRef, signal, WritableSignal } from '@angular/core';
 import { Printer } from '../../domain/Printer';
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
 import { ActivatedRoute } from '@angular/router';
@@ -16,9 +14,9 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './create-printer-dialog.component.css'
 })
 export class CreatePrinterDialogComponent {
-  @Input() dialogId!: string;
-  @Output() dialogClosed: EventEmitter<boolean> = new EventEmitter();
-  @Output() printerCreated: EventEmitter<Printer> = new EventEmitter();
+  dialogId: InputSignal<string> = input.required<string>();
+  dialogClosed: OutputEmitterRef<boolean> = output();
+  printerCreated: OutputEmitterRef<Printer> = output();
 
   _printer: WritableSignal<Printer> = signal(new Printer())
 

@@ -1,6 +1,6 @@
-<dialog [id]="dialogId" class="modal" (close)="dialogClosed.emit(true)">
+<dialog [id]="dialogId()" class="modal" (close)="dialogClosed.emit()">
   <div class="modal-box">
-    <h3 class="text-lg font-bold">Create new shop</h3>
+    <h3 class="text-lg font-bold">Create Article</h3>
     <form class="mt-4" method="dialog" (submit)="createArticle()">
       <fieldset class="fieldset flex flex-col">
         <label class="fieldset-label m-2">Name</label>
