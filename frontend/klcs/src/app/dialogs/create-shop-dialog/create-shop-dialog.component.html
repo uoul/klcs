@@ -9,7 +9,7 @@
         <input name="shopName" type="text" placeholder="Type here" class="input input-bordered w-full max-w-xs" [(ngModel)]="_shop().Name" required/>
       </label>
       <div class="modal-action">
-        <button class="btn btn-primary" [disabled]="f.invalid">Save</button>
+        <button class="btn btn-secondary" [disabled]="f.invalid">Save</button>
         <form method="dialog" (submit)="init()">
           <button class="btn btn-outline btn-neutral">Close</button>
         </form>

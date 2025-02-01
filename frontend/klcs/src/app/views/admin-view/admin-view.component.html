@@ -29,6 +29,6 @@
       </button>
     </div>
     <klcs-create-shop-dialog [dialogId]="CREATE_DIALOG_ID" (shopCreated)="refresh()"/>
-    <klcs-update-shop-dialog [dialogId]="EDIT_DIALOG_ID" [shop]="_currentSelectedShop()" (shopUpdated)="refresh()" />
+    <klcs-update-shop-dialog [dialogId]="EDIT_DIALOG_ID" [(shop)]="_currentSelectedShop" />
   </div>
 </div>

@@ -18,8 +18,8 @@ export class AdminViewComponent implements OnInit {
   readonly CREATE_DIALOG_ID = "create-dialog";
   readonly EDIT_DIALOG_ID = "create-edit";
 
-  shops: WritableSignal<Shop[]> = signal([]); 
-  _currentSelectedShop: WritableSignal<Shop> = signal(new Shop());
+  shops = signal<Shop[]>([]); 
+  _currentSelectedShop = signal<Shop>(new Shop());
   
   constructor(
     private klcsAdminApi: KlcsAdminApiService,
