@@ -1,15 +1,15 @@
 <dialog [id]="dialogId()" class="modal" (close)="dialogClosed.emit(true)">
   <div class="modal-box">
     <h3 class="text-lg font-bold">Create Printer</h3>
-    <form method="dialog" (submit)="createPrinter()">
+    <form #f="ngForm" method="dialog" (submit)="createPrinter()">
       <label class="form-control w-full max-w-xs">
         <div class="label">
           <span class="label-text">Name</span>
         </div>
-        <input name="shopName" type="text" placeholder="Type here" class="input input-bordered w-full max-w-xs" [(ngModel)]="_printer().Name"/>
+        <input name="shopName" type="text" placeholder="Type here" class="input input-bordered w-full max-w-xs" [(ngModel)]="_printer().Name" required/>
       </label>
       <div class="modal-action">
-        <button class="btn btn-secondary">Save</button>
+        <button class="btn btn-secondary" [disabled]="f.invalid">Create</button>
         <form method="dialog" (submit)="init()">
           <button class="btn btn-outline btn-neutral">Close</button>
         </form>

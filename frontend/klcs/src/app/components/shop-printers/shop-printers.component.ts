@@ -1,8 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output, signal, WritableSignal } from '@angular/core';
+import { Component, effect, input, signal, untracked, WritableSignal } from '@angular/core';
 import { Printer } from '../../domain/Printer';
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
-import { ActivatedRoute } from '@angular/router';
-import { mergeMap, take } from 'rxjs';
 import { CreatePrinterDialogComponent } from "../../dialogs/create-printer-dialog/create-printer-dialog.component";
 
 @Component({
@@ -11,25 +9,23 @@ import { CreatePrinterDialogComponent } from "../../dialogs/create-printer-dialo
   templateUrl: './shop-printers.component.html',
   styleUrl: './shop-printers.component.css'
 })
-export class ShopPrintersComponent implements OnInit {
+export class ShopPrintersComponent {
   protected readonly CREATE_DIALOG_ID = "create-printer-dialog"
 
+  shopId = input.required<string>()
   _printers: WritableSignal<Printer[]> = signal([])
 
   constructor(
     private shopAdminApi: ShopAdminApiService,
-    private route: ActivatedRoute,
-  ){}
-
-  ngOnInit(): void {
-    this.refreshPrinters()
+  ){
+    effect(() => {
+      const shopId = this.shopId()
+      untracked(() => this.refreshPrinters(shopId)) 
+    })
   }
 
-  refreshPrinters() {
-    const sub = this.route.paramMap.pipe(
-      take(1),
-      mergeMap(params => this.shopAdminApi.getPrinters(params.get("shopId") ?? "")),
-    ).subscribe({
+  refreshPrinters(shopId: string) {
+    const sub = this.shopAdminApi.getPrinters(shopId).subscribe({
       next: p =>  this._printers.set(p),
       error: err => console.error(err),
       complete: () => sub.unsubscribe(),
@@ -39,7 +35,7 @@ export class ShopPrintersComponent implements OnInit {
   deletePrinter(printer: Printer) {
     if(confirm(`Do you realy want to delete ${printer.Name}?`)){
       const sub = this.shopAdminApi.deletePrinter(printer.Id).subscribe({
-        next: _ => this.refreshPrinters(),
+        next: _ => this.refreshPrinters(this.shopId()),
         error: err => console.error(err),
         complete: () => sub.unsubscribe(),
       })

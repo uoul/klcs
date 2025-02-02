@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, computed, effect, input, OnInit, signal, untracked, WritableSignal } from '@angular/core';
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
 import { ShopUser } from '../../domain/ShopUser';
 import { ActivatedRoute } from '@angular/router';
@@ -25,14 +25,24 @@ interface _InternalUser {
   templateUrl: './shop-users.component.html',
   styleUrl: './shop-users.component.css'
 })
-export class ShopUsersComponent implements OnInit {
+export class ShopUsersComponent {
 
   constructor(
     private shopAdminApi: ShopAdminApiService,
-    private route: ActivatedRoute,
     private authService: AuthService,
-  ){}
+  ){
+    effect(() => {
+      const shopId = this.shopId()
+      untracked(() => {
+        this.refreshUsers(shopId);
+        this.refreshRoles();
+        this.currentUser.set(this.authService.getIdentity());
+      })
+    })
+  }
 
+  shopId = input.required<string>()
+  
   currentUser: WritableSignal<UserIdentity> = signal(new UserIdentity())
   klcsUsers: WritableSignal<ShopUser[]> = signal([])
   roles: WritableSignal<Role[]> = signal([])
@@ -57,12 +67,6 @@ export class ShopUsersComponent implements OnInit {
 
   klcsConfig = KlcsConfig
 
-  ngOnInit(): void {
-    this.refreshUsers();
-    this.refreshRoles();
-    this.currentUser.set(this.authService.getIdentity());
-  }
-
   refreshRoles() {
     const sub = this.shopAdminApi.getRoles().subscribe({
       next: r => this.roles.set(r),
@@ -71,10 +75,8 @@ export class ShopUsersComponent implements OnInit {
     })
   }
 
-  refreshUsers() {
-    const sub = this.route.paramMap.pipe(
-      mergeMap(params => this.shopAdminApi.getUsersForShop(params.get("shopId") ?? ""))
-    ).subscribe({
+  refreshUsers(shopId: string) {
+    const sub = this.shopAdminApi.getUsersForShop(shopId).subscribe({
       next: u => this.klcsUsers.set(u),
       error: err => console.error(err),
       complete: () => sub.unsubscribe(),
@@ -85,22 +87,22 @@ export class ShopUsersComponent implements OnInit {
     return user.ShopRoles.find(r => r.Id == role.Id) ? true : false
   }
 
-  setUserRole(userId: string, role: Role, event: any) {
+  compareUser(a: _InternalUser, b: _InternalUser): number {
+    if(a.Username == b.Username)
+      return 0
+    return a.Username < b.Username ? 1 : -1;
+  }
+
+  setUserRole(shopId: string, userId: string, role: Role, event: any) {
     if (event.target.checked) {
-      const sub = this.route.paramMap.pipe(
-        take(1),
-        mergeMap(params => this.shopAdminApi.addUserRoleForShop(params.get("shopId") ?? "", userId, role))
-      ).subscribe({
-        next: _ => this.refreshUsers(),
+      const sub = this.shopAdminApi.addUserRoleForShop(shopId, userId, role).subscribe({
+        next: _ => this.refreshUsers(shopId),
         error: err => console.error(err),
         complete: () => sub.unsubscribe(),
       })
     } else {
-      const sub = this.route.paramMap.pipe(
-        take(1),
-        mergeMap(params => this.shopAdminApi.deleteUserRoleForShop(params.get("shopId") ?? "", userId, role.Id))
-      ).subscribe({
-        next: _ => this.refreshUsers(),
+      const sub = this.shopAdminApi.deleteUserRoleForShop(shopId, userId, role.Id).subscribe({
+        next: _ => this.refreshUsers(shopId),
         error: err => console.error(err),
         complete: () => sub.unsubscribe(),
       })

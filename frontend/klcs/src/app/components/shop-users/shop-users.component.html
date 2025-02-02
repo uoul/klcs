@@ -8,14 +8,14 @@
       </tr>
     </thead>
     <tbody>
-      @for (u of users(); track $index) {
+      @for (u of users().sort(compareUser); track $index) {
         <tr>
           <td>{{ u.Name }}</td>
           <td>{{ u.Username }}</td>
           <td class="lg:flex">
             @for (role of u.roles | keyvalue; track $index) {
               <div class="flex items-center mr-3">
-                <input [id]="role.key.Id" type="checkbox" [checked]="role.value" class="checkbox" class="checkbox checkbox-secondary" (change)="setUserRole(u.Id, role.key, $event)" [disabled]="currentUser().username === u.Username && role.key.Name === klcsConfig.ShopRoleAdmin" />
+                <input [id]="role.key.Id" type="checkbox" [checked]="role.value" class="checkbox" class="checkbox checkbox-secondary" (change)="setUserRole(shopId(), u.Id, role.key, $event)" [disabled]="currentUser().username === u.Username && role.key.Name === klcsConfig.ShopRoleAdmin" />
                 <label [for]="role.key.Id" class="label">{{ role.key.Name }}</label>
               </div>
             }

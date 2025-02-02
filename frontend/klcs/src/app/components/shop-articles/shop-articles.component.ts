@@ -20,6 +20,8 @@ import { UpdateArticleDialogComponent } from "../../dialogs/update-article-dialo
   styleUrl: './shop-articles.component.css'
 })
 export class ShopArticlesComponent {
+
+  shopId = input.required<string>()
   categories: InputSignal<Map<string, Article[]>> = input.required<Map<string, Article[]>>();
   articlesChanged: OutputEmitterRef<void> = output();
 
@@ -28,7 +30,6 @@ export class ShopArticlesComponent {
 
   constructor(
     private shopAdminApi: ShopAdminApiService,
-    private route: ActivatedRoute,
   ){}
 
   _printers: WritableSignal<Printer[]> = signal([])
@@ -44,11 +45,8 @@ export class ShopArticlesComponent {
     }
   }
 
-  refreshPrinters() {
-    const sub = this.route.paramMap.pipe(
-      take(1),
-      mergeMap(params => this.shopAdminApi.getPrinters(params.get("shopId") ?? "")),
-    ).subscribe({
+  refreshPrinters(shopId: string) {
+    const sub = this.shopAdminApi.getPrinters(shopId).subscribe({
       next: p =>  this._printers.set(p),
       error: err => console.error(err),
       complete: () => sub.unsubscribe(),
@@ -56,13 +54,13 @@ export class ShopArticlesComponent {
   }
 
   showCreateDialog(){
-    this.refreshPrinters()
+    this.refreshPrinters(this.shopId())
     const dialog = document.getElementById(this.CREATE_DIALOG_ID) as HTMLDialogElement
     dialog.showModal();
   }
 
   showUpdateDialog(articleId: string){
-    this.refreshPrinters()
+    this.refreshPrinters(this.shopId())
     const sub = this.shopAdminApi.getArticle(articleId).subscribe({
       next: artilce => {
         this._articleDetails.set(artilce)

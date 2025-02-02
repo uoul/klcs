@@ -8,17 +8,17 @@
     
       <input type="radio" name="my_tabs_2" role="tab" class="tab text-lg whitespace-nowrap" checked aria-label="Articles" />
       <div role="tabpanel" class="tab-content">
-        <klcs-shop-articles [categories]="articles()" (articlesChanged)="refresh()"/>
+        <klcs-shop-articles [shopId]="shop().Id" [categories]="articles()" (articlesChanged)="refresh()"/>
       </div>
   
       <input type="radio" name="my_tabs_2" role="tab" class="tab text-lg whitespace-nowrap" checked aria-label="Printers" />
       <div role="tabpanel" class="tab-content">
-        <klcs-shop-printers />
+        <klcs-shop-printers [shopId]="shop().Id"/>
       </div>
   
       <input type="radio" name="my_tabs_2" role="tab" class="tab text-lg whitespace-nowrap" checked aria-label="Users" />
       <div role="tabpanel" class="tab-content">
-        <klcs-shop-users />
+        <klcs-shop-users [shopId]="shop().Id" />
       </div>
     </div>
   } @else {
