@@ -8,15 +8,15 @@
       </tr>
     </thead>
     <tbody>
-      @for (user of users(); track $index) {
+      @for (u of users(); track $index) {
         <tr>
-          <td>{{ user.Name }}</td>
-          <td>{{ user.Username }}</td>
+          <td>{{ u.Name }}</td>
+          <td>{{ u.Username }}</td>
           <td class="lg:flex">
-            @for (role of roles(); track $index) {
+            @for (role of u.roles | keyvalue; track $index) {
               <div class="flex items-center mr-3">
-                <input [id]="role.Id" type="checkbox" [checked]="userHasRole(user, role)" class="checkbox" class="checkbox checkbox-secondary" (change)="setUserRole(user, role, $event)" [disabled]="currentUser().username === user.Username && role.Name === klcsConfig.ShopRoleAdmin" />
-                <label [for]="role.Id" class="label">{{ role.Name }}</label>
+                <input [id]="role.key.Id" type="checkbox" [checked]="role.value" class="checkbox" class="checkbox checkbox-secondary" (change)="setUserRole(u.Id, role.key, $event)" [disabled]="currentUser().username === u.Username && role.key.Name === klcsConfig.ShopRoleAdmin" />
+                <label [for]="role.key.Id" class="label">{{ role.key.Name }}</label>
               </div>
             }
           </td>

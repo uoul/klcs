@@ -3,7 +3,7 @@ import { Article } from '../../domain/Article';
 import { CommonModule } from '@angular/common';
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
 import { ActivatedRoute } from '@angular/router';
-import { mergeMap, subscribeOn } from 'rxjs';
+import { mergeMap, subscribeOn, take } from 'rxjs';
 import { ArticleDetails } from '../../domain/ArticleDetails';
 import { CreateArticleDialogComponent } from "../../dialogs/create-article-dialog/create-article-dialog.component";
 import { Printer } from '../../domain/Printer';
@@ -46,6 +46,7 @@ export class ShopArticlesComponent {
 
   refreshPrinters() {
     const sub = this.route.paramMap.pipe(
+      take(1),
       mergeMap(params => this.shopAdminApi.getPrinters(params.get("shopId") ?? "")),
     ).subscribe({
       next: p =>  this._printers.set(p),

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, signal, WritableSignal 
 import { Printer } from '../../domain/Printer';
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
 import { ActivatedRoute } from '@angular/router';
-import { mergeMap } from 'rxjs';
+import { mergeMap, take } from 'rxjs';
 import { CreatePrinterDialogComponent } from "../../dialogs/create-printer-dialog/create-printer-dialog.component";
 
 @Component({
@@ -27,6 +27,7 @@ export class ShopPrintersComponent implements OnInit {
 
   refreshPrinters() {
     const sub = this.route.paramMap.pipe(
+      take(1),
       mergeMap(params => this.shopAdminApi.getPrinters(params.get("shopId") ?? "")),
     ).subscribe({
       next: p =>  this._printers.set(p),
