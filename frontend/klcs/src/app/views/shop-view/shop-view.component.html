@@ -1,6 +1,6 @@
-<div class="w-full h-full flex flex-col mx-2">
+<div class="w-full h-full flex flex-col">
   @if (isAdmin()) {
-    <div class="tabs tabs-lg tabs-bordered">
+    <div class="tabs tabs-lg tabs-bordered sticky top-0 z-10 bg-base-100">
       <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 1" (click)="currentTab.set(1)">Sell</a>
       <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 2" (click)="currentTab.set(2)">Articles</a>
       <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 3" (click)="currentTab.set(3)">Printers</a>
