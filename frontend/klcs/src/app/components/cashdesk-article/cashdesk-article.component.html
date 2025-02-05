@@ -1,0 +1,7 @@
+<div class="w-32 h-32 bg-secondary bg-opacity-15 border-secondary border-2 rounded-lg m-2 flex flex-col justify-center items-center duration-100 hover:scale-105 text-center cursor-pointer select-none" (click)="articleClicked.emit(article())">
+  <h1 class="flex text-lg pb-2">{{ article().Name }}</h1>
+  <div class="flex flex-col text-sm">
+    <span>{{ article().Description }}</span>
+    <span>{{ article().Price / 100 | currency: 'EUR' }}</span>
+  </div>
+</div>

@@ -26,6 +26,7 @@ import { Article } from '../../domain/Article';
 export class ShopViewComponent implements OnInit {
 
   shop: WritableSignal<ShopDetails> = signal(new ShopDetails());
+  currentTab = signal<number>(1)
 
   articles = computed(() => this.shop().Categories);
   isAdmin = computed(() => this.shop().UserRoles.find(r => r == KlcsConfig.ShopRoleAdmin) ? true : false);

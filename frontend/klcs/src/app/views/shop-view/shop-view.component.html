@@ -1,27 +1,26 @@
-<div class="w-full h-full overflow-auto">
+<div class="w-full h-full flex flex-col mx-2">
   @if (isAdmin()) {
-    <div role="tablist" class="tabs tabs-bordered m-2">
-      <input type="radio" name="my_tabs_2" role="tab" class="tab text-lg whitespace-nowrap" checked aria-label="Sell" />
-      <div role="tabpanel" class="tab-content border-t-2">
-        <klcs-cashdesk />
+    <div class="tabs tabs-lg tabs-bordered">
+      <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 1" (click)="currentTab.set(1)">Sell</a>
+      <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 2" (click)="currentTab.set(2)">Articles</a>
+      <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 3" (click)="currentTab.set(3)">Printers</a>
+      <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 4" (click)="currentTab.set(4)">Users</a>
+    </div>
+    <div class="flex-grow">
+      <div class="h-full w-full" [hidden]="currentTab() != 1">
+        <klcs-cashdesk [categories]="shop().Categories" />
       </div>
-    
-      <input type="radio" name="my_tabs_2" role="tab" class="tab text-lg whitespace-nowrap" checked aria-label="Articles" />
-      <div role="tabpanel" class="tab-content">
-        <klcs-shop-articles [shopId]="shop().Id" [categories]="articles()" (articlesChanged)="refresh()"/>
+      <div class="h-full w-full" [hidden]="currentTab() != 2">
+        <klcs-shop-articles [hidden]="currentTab() != 2" [shopId]="shop().Id" [categories]="articles()" (articlesChanged)="refresh()"/>
       </div>
-  
-      <input type="radio" name="my_tabs_2" role="tab" class="tab text-lg whitespace-nowrap" checked aria-label="Printers" />
-      <div role="tabpanel" class="tab-content">
+      <div class="h-full w-full" [hidden]="currentTab() != 3">
         <klcs-shop-printers [shopId]="shop().Id"/>
       </div>
-  
-      <input type="radio" name="my_tabs_2" role="tab" class="tab text-lg whitespace-nowrap" checked aria-label="Users" />
-      <div role="tabpanel" class="tab-content">
+      <div class="h-full w-full" [hidden]="currentTab() != 4">
         <klcs-shop-users [shopId]="shop().Id" />
       </div>
     </div>
   } @else {
-    <klcs-cashdesk />
+    <klcs-cashdesk [categories]="shop().Categories" />
   }
 </div>
