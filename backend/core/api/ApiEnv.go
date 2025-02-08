@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/uoul/go-common/auth/iface"
+	"github.com/uoul/go-common/auth"
 	"github.com/uoul/klcs/backend/oos-core/domain"
 	appError "github.com/uoul/klcs/backend/oos-core/error"
 	"github.com/uoul/klcs/backend/oos-core/logic"
@@ -17,7 +17,7 @@ const (
 
 type ApiEnv struct {
 	logic         logic.ILogic
-	authenticator iface.IAuthenticator[*domain.OidcUser]
+	authenticator auth.IAuthenticator[*domain.OidcUser]
 }
 
 func (e *ApiEnv) Run(port uint16) {
@@ -104,7 +104,7 @@ func getFromRequestCtx[T any](ctx *gin.Context, key string) (T, error) {
 	return v, nil
 }
 
-func NewApiEnv(logic logic.ILogic, authenticator iface.IAuthenticator[*domain.OidcUser]) *ApiEnv {
+func NewApiEnv(logic logic.ILogic, authenticator auth.IAuthenticator[*domain.OidcUser]) *ApiEnv {
 	return &ApiEnv{
 		logic:         logic,
 		authenticator: authenticator,

@@ -1,6 +1,6 @@
 package domain
 
-import "github.com/uoul/go-common/auth/iface"
+import "github.com/uoul/go-common/auth"
 
 type OidcUser struct {
 	JwtId                      string   `json:"jti,omitempty"`
@@ -45,6 +45,6 @@ func (i *OidcUser) GetUsername() string {
 	return i.UserName
 }
 
-func NewUserIdentiy() iface.IUserIdentity {
+func NewUserIdentiy() auth.IUserIdentity {
 	return &OidcUser{}
 }

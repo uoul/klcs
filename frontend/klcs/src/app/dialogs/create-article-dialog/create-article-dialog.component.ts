@@ -18,6 +18,7 @@ export class CreateArticleDialogComponent {
   nonePrinter: Printer = { Id: "", Name: "-" };
 
   dialogId: InputSignal<string> = input.required<string>();
+  shopId: InputSignal<string> = input.required<string>();
   printers: InputSignal<Printer[]> = input([this.nonePrinter]);
 
   dialogClosed: OutputEmitterRef<void> = output();
@@ -35,9 +36,7 @@ export class CreateArticleDialogComponent {
   createArticle() {
     this.articleDetails.Price = Math.floor(this.priceUi * 100);
     this.articleDetails.Printer = this.printer.Id === "" ? null : this.printer;
-    const sub = this.route.paramMap.pipe(
-      mergeMap(params => this.shopAdminApi.createArticle(params.get("shopId") ?? "", this.articleDetails))
-    ).subscribe({
+    const sub = this.shopAdminApi.createArticle(this.shopId(), this.articleDetails).subscribe({
       next: a => this.articleCreated.emit(a),
       error: err => console.error(err),
       complete: () => sub.unsubscribe(),

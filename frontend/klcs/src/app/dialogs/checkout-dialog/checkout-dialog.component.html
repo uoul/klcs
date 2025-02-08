@@ -1,0 +1,53 @@
+<dialog [id]="dialogId()" class="modal" (close)="dialogClosed.emit()">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">Checkout</h3>
+    @if (shoppingCart.getOrderItems().length > 0) {
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Article</th>
+            <th>Count</th>
+            <th>Sum</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of shoppingCart.getOrderItems(); track $index) {
+            <tr>
+              <td>{{ item.article.Name }}</td>
+              <td>{{ item.count }}</td>
+              <td>{{ item.article.Price * item.count / 100 | currency: 'EUR' }}</td>
+            </tr>
+          }
+          <tr>
+            <td></td>
+            <td></td>
+            <td>
+              <span class="border-b-4 border-double border-black">{{ shoppingCart.getSum() / 100 | currency: 'EUR'}}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    } @else {
+      <span class="w-full h-32 flex justify-center text-opacity-30 text-base-content items-center border-neutral border-2 rounded-lg border-opacity-5 my-2">Empty cart</span>
+    }
+    <hr class="my-4"/>
+    <form #f="ngForm" (submit)="checkout()" method="dialog">
+      <fieldset class="fieldset flex flex-col" [disabled]="shoppingCart.getOrderItems().length <= 0">
+        <input name="description" type="text" class="input input-bordered validator" placeholder="Description" [(ngModel)]="description"/>
+        <div class="validator-hint">Enter valid email address</div>
+
+        @if (withCard()) {
+          <input name="accountid" type="text" class="input input-bordered validator" placeholder="Account ID" [(ngModel)]="accountId" required pattern="[0-9a-f]{12}4[0-9a-f]{3}[89ab][0-9a-f]{15}\Z"/>
+          <div class="validator-hint">Enter valid email address</div>
+        }
+
+      </fieldset>
+      <div class="modal-action">
+        <button class="btn btn-secondary" [disabled]="f.invalid || shoppingCart.getOrderItems().length <= 0" type="submit">Checkout</button>
+        <form method="dialog">
+          <button class="btn btn-outline btn-primary">Cancel</button>
+        </form>
+      </div>
+    </form>
+  </div>
+</dialog>

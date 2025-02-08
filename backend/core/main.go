@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/uoul/go-common/auth/oidc"
+	"github.com/uoul/go-common/auth"
 	"github.com/uoul/go-common/config"
 	"github.com/uoul/go-common/db"
 	"github.com/uoul/klcs/backend/oos-core/api"
@@ -15,7 +15,7 @@ func main() {
 	cp := config.NewEnvVarProvider()
 	cf := setupDbConnection(cp)
 	logic := logic.NewLogic(cf)
-	authenticator := oidc.NewKeyCloakAuthenticator[*domain.OidcUser](cp.StringOrDefault("KLCS_JWKS_URI", ""))
+	authenticator := auth.NewKeyCloakAuthenticator[*domain.OidcUser](cp.StringOrDefault("KLCS_JWKS_URI", ""))
 	api := api.NewApiEnv(logic, authenticator)
 	api.Run(cp.UInt16OrDefault("KLCS_HTTP_PORT", 8080))
 }

@@ -51,7 +51,7 @@ export class SellerApiService {
   private placeOrder(order: Order): Observable<Order> {
     this.cartService.lock();
     return this.http.post<Order>(`${KlcsConfig.BackendRoot}/api/v1/orders`, order).pipe(
-      finalize(() => {
+      tap(() => {
         this.cartService.unlock();
       }),
     );

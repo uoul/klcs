@@ -13,7 +13,8 @@
       <span class="font-bold">Summe:</span>
       <span>{{ sum() / 100 | currency: 'EUR'}}</span>
     </div>
-    <button class="btn btn-secondary btn-outline my-1">Checkout Cash</button>
-    <button class="btn btn-secondary btn-outline my-1">Checkout Card</button>
+    <button class="btn btn-secondary btn-outline my-1" (click)="showCheckout(false)">Checkout Cash</button>
+    <button class="btn btn-secondary btn-outline my-1" (click)="showCheckout(true)">Checkout Card</button>
   </div>
+  <klcs-checkout-dialog [dialogId]="CHECKOUT_DIALOG_ID" [withCard]="checkoutCard()"/>
 </div>

@@ -2,7 +2,7 @@ module github.com/uoul/klcs/backend/oos-core
 
 go 1.23.0
 
-require github.com/uoul/go-common v0.0.7
+require github.com/uoul/go-common v0.0.16
 
 require (
 	github.com/bytedance/sonic v1.11.6 // indirect
@@ -45,7 +45,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
-	github.com/lib/pq v1.10.9 // indirect
+	github.com/lib/pq v1.10.9
 	golang.org/x/crypto v0.26.0 // indirect
 	golang.org/x/sys v0.24.0 // indirect
 )
