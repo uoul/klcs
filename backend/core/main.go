@@ -16,7 +16,7 @@ func main() {
 	cf := setupDbConnection(cp)
 	logic := logic.NewLogic(cf)
 	authenticator := auth.NewKeyCloakAuthenticator[*domain.OidcUser](cp.StringOrDefault("KLCS_JWKS_URI", ""))
-	api := api.NewApiEnv(logic, authenticator)
+	api := api.NewApi(logic, authenticator)
 	api.Run(cp.UInt16OrDefault("KLCS_HTTP_PORT", 8080))
 }
 

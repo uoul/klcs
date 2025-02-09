@@ -2,11 +2,11 @@ package api
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/gin-gonic/gin"
 	"github.com/uoul/go-common/auth"
 	"github.com/uoul/klcs/backend/oos-core/domain"
-	appError "github.com/uoul/klcs/backend/oos-core/error"
 	"github.com/uoul/klcs/backend/oos-core/logic"
 )
 
@@ -15,12 +15,17 @@ const (
 	OIDC_ACCOUNT_MANAGER_ROLE = "KLCS_ACCOUNT_MANAGER"
 )
 
-type ApiEnv struct {
+type Api struct {
 	logic         logic.ILogic
 	authenticator auth.IAuthenticator[*domain.OidcUser]
 }
 
-func (e *ApiEnv) Run(port uint16) {
+type ErrorResponse struct {
+	Type    string
+	Message string
+}
+
+func (e *Api) Run(port uint16) {
 	// Get new router
 	router := gin.New()
 	router.Use(
@@ -43,7 +48,7 @@ func (e *ApiEnv) Run(port uint16) {
 	router.Run(fmt.Sprintf(":%v", port))
 }
 
-func (e *ApiEnv) setupSysAdminRg(router *gin.RouterGroup, prefix string) *gin.RouterGroup {
+func (e *Api) setupSysAdminRg(router *gin.RouterGroup, prefix string) *gin.RouterGroup {
 	rg := router.Group(prefix)
 	rg.Use(
 		e.checkOidcRole(OIDC_ADMIN_ROLE),
@@ -56,7 +61,7 @@ func (e *ApiEnv) setupSysAdminRg(router *gin.RouterGroup, prefix string) *gin.Ro
 	return rg
 }
 
-func (e *ApiEnv) setupAccountManagerRg(router *gin.RouterGroup, prefix string) {
+func (e *Api) setupAccountManagerRg(router *gin.RouterGroup, prefix string) {
 	rg := router.Group(prefix)
 	rg.Use(
 		e.checkOidcRole(OIDC_ACCOUNT_MANAGER_ROLE),
@@ -68,7 +73,7 @@ func (e *ApiEnv) setupAccountManagerRg(router *gin.RouterGroup, prefix string) {
 	rg.POST("/:accountId/balance", e.postToAccount)
 }
 
-func (e *ApiEnv) setupUserRg(router *gin.RouterGroup, prefix string) *gin.RouterGroup {
+func (e *Api) setupUserRg(router *gin.RouterGroup, prefix string) *gin.RouterGroup {
 	rg := router.Group(prefix)
 	// seller api
 	rg.GET("/shops", e.getShopsForUser)
@@ -91,22 +96,16 @@ func (e *ApiEnv) setupUserRg(router *gin.RouterGroup, prefix string) *gin.Router
 	return rg
 }
 
-func getFromRequestCtx[T any](ctx *gin.Context, key string) (T, error) {
-	x, exists := ctx.Get(key)
-	if !exists {
-		return *new(T), appError.NewValidationError(fmt.Errorf("request context does not contain key %s", key))
-	}
-	v, ok := x.(T)
-	fmt.Sprintln(x)
-	if !ok {
-		return *new(T), appError.NewValidationError(fmt.Errorf("invalid type in request context for key %s", key))
-	}
-	return v, nil
-}
-
-func NewApiEnv(logic logic.ILogic, authenticator auth.IAuthenticator[*domain.OidcUser]) *ApiEnv {
-	return &ApiEnv{
+func NewApi(logic logic.ILogic, authenticator auth.IAuthenticator[*domain.OidcUser]) *Api {
+	return &Api{
 		logic:         logic,
 		authenticator: authenticator,
+	}
+}
+
+func NewErrorResponse(err error) *ErrorResponse {
+	return &ErrorResponse{
+		Type:    reflect.TypeOf(err).Name(),
+		Message: err.Error(),
 	}
 }

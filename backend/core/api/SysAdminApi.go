@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,15 +8,15 @@ import (
 	appError "github.com/uoul/klcs/backend/oos-core/error"
 )
 
-func (e *ApiEnv) createShop(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) createShop(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	var body domain.Shop
 	if err := ctx.BindJSON(&body); err != nil {
-		ctx.Error(appError.NewValidationError(err))
+		ctx.Error(appError.NewErrInvalidInput("failed to parse shop - %v", err))
 		return
 	}
 	shop, err := e.logic.CreateShop(
@@ -32,7 +31,7 @@ func (e *ApiEnv) createShop(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, shop)
 }
 
-func (e *ApiEnv) getShops(ctx *gin.Context) {
+func (e *Api) getShops(ctx *gin.Context) {
 	shops, err := e.logic.GetShops(ctx)
 	if err != nil {
 		ctx.Error(err)
@@ -41,14 +40,14 @@ func (e *ApiEnv) getShops(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, shops)
 }
 
-func (e *ApiEnv) updateShop(ctx *gin.Context) {
+func (e *Api) updateShop(ctx *gin.Context) {
 	var body domain.Shop
 	if err := ctx.BindJSON(&body); err != nil {
-		ctx.Error(appError.NewValidationError(err))
+		ctx.Error(appError.NewErrInvalidInput("failed to parse shop - %v", err))
 		return
 	}
 	if ctx.Param("shopId") != body.Id {
-		ctx.Error(appError.NewValidationError(fmt.Errorf("shopIds does not match in request")))
+		ctx.Error(appError.NewErrValidation("shopId of uri does not match id from body (%s != %s)", ctx.Param("shopId"), body.Id))
 		return
 	}
 	shop, err := e.logic.UpdateShop(
@@ -62,7 +61,7 @@ func (e *ApiEnv) updateShop(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, shop)
 }
 
-func (e *ApiEnv) deleteShop(ctx *gin.Context) {
+func (e *Api) deleteShop(ctx *gin.Context) {
 	err := e.logic.DeleteShop(ctx, ctx.Param("shopId"))
 	if err != nil {
 		ctx.Error(err)

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,11 +8,14 @@ import (
 	appError "github.com/uoul/klcs/backend/oos-core/error"
 )
 
-func (e *ApiEnv) updateUserByOidcData() func(*gin.Context) {
+func (e *Api) updateUserByOidcData() func(*gin.Context) {
 	return func(ctx *gin.Context) {
 		user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 		if err != nil {
-			ctx.AbortWithError(http.StatusUnauthorized, err)
+			ctx.AbortWithStatusJSON(
+				http.StatusUnauthorized,
+				NewErrorResponse(appError.NewErrAuthentication("failed to get user identity - %v", err)),
+			)
 			return
 		}
 		_, err = e.logic.UpdateUser(ctx, &domain.User{
@@ -21,41 +23,46 @@ func (e *ApiEnv) updateUserByOidcData() func(*gin.Context) {
 			Name:     user.Name,
 		})
 		if err != nil {
-			ctx.AbortWithError(http.StatusInternalServerError, err)
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, err)
 			return
 		}
 		ctx.Next()
 	}
 }
 
-func (e *ApiEnv) checkUserLoggedIn() func(ctx *gin.Context) {
+func (e *Api) checkUserLoggedIn() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		user, err := e.authenticator.GetIdentity(ctx.Request.Header)
+		_, err := e.authenticator.GetIdentity(ctx.Request.Header)
 		if err != nil {
-			ctx.AbortWithError(http.StatusUnauthorized, err)
+			ctx.AbortWithStatusJSON(
+				http.StatusUnauthorized,
+				NewErrorResponse(appError.NewErrAuthentication("failed to get user identity - %v", err)),
+			)
 			return
 		}
-		ctx.Set("oidcIdentity", *user)
 		ctx.Next()
 	}
 }
 
-func (e *ApiEnv) checkOidcRole(role string) func(*gin.Context) {
+func (e *Api) checkOidcRole(role string) func(*gin.Context) {
 	return func(ctx *gin.Context) {
 		user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 		if err != nil {
-			ctx.AbortWithError(http.StatusUnauthorized, err)
+			ctx.AbortWithStatusJSON(
+				http.StatusUnauthorized,
+				NewErrorResponse(appError.NewErrAuthentication("failed to get user identity - %v", err)),
+			)
 			return
 		}
 		if !user.HasRole(role) {
-			ctx.AbortWithError(http.StatusForbidden, fmt.Errorf("user %s does not have necessary role %s", user.GetUsername(), role))
+			ctx.AbortWithStatusJSON(http.StatusForbidden, appError.NewErrForbidden("user %s does not have necessary role %s", user.GetUsername(), role))
 			return
 		}
 		ctx.Next()
 	}
 }
 
-func (e *ApiEnv) useCors() func(ctx *gin.Context) {
+func (e *Api) useCors() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		ctx.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		ctx.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -69,20 +76,23 @@ func (e *ApiEnv) useCors() func(ctx *gin.Context) {
 	}
 }
 
-func (e *ApiEnv) errorTranslation() func(*gin.Context) {
+func (e *Api) errorTranslation() func(*gin.Context) {
 	return func(ctx *gin.Context) {
 		ctx.Next()
 		if !ctx.IsAborted() {
 			for _, err := range ctx.Errors {
+				resp := NewErrorResponse(err)
 				switch err.Err.(type) {
-				case *appError.PermissionError:
-					ctx.Status(http.StatusForbidden)
-				case *appError.ValidationError:
-					ctx.Status(http.StatusBadRequest)
-				case *appError.NotFoundError:
-					ctx.Status(http.StatusNotFound)
+				case appError.ErrForbidden:
+					ctx.JSON(http.StatusForbidden, resp)
+				case appError.ErrValidation:
+					ctx.JSON(http.StatusBadRequest, resp)
+				case appError.ErrNotFound:
+					ctx.JSON(http.StatusNotFound, resp)
+				case appError.ErrAuthentication:
+					ctx.JSON(http.StatusUnauthorized, resp)
 				default:
-					ctx.Status(http.StatusInternalServerError)
+					ctx.JSON(http.StatusInternalServerError, resp)
 				}
 			}
 		}

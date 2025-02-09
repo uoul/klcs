@@ -3,7 +3,6 @@ package logic
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"maps"
 	"slices"
 
@@ -36,14 +35,23 @@ func (l *Logic) DeletePrinter(ctx context.Context, username string, printerId st
 		func(ctx context.Context, tx *sql.Tx) (any, error) {
 			shop := <-l.shopDao.GetShopForPrinter(tx, printerId)
 			if shop.Error != nil {
-				return nil, shop.Error
+				if shop.Error == sql.ErrNoRows {
+					return nil, appError.NewErrNotFound("shop for printer(%s) not found - %v", printerId, shop.Error)
+				}
+				return nil, appError.NewErrDataAccess("failed to get shop for printer(%s) - %v", printerId, shop.Error)
 			}
 			err := l.checkUserRole(tx, username, shop.Result.Id, ADMIN_ROLE)
 			if err != nil {
 				return nil, err
 			}
 			r := <-l.printerDao.DeletePrinter(tx, printerId)
-			return r.Result, r.Error
+			if r.Error != nil {
+				if r.Error == sql.ErrNoRows {
+					return nil, appError.NewErrNotFound("printer(%s) not found - %v", printerId, r.Error)
+				}
+				return nil, appError.NewErrDataAccess("failed to delete printer(%s) - %v", printerId, r.Error)
+			}
+			return r.Result, nil
 		},
 	)
 	return err
@@ -57,12 +65,18 @@ func (l *Logic) CloseAccount(ctx context.Context, username, accountId string) (*
 		func(ctx context.Context, tx *sql.Tx) (*domain.AccountDetails, error) {
 			accountDetails, err := l.getAccountDetails(tx, accountId)
 			if err != nil {
-				return nil, err
+				if err == sql.ErrNoRows {
+					return nil, appError.NewErrNotFound("account(%s) not found - %v", accountId, err)
+				}
+				return nil, appError.NewErrDataAccess("failed to get balance for account(%s) - %v", accountId, err)
 			}
 			if accountDetails.Balance != 0 {
 				user := <-l.userDao.GetUserByUsername(tx, username)
 				if user.Error != nil {
-					return nil, appError.NewPermissionError(user.Error)
+					if user.Error == sql.ErrNoRows {
+						return nil, appError.NewErrNotFound("user(%s) not found - %v", username, user.Error)
+					}
+					return nil, appError.NewErrDataAccess("failed to get user(%s) - %v", username, user.Error)
 				}
 				t := <-l.transactionDao.CreateTransaction(
 					tx,
@@ -76,7 +90,7 @@ func (l *Logic) CloseAccount(ctx context.Context, username, accountId string) (*
 					},
 				)
 				if t.Error != nil {
-					return nil, t.Error
+					return nil, appError.NewErrDataAccess("failed to create new transaction - %v", t.Error)
 				}
 			}
 			return accountDetails, nil
@@ -90,8 +104,11 @@ func (l *Logic) CreateAccount(ctx context.Context, account *domain.Account) (*do
 		ctx,
 		l.cf,
 		func(ctx context.Context, tx *sql.Tx) (*domain.Account, error) {
-			account := <-l.accountDao.CreateAccount(tx, account)
-			return &account.Result, account.Error
+			a := <-l.accountDao.CreateAccount(tx, account)
+			if a.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to create account(%s)", account.HolderName)
+			}
+			return &a.Result, nil
 		},
 	)
 }
@@ -104,7 +121,7 @@ func (l *Logic) PostToAccount(ctx context.Context, username, accountId string, a
 		func(ctx context.Context, tx *sql.Tx) (*domain.AccountDetails, error) {
 			user := <-l.userDao.GetUserByUsername(tx, username)
 			if user.Error != nil {
-				return nil, appError.NewPermissionError(user.Error)
+				return nil, appError.NewErrDataAccess("failed to get user(%s) - %v", username, user.Error)
 			}
 			transaction := <-l.transactionDao.CreateTransaction(
 				tx,
@@ -118,7 +135,7 @@ func (l *Logic) PostToAccount(ctx context.Context, username, accountId string, a
 				},
 			)
 			if transaction.Error != nil {
-				return nil, transaction.Error
+				return nil, appError.NewErrDataAccess("failed to create transaction - %v", transaction.Error)
 			}
 			return l.getAccountDetails(tx, accountId)
 		},
@@ -132,7 +149,13 @@ func (l *Logic) UpdateAccount(ctx context.Context, account *domain.Account) (*do
 		l.cf,
 		func(ctx context.Context, tx *sql.Tx) (*domain.Account, error) {
 			r := <-l.accountDao.UpdateAccount(tx, account)
-			return account, r.Error
+			if r.Error != nil {
+				if r.Error == sql.ErrNoRows {
+					return nil, appError.NewErrNotFound("account(%s) not found - %v", account.Id, r.Error)
+				}
+				return nil, appError.NewErrDataAccess("failed to update account(%s) - %v", account.Id, r.Error)
+			}
+			return account, nil
 		},
 	)
 }
@@ -155,7 +178,10 @@ func (l *Logic) GetRoles(ctx context.Context) ([]domain.Role, error) {
 		l.cf,
 		func(ctx context.Context, tx *sql.Tx) ([]domain.Role, error) {
 			roles := <-l.roleDao.GetRoles(tx)
-			return roles.Result, roles.Error
+			if roles.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to get roles - %v", roles.Error)
+			}
+			return roles.Result, nil
 		},
 	)
 }
@@ -168,10 +194,16 @@ func (l *Logic) AssignShopAdmin(ctx context.Context, shopId string, userId strin
 		func(ctx context.Context, tx *sql.Tx) (*any, error) {
 			role := <-l.roleDao.GetRoleByName(tx, ADMIN_ROLE)
 			if role.Error != nil {
-				return nil, role.Error
+				if role.Error == sql.ErrNoRows {
+					return nil, appError.NewErrNotFound("role(%s) not found - %v", ADMIN_ROLE, role.Error)
+				}
+				return nil, appError.NewErrDataAccess("failed to get role(%s) - %v", ADMIN_ROLE, role.Error)
 			}
 			r := <-l.userDao.AssignUserShopRole(tx, userId, shopId, role.Result.Id)
-			return nil, r.Error
+			if r.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to assign role(%s) for user(%s) to shop(%s) - %v", ADMIN_ROLE, userId, shopId, r.Error)
+			}
+			return nil, nil
 		},
 	)
 	return err
@@ -184,7 +216,10 @@ func (l *Logic) GetUsers(ctx context.Context) ([]domain.User, error) {
 		l.cf,
 		func(ctx context.Context, tx *sql.Tx) ([]domain.User, error) {
 			users := <-l.userDao.GetAll(tx)
-			return users.Result, users.Error
+			if users.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to get users - %v", users.Error)
+			}
+			return users.Result, nil
 		},
 	)
 }
@@ -238,7 +273,10 @@ func (l *Logic) AddUserRole(ctx context.Context, username string, shopId string,
 				return nil, err
 			}
 			r := <-l.userDao.AssignUserShopRole(tx, userId, shopId, roleId)
-			return nil, r.Error
+			if r.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to add userrole - %v", r.Error)
+			}
+			return nil, nil
 		},
 	)
 	return err
@@ -255,7 +293,10 @@ func (l *Logic) DeleteUserRole(ctx context.Context, username string, shopId stri
 				return nil, err
 			}
 			r := <-l.userDao.UnassignUserShopRole(tx, userId, shopId, roleId)
-			return nil, r.Error
+			if r.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to unassign userrole - %v", r.Error)
+			}
+			return nil, nil
 		},
 	)
 	return err
@@ -277,16 +318,16 @@ func (l *Logic) CreateArticle(ctx context.Context, username string, shopId strin
 				switch p.Error {
 				case nil:
 				case sql.ErrNoRows:
-					return nil, appError.NewValidationError(fmt.Errorf("given printer with id %s does not exist", article.Id))
+					return nil, appError.NewErrNotFound("given printer with id %s does not exist", article.Id)
 				default:
-					return nil, p.Error
+					return nil, appError.NewErrDataAccess("failed to get printer(%s) - %v", article.Printer.Id, p.Error)
 				}
 				shopForPrinter := <-l.shopDao.GetShopForPrinter(tx, article.Printer.Id)
 				if shopForPrinter.Error != nil {
-					return nil, shopForPrinter.Error
+					return nil, appError.NewErrDataAccess("failed to get shop for printer(%v) - %v", printerId, shopForPrinter.Error)
 				}
 				if shopId != shopForPrinter.Result.Id {
-					return nil, appError.NewValidationError(fmt.Errorf("given printer and given article does not belong to same shop"))
+					return nil, appError.NewErrValidation("given printer and given article does not belong to same shop")
 				}
 				printerId = &article.Printer.Id
 			}
@@ -298,7 +339,7 @@ func (l *Logic) CreateArticle(ctx context.Context, username string, shopId strin
 				StockAmount: article.StockAmount,
 			}, shopId, printerId)
 			if a.Error != nil {
-				return nil, a.Error
+				return nil, appError.NewErrDataAccess("failed to create article - %v", a.Error)
 			}
 			return &domain.ArticleDetails{
 				Id:          a.Result.Id,
@@ -324,7 +365,10 @@ func (l *Logic) CreatePrinter(ctx context.Context, username string, shopId strin
 				return nil, err
 			}
 			p := <-l.printerDao.CreatePrinter(tx, shopId, printer)
-			return &p.Result, p.Error
+			if p.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to create printer - %v", p.Error)
+			}
+			return &p.Result, nil
 		},
 	)
 }
@@ -337,18 +381,18 @@ func (l *Logic) CreateShop(ctx context.Context, username string, shop *domain.Sh
 		func(ctx context.Context, tx *sql.Tx) (*domain.Shop, error) {
 			s := <-l.shopDao.CreateShop(tx, shop)
 			if s.Error != nil {
-				return nil, s.Error
+				return nil, appError.NewErrDataAccess("failed to create shop(%s) - %v", shop.Name, s.Error)
 			}
 			user := <-l.userDao.GetUserByUsername(tx, username)
 			if user.Error != nil {
-				return nil, user.Error
+				return nil, appError.NewErrDataAccess("failed to get user(%s) - %v", username, user.Error)
 			}
 			role := <-l.roleDao.GetRoleByName(tx, ADMIN_ROLE)
 			if role.Error != nil {
-				return nil, role.Error
+				return nil, appError.NewErrDataAccess("failed to get role(%s) - %v", ADMIN_ROLE, role.Error)
 			}
 			r := <-l.userDao.AssignUserShopRole(tx, user.Result.Id, s.Result.Id, role.Result.Id)
-			return &s.Result, r.Error
+			return &s.Result, appError.NewErrDataAccess("failed to assign role(%s) to user(%s) for shop(%s) - %v", ADMIN_ROLE, username, shop.Name, r.Error)
 		},
 	)
 }
@@ -361,14 +405,17 @@ func (l *Logic) DeleteArticle(ctx context.Context, username string, articleId st
 		func(ctx context.Context, tx *sql.Tx) (*any, error) {
 			shop := <-l.shopDao.GetShopForArticle(tx, articleId)
 			if shop.Error != nil {
-				return nil, shop.Error
+				return nil, appError.NewErrDataAccess("failed to get shop for article(%s), - %v", articleId, shop.Error)
 			}
 			err := l.checkUserRole(tx, username, shop.Result.Id, ADMIN_ROLE)
 			if err != nil {
 				return nil, err
 			}
 			a := <-l.articleDao.DeleteArticle(tx, articleId)
-			return nil, a.Error
+			if a.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to delete article - %v", a.Error)
+			}
+			return nil, nil
 		},
 	)
 	return err
@@ -381,7 +428,10 @@ func (l *Logic) DeleteShop(ctx context.Context, shopId string) error {
 		l.cf,
 		func(ctx context.Context, tx *sql.Tx) (*any, error) {
 			r := <-l.shopDao.DeleteShop(tx, shopId)
-			return nil, r.Error
+			if r.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to delete shop(%s) - %v", shopId, r.Error)
+			}
+			return nil, nil
 		},
 	)
 	return err
@@ -394,12 +444,11 @@ func (l *Logic) GetArticle(ctx context.Context, username string, articleId strin
 		l.cf,
 		func(ctx context.Context, tx *sql.Tx) (*domain.ArticleDetails, error) {
 			shopOfArticle := <-l.shopDao.GetShopForArticle(tx, articleId)
-			switch shopOfArticle.Error {
-			case nil:
-			case sql.ErrNoRows:
-				return nil, appError.NewNotFoundError(fmt.Errorf("shop for Article not found"))
-			default:
-				return nil, shopOfArticle.Error
+			if shopOfArticle.Error != nil {
+				if shopOfArticle.Error == sql.ErrNoRows {
+					return nil, appError.NewErrNotFound("shop for article(%s) not found - %v", articleId, shopOfArticle.Error)
+				}
+				return nil, appError.NewErrDataAccess("failed to get shop for article(%s) - %v", articleId, shopOfArticle.Error)
 			}
 			err := l.checkUserMemberOfShop(tx, username, shopOfArticle.Result.Id)
 			if err != nil {
@@ -412,7 +461,7 @@ func (l *Logic) GetArticle(ctx context.Context, username string, articleId strin
 				printer = &p.Result
 			case sql.ErrNoRows:
 			default:
-				return nil, err
+				return nil, appError.NewErrDataAccess("failed to get printer for article(%s) - %v", articleId, p.Error)
 			}
 			a := <-l.articleDao.GetArticle(tx, articleId)
 			switch a.Error {
@@ -427,9 +476,9 @@ func (l *Logic) GetArticle(ctx context.Context, username string, articleId strin
 					Printer:     printer,
 				}, nil
 			case sql.ErrNoRows:
-				return nil, appError.NewNotFoundError(fmt.Errorf("article not found"))
+				return nil, appError.NewErrNotFound("article(%s) not found - %v", articleId, a.Error)
 			default:
-				return nil, a.Error
+				return nil, appError.NewErrDataAccess("failed to get article(%s) - %v", articleId, a.Error)
 			}
 		},
 	)
@@ -446,7 +495,13 @@ func (l *Logic) GetArticlesForShop(ctx context.Context, username string, shopId 
 				return nil, err
 			}
 			a := <-l.articleDao.GetArticlesForShop(tx, shopId)
-			return a.Result, a.Error
+			if a.Error != nil {
+				if a.Error == sql.ErrNoRows {
+					return nil, appError.NewErrNotFound("shop(%s) not found - %v", shopId, a.Error)
+				}
+				return nil, appError.NewErrDataAccess("failed to get articles for shop(%s) - %v", shopId, a.Error)
+			}
+			return a.Result, nil
 		},
 	)
 }
@@ -462,7 +517,13 @@ func (l *Logic) GetPrintersForShop(ctx context.Context, username string, shopId 
 				return nil, err
 			}
 			p := <-l.printerDao.GetPrintersForShop(tx, shopId)
-			return p.Result, p.Error
+			if p.Error != nil {
+				if p.Error == sql.ErrNoRows {
+					return nil, appError.NewErrNotFound("shop(%s) not found - %v", shopId, p.Error)
+				}
+				return nil, appError.NewErrDataAccess("failed to get printers for shop(%s) - %v", shopId, p.Error)
+			}
+			return p.Result, nil
 		},
 	)
 }
@@ -474,7 +535,10 @@ func (l *Logic) GetShops(ctx context.Context) ([]domain.Shop, error) {
 		l.cf,
 		func(ctx context.Context, tx *sql.Tx) ([]domain.Shop, error) {
 			r := <-l.shopDao.GetAll(tx)
-			return r.Result, r.Error
+			if r.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to get shops - %v", r.Error)
+			}
+			return r.Result, nil
 		},
 	)
 }
@@ -491,13 +555,13 @@ func (l *Logic) GetShopUsers(ctx context.Context, username string, shopId string
 			}
 			users := <-l.userDao.GetAll(tx)
 			if users.Error != nil {
-				return nil, users.Error
+				return nil, appError.NewErrDataAccess("failed to get users - %v", users.Error)
 			}
 			userMapping := make(map[domain.User][]domain.Role)
 			for _, user := range users.Result {
 				l := <-l.roleDao.GetUserRolesForShop(tx, user.Username, shopId)
 				if l.Error != nil {
-					return nil, l.Error
+					return nil, appError.NewErrDataAccess("failed to get roles of user(%s) for shop(%s) - %v", username, shopId, l.Error)
 				}
 				userMapping[user] = l.Result
 			}
@@ -514,7 +578,7 @@ func (l *Logic) UpdateArticle(ctx context.Context, username string, article *dom
 		func(ctx context.Context, tx *sql.Tx) (*domain.ArticleDetails, error) {
 			shopForArticle := <-l.shopDao.GetShopForArticle(tx, article.Id)
 			if shopForArticle.Error != nil {
-				return nil, shopForArticle.Error
+				return nil, appError.NewErrDataAccess("failed to get shop for article(%s) - %v", article.Name, shopForArticle.Error)
 			}
 			err := l.checkUserRole(tx, username, shopForArticle.Result.Id, ADMIN_ROLE)
 			if err != nil {
@@ -529,35 +593,34 @@ func (l *Logic) UpdateArticle(ctx context.Context, username string, article *dom
 				StockAmount: article.StockAmount,
 			})
 			if a.Error != nil {
-				return nil, a.Error
+				return nil, appError.NewErrDataAccess("failed to update article(%s) - %v", article.Name, a.Error)
 			}
 			if article.Printer != nil {
 				p := <-l.printerDao.GetPrinter(tx, article.Printer.Id)
-				switch p.Error {
-				case nil:
-				case sql.ErrNoRows:
-					return nil, appError.NewValidationError(fmt.Errorf("given printer with id %s does not exist", article.Id))
-				default:
-					return nil, p.Error
+				if p.Error != nil {
+					if p.Error == sql.ErrNoRows {
+						return nil, appError.NewErrNotFound("printer(%s) does not exist - %v", article.Printer.Id, p.Error)
+					}
+					return nil, appError.NewErrDataAccess("failed to get printer(%s) - %v", article.Printer.Id, p.Error)
 				}
 				shopForPrinter := <-l.shopDao.GetShopForPrinter(tx, article.Printer.Id)
 				if shopForPrinter.Error != nil {
-					return nil, shopForPrinter.Error
+					return nil, appError.NewErrDataAccess("failed to get shop for printer(%s) - %v", article.Printer.Id, shopForPrinter.Error)
 				}
 				if shopForArticle.Result.Id != shopForPrinter.Result.Id {
-					return nil, appError.NewValidationError(fmt.Errorf("given printer and given article does not belong to same shop"))
+					return nil, appError.NewErrValidation("given printer(%s) and given article(%s) does not belong to same shop", article.Printer.Id, article.Id)
 				}
 				r := <-l.articleDao.SetPrinterForArticle(tx, article.Id, &article.Printer.Id)
 				if r.Error != nil {
-					return nil, r.Error
+					return nil, appError.NewErrDataAccess("failed to set printer(%s) for article(%s) - %v", article.Printer.Id, article.Id, r.Error)
 				}
 			} else {
 				r := <-l.articleDao.SetPrinterForArticle(tx, article.Id, nil)
 				if r.Error != nil {
-					return nil, r.Error
+					return nil, appError.NewErrDataAccess("failed to remove Printer from article(%s) - %v", article.Id, r.Error)
 				}
 			}
-			return article, a.Error
+			return article, nil
 		},
 	)
 }
@@ -569,7 +632,10 @@ func (l *Logic) UpdateShop(ctx context.Context, shop *domain.Shop) (*domain.Shop
 		l.cf,
 		func(ctx context.Context, tx *sql.Tx) (*domain.Shop, error) {
 			r := <-l.shopDao.UpdateShop(tx, shop)
-			return shop, r.Error
+			if r.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to update shop(%s)", shop.Id)
+			}
+			return shop, nil
 		},
 	)
 }
@@ -581,7 +647,10 @@ func (l *Logic) UpdateUser(ctx context.Context, user *domain.User) (*domain.User
 		l.cf,
 		func(ctx context.Context, tx *sql.Tx) (*domain.User, error) {
 			u := <-l.userDao.CreateOrUpdateUser(tx, user)
-			return &u.Result, u.Error
+			if u.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to update user - %v", u.Error)
+			}
+			return &u.Result, nil
 		},
 	)
 }
@@ -594,18 +663,21 @@ func (l *Logic) GetShopDetailsForUser(ctx context.Context, username string, shop
 		func(ctx context.Context, tx *sql.Tx) (*domain.ShopDetails, error) {
 			shop := <-l.shopDao.GetShop(tx, shopId)
 			if shop.Error != nil {
-				return nil, shop.Error
+				if shop.Error == sql.ErrNoRows {
+					return nil, appError.NewErrNotFound("shop(%s) does not exist - %v", shopId, shop.Error)
+				}
+				return nil, appError.NewErrDataAccess("failed to get shop(%s) - %v", shopId, shop.Error)
 			}
 			userRoles := <-l.roleDao.GetUserRolesForShop(tx, username, shopId)
 			if userRoles.Error != nil {
-				return nil, userRoles.Error
+				return nil, appError.NewErrDataAccess("failed to get roles of user(%s) for shop(%s) - %v", username, shopId, userRoles.Error)
 			}
 			if len(userRoles.Result) <= 0 {
-				return nil, appError.NewPermissionError(fmt.Errorf("%s is no member of %s", username, shop.Result.Name))
+				return nil, appError.NewErrForbidden("%s is no member of %s", username, shop.Result.Name)
 			}
 			articles := <-l.articleDao.GetArticlesForShop(tx, shopId)
 			if articles.Error != nil {
-				return nil, articles.Error
+				return nil, appError.NewErrDataAccess("failed to get articles for shop(%s) - %v", shopId, articles.Error)
 			}
 			shopDetails := &domain.ShopDetails{
 				Id:         shop.Result.Id,
@@ -625,7 +697,10 @@ func (l *Logic) GetShopsForUser(ctx context.Context, username string) ([]domain.
 		l.cf,
 		func(ctx context.Context, tx *sql.Tx) ([]domain.Shop, error) {
 			shops := <-l.shopDao.GetShopsForUser(tx, username)
-			return shops.Result, shops.Error
+			if shops.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to get shops for user(%s) - %v", username, shops.Error)
+			}
+			return shops.Result, nil
 		},
 	)
 }
@@ -652,26 +727,26 @@ func convertArticles(articles []domain.Article) map[string][]domain.Article {
 func (l *Logic) checkUserRole(tx *sql.Tx, username string, shopId string, role string) error {
 	userRoles := <-l.roleDao.GetUserRolesForShop(tx, username, shopId)
 	if userRoles.Error != nil {
-		return userRoles.Error
+		return appError.NewErrDataAccess("failed to get shop roles for user - %v", userRoles.Error)
 	}
 	if len(userRoles.Result) <= 0 {
-		return appError.NewPermissionError(fmt.Errorf("user %s is no member of shop %s", username, shopId))
+		return appError.NewErrForbidden("user %s is no member of shop %s", username, shopId)
 	}
 	for _, r := range userRoles.Result {
 		if r.Name == role {
 			return nil
 		}
 	}
-	return appError.NewPermissionError(fmt.Errorf("user %s does not have role %s at shop %s", username, role, shopId))
+	return appError.NewErrForbidden("user %s does not have role %s at shop %s", username, role, shopId)
 }
 
 func (l *Logic) checkUserMemberOfShop(tx *sql.Tx, username string, shopId string) error {
 	userRoles := <-l.roleDao.GetUserRolesForShop(tx, username, shopId)
 	if userRoles.Error != nil {
-		return userRoles.Error
+		return appError.NewErrDataAccess("failed to get shop roles for user - %v", userRoles.Error)
 	}
 	if len(userRoles.Result) <= 0 {
-		return appError.NewPermissionError(fmt.Errorf("user %s is no member of shop %s", username, shopId))
+		return appError.NewErrForbidden("user %s is no member of shop %s", username, shopId)
 	}
 	return nil
 }
@@ -679,7 +754,7 @@ func (l *Logic) checkUserMemberOfShop(tx *sql.Tx, username string, shopId string
 func (l *Logic) getCurrentStockForArticles(tx *sql.Tx, articleIds []string) (map[string]domain.Article, error) {
 	stockList := <-l.articleDao.GetArticlesIn(tx, articleIds)
 	if stockList.Error != nil {
-		return nil, stockList.Error
+		return nil, appError.NewErrDataAccess("failed to get articles - %v", stockList.Error)
 	}
 	stock := make(map[string]domain.Article)
 	for _, article := range stockList.Result {
@@ -698,7 +773,7 @@ func (l *Logic) updateStockAmountAndCalculateSumOfOrder(tx *sql.Tx, order *domai
 	ordersum := 0
 	for articleId, amount := range order.Articles {
 		if stock[articleId].StockAmount != nil && *stock[articleId].StockAmount < amount {
-			return 0, appError.NewValidationError(fmt.Errorf("current StockAmount of article %s to low for order - need: %v, current: %v", articleId, amount, stock[articleId].StockAmount))
+			return 0, appError.NewErrValidation("current StockAmount of article %s to low for order - need: %v, current: %v", articleId, amount, stock[articleId].StockAmount)
 		}
 		ordersum += stock[articleId].Price * amount
 		// update StockAmount
@@ -707,7 +782,7 @@ func (l *Logic) updateStockAmountAndCalculateSumOfOrder(tx *sql.Tx, order *domai
 			a := stock[articleId]
 			r := <-l.articleDao.UpdateArticle(tx, &a)
 			if r.Error != nil {
-				return 0, r.Error
+				return 0, appError.NewErrDataAccess("failed to update stock amount for article(%s) - %v", articleId, r.Error)
 			}
 		}
 	}
@@ -716,7 +791,7 @@ func (l *Logic) updateStockAmountAndCalculateSumOfOrder(tx *sql.Tx, order *domai
 
 func (l *Logic) validateOrder(order *domain.Order) error {
 	if order.Type != "CARD" && order.Type != "CASH" {
-		return appError.NewValidationError(fmt.Errorf("invalid order type %s", order.Type))
+		return appError.NewErrValidation("invalid order type %s", order.Type)
 	}
 	return nil
 }
@@ -726,17 +801,20 @@ func (l *Logic) checkAccountConditionsForCheckOutWithCard(tx *sql.Tx, order *dom
 		accountId := *order.AccountId
 		account := <-l.accountDao.GetAccount(tx, accountId)
 		if account.Error != nil {
-			return account.Error
+			if account.Error == sql.ErrNoRows {
+				return appError.NewErrNotFound("account(%s) not found - %v", accountId, account.Error)
+			}
+			return appError.NewErrDataAccess("failed to get account(%s) - %v", accountId, account.Error)
 		}
 		if account.Result.Locked {
-			return appError.NewValidationError(fmt.Errorf("account %s is currently locked", *order.AccountId))
+			return appError.NewErrValidation("account %s is currently locked", *order.AccountId)
 		}
 		accountBalance := <-l.transactionDao.GetAccountBalance(tx, order.AccountId)
 		if accountBalance.Error != nil {
-			return accountBalance.Error
+			return appError.NewErrDataAccess("failed to get account(%s) balance - %v", accountId, accountBalance.Error)
 		}
 		if accountBalance.Result < sumOfOrder {
-			return appError.NewValidationError(fmt.Errorf("account %s does not have neccessary balance - need: %v current: %v", *order.AccountId, sumOfOrder, accountBalance.Result))
+			return appError.NewErrValidation("account %s does not have neccessary balance - need: %v current: %v", *order.AccountId, sumOfOrder, accountBalance.Result)
 		}
 	}
 	return nil
@@ -745,7 +823,10 @@ func (l *Logic) checkAccountConditionsForCheckOutWithCard(tx *sql.Tx, order *dom
 func (l *Logic) createTransactionForCheckout(tx *sql.Tx, username string, order *domain.Order, sumOfOrder int) error {
 	user := <-l.userDao.GetUserByUsername(tx, username)
 	if user.Error != nil {
-		return user.Error
+		if user.Error == sql.ErrNoRows {
+			return appError.NewErrNotFound("user(%s) not found - %v", username, user.Error)
+		}
+		return appError.NewErrDataAccess("failed to get user(%s) - %v", username, user.Error)
 	}
 	transaction := <-l.transactionDao.CreateTransaction(
 		tx,
@@ -759,7 +840,7 @@ func (l *Logic) createTransactionForCheckout(tx *sql.Tx, username string, order 
 		},
 	)
 	if transaction.Error != nil {
-		return transaction.Error
+		return appError.NewErrDataAccess("failed to create transaction - %v", transaction.Error)
 	}
 	return nil
 }
@@ -767,7 +848,7 @@ func (l *Logic) createTransactionForCheckout(tx *sql.Tx, username string, order 
 func (l *Logic) checkUserPermissionsForArticles(tx *sql.Tx, username string, articleIds []string) error {
 	shops := <-l.shopDao.GetShopsForArticles(tx, articleIds)
 	if shops.Error != nil {
-		return shops.Error
+		return appError.NewErrDataAccess("failed to get shops for articles(%s) - %v", articleIds, shops.Error)
 	}
 	for _, shop := range shops.Result {
 		err := l.checkUserMemberOfShop(tx, username, shop.Id)
@@ -784,7 +865,7 @@ func (l *Logic) getAccountDetails(tx *sql.Tx, accountId string) (*domain.Account
 	case nil:
 		balance := <-l.transactionDao.GetAccountBalance(tx, &accountId)
 		if balance.Error != nil {
-			return nil, balance.Error
+			return nil, appError.NewErrDataAccess("failed to get balance for account(%s) - %v", accountId, balance.Error)
 		}
 		return &domain.AccountDetails{
 			Id:         account.Result.Id,
@@ -793,9 +874,9 @@ func (l *Logic) getAccountDetails(tx *sql.Tx, accountId string) (*domain.Account
 			Balance:    balance.Result,
 		}, nil
 	case sql.ErrNoRows:
-		return nil, appError.NewNotFoundError(fmt.Errorf("account with id %s does not exist", accountId))
+		return nil, appError.NewErrNotFound("account with id %s does not exist", accountId)
 	default:
-		return nil, account.Error
+		return nil, appError.NewErrDataAccess("failed to get account(%s) - %v", accountId, account.Error)
 	}
 }
 

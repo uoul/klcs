@@ -8,10 +8,10 @@ import (
 	appError "github.com/uoul/klcs/backend/oos-core/error"
 )
 
-func (e *ApiEnv) getShopsForUser(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) getShopsForUser(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	shops, err := e.logic.GetShopsForUser(ctx, user.GetUsername())
@@ -22,10 +22,10 @@ func (e *ApiEnv) getShopsForUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, shops)
 }
 
-func (e *ApiEnv) getShopdetailsForUser(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) getShopdetailsForUser(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	shopId := ctx.Param("shopId")
@@ -37,16 +37,16 @@ func (e *ApiEnv) getShopdetailsForUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, shop)
 }
 
-func (e *ApiEnv) checkout(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) checkout(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	reqOrder := domain.Order{}
 	err = ctx.BindJSON(&reqOrder)
 	if err != nil {
-		ctx.Error(appError.NewValidationError(err))
+		ctx.Error(appError.NewErrInvalidInput("failed to parse order - %v", err))
 		return
 	}
 	resOrder, err := e.logic.Checkout(ctx, user.GetUsername(), &reqOrder)

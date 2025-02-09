@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,10 +9,10 @@ import (
 	appError "github.com/uoul/klcs/backend/oos-core/error"
 )
 
-func (e *ApiEnv) getArticlesForShop(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) getArticlesForShop(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	shopId := ctx.Param("shopId")
@@ -25,17 +24,17 @@ func (e *ApiEnv) getArticlesForShop(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, articles)
 }
 
-func (e *ApiEnv) createArticle(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) createArticle(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	shopId := ctx.Param("shopId")
 	article := domain.ArticleDetails{}
 	err = ctx.BindJSON(&article)
 	if err != nil {
-		ctx.Error(appError.NewValidationError(err))
+		ctx.Error(appError.NewErrInvalidInput("failed to parse article - %v", err))
 		return
 	}
 	a, err := e.logic.CreateArticle(
@@ -51,10 +50,10 @@ func (e *ApiEnv) createArticle(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, a)
 }
 
-func (e *ApiEnv) getArticle(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) getArticle(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	articleId := ctx.Param("articleId")
@@ -66,21 +65,21 @@ func (e *ApiEnv) getArticle(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, article)
 }
 
-func (e *ApiEnv) updateArticle(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) updateArticle(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	articleId := ctx.Param("articleId")
 	article := domain.ArticleDetails{}
 	err = ctx.BindJSON(&article)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrInvalidInput("failed to parse article - %v", err))
 		return
 	}
 	if articleId != article.Id {
-		ctx.Error(appError.NewValidationError(fmt.Errorf("article id's does not match (%s != %s)", articleId, article.Id)))
+		ctx.Error(appError.NewErrValidation("article id's does not match (%s != %s)", articleId, article.Id))
 		return
 	}
 	a, err := e.logic.UpdateArticle(ctx, user.GetUsername(), &article)
@@ -91,10 +90,10 @@ func (e *ApiEnv) updateArticle(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, a)
 }
 
-func (e *ApiEnv) deleteArticle(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) deleteArticle(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	articleId := ctx.Param("articleId")
@@ -106,10 +105,10 @@ func (e *ApiEnv) deleteArticle(ctx *gin.Context) {
 	ctx.Status(http.StatusNoContent)
 }
 
-func (e *ApiEnv) getPrintersForShop(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) getPrintersForShop(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	shopId := ctx.Param("shopId")
@@ -121,17 +120,17 @@ func (e *ApiEnv) getPrintersForShop(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, printers)
 }
 
-func (e *ApiEnv) createPrinter(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) createPrinter(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	shopId := ctx.Param("shopId")
 	printer := domain.Printer{}
 	err = ctx.BindJSON(&printer)
 	if err != nil {
-		ctx.Error(appError.NewValidationError(err))
+		ctx.Error(appError.NewErrInvalidInput("failed to parse printer - %v", err))
 		return
 	}
 	p, err := e.logic.CreatePrinter(ctx, user.GetUsername(), shopId, &printer)
@@ -142,10 +141,10 @@ func (e *ApiEnv) createPrinter(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, p)
 }
 
-func (e *ApiEnv) deletePrinter(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) deletePrinter(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	printerId := ctx.Param("printerId")
@@ -157,7 +156,7 @@ func (e *ApiEnv) deletePrinter(ctx *gin.Context) {
 	ctx.Status(http.StatusNoContent)
 }
 
-func (e *ApiEnv) getUsers(ctx *gin.Context) {
+func (e *Api) getUsers(ctx *gin.Context) {
 	users, err := e.logic.GetUsers(ctx)
 	if err != nil {
 		ctx.Error(err)
@@ -166,10 +165,10 @@ func (e *ApiEnv) getUsers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, users)
 }
 
-func (e *ApiEnv) getShopUsers(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) getShopUsers(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	shopId := ctx.Param("shopId")
@@ -190,16 +189,20 @@ func (e *ApiEnv) getShopUsers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func (e *ApiEnv) addUserRoleForShop(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) addUserRoleForShop(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	shopId := ctx.Param("shopId")
 	userId := ctx.Param("userId")
 	role := domain.Role{}
-	ctx.BindJSON(&role)
+	err = ctx.BindJSON(&role)
+	if err != nil {
+		ctx.Error(appError.NewErrInvalidInput("failed to bind role - %v", err))
+		return
+	}
 	err = e.logic.AddUserRole(ctx, user.GetUsername(), shopId, userId, role.Id)
 	if err != nil {
 		ctx.Error(err)
@@ -208,10 +211,10 @@ func (e *ApiEnv) addUserRoleForShop(ctx *gin.Context) {
 	ctx.Status(http.StatusNoContent)
 }
 
-func (e *ApiEnv) deleteUserRoleFromShop(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) deleteUserRoleFromShop(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	shopId := ctx.Param("shopId")
@@ -225,7 +228,7 @@ func (e *ApiEnv) deleteUserRoleFromShop(ctx *gin.Context) {
 	ctx.Status(http.StatusNoContent)
 }
 
-func (e *ApiEnv) getRoles(ctx *gin.Context) {
+func (e *Api) getRoles(ctx *gin.Context) {
 	roles, err := e.logic.GetRoles(ctx)
 	if err != nil {
 		ctx.Error(err)

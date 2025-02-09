@@ -6,9 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/uoul/klcs/backend/oos-core/api/dto"
 	"github.com/uoul/klcs/backend/oos-core/domain"
+
+	appError "github.com/uoul/klcs/backend/oos-core/error"
 )
 
-func (e *ApiEnv) getAccountDetails(ctx *gin.Context) {
+func (e *Api) getAccountDetails(ctx *gin.Context) {
 	accountId := ctx.Param("accountId")
 	accountDetails, err := e.logic.GetAccountDetails(ctx, accountId)
 	if err != nil {
@@ -18,7 +20,7 @@ func (e *ApiEnv) getAccountDetails(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, accountDetails)
 }
 
-func (e *ApiEnv) createAccount(ctx *gin.Context) {
+func (e *Api) createAccount(ctx *gin.Context) {
 	account := domain.Account{}
 	err := ctx.BindJSON(&account)
 	if err != nil {
@@ -33,7 +35,7 @@ func (e *ApiEnv) createAccount(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, result)
 }
 
-func (e *ApiEnv) updateAccount(ctx *gin.Context) {
+func (e *Api) updateAccount(ctx *gin.Context) {
 	account := domain.Account{}
 	err := ctx.BindJSON(&account)
 	if err != nil {
@@ -48,10 +50,10 @@ func (e *ApiEnv) updateAccount(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func (e *ApiEnv) closeAccount(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) closeAccount(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	accountId := ctx.Param("accountId")
@@ -63,10 +65,10 @@ func (e *ApiEnv) closeAccount(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, account)
 }
 
-func (e *ApiEnv) postToAccount(ctx *gin.Context) {
-	user, err := getFromRequestCtx[domain.OidcUser](ctx, "oidcIdentity")
+func (e *Api) postToAccount(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
 		return
 	}
 	accountId := ctx.Param("accountId")
