@@ -15,13 +15,13 @@
             <tr>
               <td>{{ item.article.Name }}</td>
               <td>{{ item.count }}</td>
-              <td>{{ item.article.Price * item.count / 100 | currency: 'EUR' }}</td>
+              <td class="flex justify-end">{{ item.article.Price * item.count / 100 | currency: 'EUR' }}</td>
             </tr>
           }
           <tr>
             <td></td>
             <td></td>
-            <td>
+            <td class="flex justify-end">
               <span class="border-b-4 border-double border-black">{{ shoppingCart.getSum() / 100 | currency: 'EUR'}}</span>
             </td>
           </tr>
@@ -32,14 +32,27 @@
     }
     <hr class="my-4"/>
     <form #f="ngForm" (submit)="checkout()" method="dialog">
-      <fieldset class="fieldset flex flex-col" [disabled]="shoppingCart.getOrderItems().length <= 0">
-        <input name="description" type="text" class="input input-bordered validator" placeholder="Description" [(ngModel)]="description"/>
-        <div class="validator-hint">Enter valid email address</div>
-
+      <fieldset class="flex flex-col" [disabled]="shoppingCart.getOrderItems().length <= 0">
         @if (withCard()) {
-          <input name="accountid" type="text" class="input input-bordered validator" placeholder="Account ID" [(ngModel)]="accountId" required pattern="[0-9a-f]{12}4[0-9a-f]{3}[89ab][0-9a-f]{15}\Z"/>
-          <div class="validator-hint">Enter valid email address</div>
+          <div class="contents">
+            <input 
+              type="text" 
+              name="accountId" 
+              class="input input-bordered mt-3 peer invalid:border-red-500" 
+              placeholder="*AccountID" 
+              alt="Account identifier" 
+              [(ngModel)]="accountId"  
+              pattern="^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$"
+              required
+              autofocus
+            />
+            <span class="mt-2 text-sm text-red-500 peer-invalid:block hidden">
+              Please enter a valid AccountID
+            </span>
+          </div>
         }
+
+        <input type="text" name="description" class="input input-bordered mt-2" placeholder="Description" alt="Description" [(ngModel)]="description" />
 
       </fieldset>
       <div class="modal-action">

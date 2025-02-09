@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 
 @Component({
   selector: 'klcs-nav-item',
@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './nav-item.component.css'
 })
 export class NavItemComponent {
-
+  clicked = output<void>();
 }

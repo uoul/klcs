@@ -19,7 +19,7 @@ export class CashdeskComponent {
   categories = input.required<Map<string, Article[]>>()
 
   constructor(
-    private shoppingCart: ShoppingCartService,
+    protected shoppingCart: ShoppingCartService,
   ){}
 
   addToShoppingCart(article: Article) {

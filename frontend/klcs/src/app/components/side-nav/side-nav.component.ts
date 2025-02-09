@@ -40,4 +40,9 @@ export class SideNavComponent implements OnInit {
   checkUserRole(role: string): boolean {
     return this.authService.getIdentity().roles.find((r) => r == role) ? true : false;
   }
+
+  updateMenuState() {
+    if(this.sideNav.isMobile() && this.sideNav.isOpen())
+      this.sideNav.toggle()
+  }
 }
