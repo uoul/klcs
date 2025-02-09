@@ -8,7 +8,7 @@ export class SideNavService {
   private readonly MOBILE_RESOLUTION = 1280;
 
   private _isOpen: WritableSignal<boolean> = signal(true);
-  private _isMobile: WritableSignal<boolean> = signal(true);
+  private _isMobile: WritableSignal<boolean> = signal(window.innerWidth < this.MOBILE_RESOLUTION);
 
   constructor() {
     addEventListener("resize", (event) => {
