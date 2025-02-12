@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {catchError, finalize, Observable, of, tap, throwError} from "rxjs";
+import {Observable, tap} from "rxjs";
 import {ShoppingCartService} from "../shopping-cart/shopping-cart.service";
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { Order } from '../../domain/Order';

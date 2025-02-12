@@ -6,14 +6,19 @@
         <div class="collapse-title font-semibold">{{ category.key }}</div>
         <div class="collapse-content text-sm flex flex-wrap">
           @for (article of category.value; track $index) {
-            <klcs-cashdesk-article [article]="article" (articleClicked)="addToShoppingCart($event)"/>
+            @if (article.StockAmount === null || article.StockAmount > 0) {
+              <klcs-cashdesk-article [article]="article" (articleClicked)="addToShoppingCart($event)"/>
+            }
           }
         </div>
       </div>
     }
   </div>
-  <div class="hidden xl:flex flex-grow">
+  <div class="hidden xl:flex flex-col flex-grow">
     <klcs-shopping-cart />
+    <button class="btn btn-secondary btn-outline my-1" (click)="showCheckout(false)">Checkout Cash</button>
+    <button class="btn btn-secondary btn-outline my-1" (click)="showCheckout(true)">Checkout Card</button>
+    <klcs-checkout-dialog [dialogId]="CHECKOUT_DIALOG_ID" [withCard]="checkoutCard()"/>
   </div>
   <div class="xl:hidden flex-grow flex flex-col justify-end sticky bottom-0">
     <div class="w-full h-16 bg-secondary text-xl flex items-center" (click)="showShoppingCartDialog()">

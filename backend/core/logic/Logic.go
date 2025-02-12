@@ -392,7 +392,10 @@ func (l *Logic) CreateShop(ctx context.Context, username string, shop *domain.Sh
 				return nil, appError.NewErrDataAccess("failed to get role(%s) - %v", ADMIN_ROLE, role.Error)
 			}
 			r := <-l.userDao.AssignUserShopRole(tx, user.Result.Id, s.Result.Id, role.Result.Id)
-			return &s.Result, appError.NewErrDataAccess("failed to assign role(%s) to user(%s) for shop(%s) - %v", ADMIN_ROLE, username, shop.Name, r.Error)
+			if r.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to assign role(%s) to user(%s) for shop(%s) - %v", ADMIN_ROLE, username, shop.Name, r.Error)
+			}
+			return &s.Result, nil
 		},
 	)
 }

@@ -28,6 +28,12 @@ export class CheckoutDialogComponent {
     private sellerApi: SellerApiService,
   ){}
 
+  _dialogClosed(){
+    this.accountId = "";
+    this.description = "";
+    this.dialogClosed.emit();
+  }
+
   checkout() {
     if(this.withCard()){
       const sub = this.sellerApi.checkoutCard(this.accountId, this.description).subscribe({

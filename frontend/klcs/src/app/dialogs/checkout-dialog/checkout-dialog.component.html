@@ -1,4 +1,4 @@
-<dialog [id]="dialogId()" class="modal" (close)="dialogClosed.emit()">
+<dialog [id]="dialogId()" class="modal" (close)="_dialogClosed()">
   <div class="modal-box">
     <h3 class="text-lg font-bold">Checkout</h3>
     @if (shoppingCart.getOrderItems().length > 0) {
@@ -7,7 +7,7 @@
           <tr>
             <th>Article</th>
             <th>Count</th>
-            <th>Sum</th>
+            <th class="text-right">Sum</th>
           </tr>
         </thead>
         <tbody>
@@ -45,6 +45,7 @@
               pattern="^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$"
               required
               autofocus
+              tabindex="0"
             />
             <span class="mt-2 text-sm text-red-500 peer-invalid:block hidden">
               Please enter a valid AccountID
@@ -52,7 +53,7 @@
           </div>
         }
 
-        <input type="text" name="description" class="input input-bordered mt-2" placeholder="Description" alt="Description" [(ngModel)]="description" />
+        <input type="text" name="description" class="input input-bordered mt-2" placeholder="Description" alt="Description" [(ngModel)]="description" tabindex="1"/>
 
       </fieldset>
       <div class="modal-action">
