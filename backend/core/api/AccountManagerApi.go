@@ -10,6 +10,15 @@ import (
 	appError "github.com/uoul/klcs/backend/oos-core/error"
 )
 
+func (e *Api) getAccounts(ctx *gin.Context) {
+	accounts, err := e.logic.GetAllAccounts(ctx)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+	ctx.JSON(http.StatusOK, accounts)
+}
+
 func (e *Api) getAccountDetails(ctx *gin.Context) {
 	accountId := ctx.Param("accountId")
 	accountDetails, err := e.logic.GetAccountDetails(ctx, accountId)

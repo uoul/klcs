@@ -14,6 +14,10 @@ export class AccountManagerApiService {
     private http: HttpClient,
   ) { }
 
+  public getAccounts(): Observable<Account[]> {
+    return this.http.get<Account[]>(`${KlcsConfig.BackendRoot}/api/v1/accounts`)
+  }
+
   public getAccountDetails(accountId: string): Observable<AccountDetails> {
     return this.http.get<AccountDetails>(`${KlcsConfig.BackendRoot}/api/v1/accounts/${accountId}`)
   }
@@ -23,7 +27,7 @@ export class AccountManagerApiService {
   }
 
   public updateAccount(account: Account): Observable<Account> {
-    return this.http.patch<Account>(`${KlcsConfig.BackendRoot}/api/v1/account/${account.Id}`, account)
+    return this.http.patch<Account>(`${KlcsConfig.BackendRoot}/api/v1/accounts/${account.Id}`, account)
   }
 
   public closeAccount(accountId: string): Observable<AccountDetails> {

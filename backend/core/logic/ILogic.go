@@ -20,6 +20,7 @@ type ILogic interface {
 	GetShopsForUser(ctx context.Context, username string) ([]domain.Shop, error)
 	GetShopDetailsForUser(ctx context.Context, username string, shopId string) (*domain.ShopDetails, error)
 	Checkout(ctx context.Context, username string, order *domain.Order) (*domain.Order, error)
+	GetAccountDetails(ctx context.Context, accountId string) (*domain.AccountDetails, error)
 
 	// Shop-Admin
 	GetArticlesForShop(ctx context.Context, username string, shopId string) ([]domain.Article, error)
@@ -39,7 +40,7 @@ type ILogic interface {
 	DeleteUserRole(ctx context.Context, username, shopId, userId, roleId string) error
 
 	// Account-Manager
-	GetAccountDetails(ctx context.Context, accountId string) (*domain.AccountDetails, error)
+	GetAllAccounts(ctx context.Context) ([]domain.Account, error)
 	CreateAccount(ctx context.Context, account *domain.Account) (*domain.Account, error)
 	UpdateAccount(ctx context.Context, account *domain.Account) (*domain.Account, error)
 	CloseAccount(ctx context.Context, username, accountId string) (*domain.AccountDetails, error)

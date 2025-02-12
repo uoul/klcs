@@ -66,6 +66,7 @@ func (e *Api) setupAccountManagerRg(router *gin.RouterGroup, prefix string) {
 	rg.Use(
 		e.checkOidcRole(OIDC_ACCOUNT_MANAGER_ROLE),
 	)
+	rg.GET("", e.getAccounts)
 	rg.POST("", e.createAccount)
 	rg.PATCH("/:accountId", e.updateAccount)
 	rg.DELETE("/:accountId/balance", e.closeAccount)

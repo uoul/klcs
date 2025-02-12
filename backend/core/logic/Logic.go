@@ -27,6 +27,21 @@ type Logic struct {
 	transactionDao dal.ITransactionDao
 }
 
+// GetAllAccounts implements ILogic.
+func (l *Logic) GetAllAccounts(ctx context.Context) ([]domain.Account, error) {
+	return db.ExecInTransactionContext(
+		ctx,
+		l.cf,
+		func(ctx context.Context, tx *sql.Tx) ([]domain.Account, error) {
+			accounts := <-l.accountDao.GetAll(tx)
+			if accounts.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to get accouts - %v", accounts.Error)
+			}
+			return accounts.Result, nil
+		},
+	)
+}
+
 // DeletePrinter implements ILogic.
 func (l *Logic) DeletePrinter(ctx context.Context, username string, printerId string) error {
 	_, err := db.ExecInTransactionContext(
