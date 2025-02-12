@@ -8,13 +8,15 @@ import { SellerApiService } from '../../services/seller-api/seller-api.service';
 import { CommonModule } from '@angular/common';
 import { Shop } from '../../domain/Shop';
 import { subscribeOn } from 'rxjs';
+import { CheckAccountDialogComponent } from "../../dialogs/check-account-dialog/check-account-dialog.component";
 
 @Component({
   selector: 'klcs-side-nav',
   imports: [
     CommonModule,
     RouterModule,
-    NavItemComponent
+    NavItemComponent,
+    CheckAccountDialogComponent
 ],
   templateUrl: './side-nav.component.html',
   styleUrl: './side-nav.component.css'
@@ -25,6 +27,8 @@ export class SideNavComponent implements OnInit {
     protected authService: AuthService,
     protected sellerApi: SellerApiService,
   ){}
+
+  protected readonly CHECK_CREDIT_DIALOG_ID = "check-credit-dialog"
 
   shops: Shop[] = [];
   klcsConfig = KlcsConfig;
@@ -44,5 +48,10 @@ export class SideNavComponent implements OnInit {
   updateMenuState() {
     if(this.sideNav.isMobile() && this.sideNav.isOpen())
       this.sideNav.toggle()
+  }
+
+  showCheckCreditDialog() {
+    const dialog = document.getElementById(this.CHECK_CREDIT_DIALOG_ID) as HTMLDialogElement
+    dialog.showModal()
   }
 }

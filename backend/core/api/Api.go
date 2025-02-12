@@ -66,7 +66,6 @@ func (e *Api) setupAccountManagerRg(router *gin.RouterGroup, prefix string) {
 	rg.Use(
 		e.checkOidcRole(OIDC_ACCOUNT_MANAGER_ROLE),
 	)
-	rg.GET("/:accountId", e.getAccountDetails)
 	rg.POST("", e.createAccount)
 	rg.PATCH("/:accountId", e.updateAccount)
 	rg.DELETE("/:accountId/balance", e.closeAccount)
@@ -79,6 +78,7 @@ func (e *Api) setupUserRg(router *gin.RouterGroup, prefix string) *gin.RouterGro
 	rg.GET("/shops", e.getShopsForUser)
 	rg.GET("/shops/:shopId", e.getShopdetailsForUser)
 	rg.POST("/orders", e.checkout)
+	rg.GET("/accounts/:accountId", e.getAccountDetails)
 	// shopadmin api
 	rg.GET("/shops/:shopId/articles", e.getArticlesForShop)
 	rg.POST("/shops/:shopId/articles", e.createArticle)
