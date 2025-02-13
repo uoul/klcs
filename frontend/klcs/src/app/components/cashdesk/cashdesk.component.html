@@ -1,5 +1,5 @@
-<div class="w-full h-full flex flex-col xl:flex-row">
-  <div class="w-full xl:w-1/2 px-2">
+<div class="flex flex-col xl:flex-row m-2">
+  <div class="w-full xl:w-1/2 mx-2">
     @for (category of categories() | keyvalue; track $index) {
       <div class="collapse collapse-arrow bg-base-100 border border-base-300 my-1">
         <input type="checkbox" />
@@ -14,7 +14,7 @@
       </div>
     }
   </div>
-  <div class="hidden xl:flex flex-col flex-grow">
+  <div class="hidden xl:flex flex-col flex-grow mx-2">
     <klcs-shopping-cart />
     <button class="btn btn-secondary btn-outline my-1" (click)="showCheckout(false)">Checkout Cash</button>
     <button class="btn btn-secondary btn-outline my-1" (click)="showCheckout(true)">Checkout Card</button>

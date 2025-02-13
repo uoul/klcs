@@ -23,7 +23,7 @@ export class AccountManagerApiService {
   }
 
   public createAccount(account: Account): Observable<Account> {
-    return this.http.post<Account>(`${KlcsConfig.BackendRoot}/api/v1/account`, account)
+    return this.http.post<Account>(`${KlcsConfig.BackendRoot}/api/v1/accounts`, account)
   }
 
   public updateAccount(account: Account): Observable<Account> {

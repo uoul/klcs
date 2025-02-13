@@ -20,7 +20,7 @@
             <h3 class="text-4xl my-4">{{ accountData()?.HolderName }}</h3>
             <span class="text-6xl my-4">{{ (accountData()?.Balance ?? 0) / 100 | currency: 'EUR'}}</span>
             @if(accountData()?.Locked){
-              <span class="badge badge-error">LOCKED</span>
+              <span class="badge badge-error badge-lg">LOCKED</span>
             }
           </div>     
         }
