@@ -6,6 +6,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './interceptors/auth/auth.interceptor';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,5 +20,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([authInterceptor])
     ),
+    provideAnimations()
   ]
 };

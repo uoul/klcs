@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Notification, NotificationService } from '../../services/notification/notification.service';
 
 @Component({
   selector: 'klcs-home-view',
@@ -8,4 +9,16 @@ import { Component } from '@angular/core';
 })
 export class HomeViewComponent {
 
+  constructor(
+    private notificationService: NotificationService,
+  ){}
+
+  createNotification(){
+    const n: Notification = {
+      duration: 3000,
+      message: `${Math.random()}`,
+      type: "warning"
+    }
+    this.notificationService.show(n)
+  }
 }

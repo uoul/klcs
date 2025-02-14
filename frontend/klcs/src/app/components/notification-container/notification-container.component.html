@@ -1,0 +1,5 @@
+<div class="fixed bottom-5 px-48 w-full z-50" >
+  @for (n of notificationService.notifications(); track $index) {
+    <klcs-notification-item [notification]="n" [@toastAnimation]/>
+  }
+</div>

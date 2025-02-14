@@ -6,15 +6,17 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { AuthService } from './services/auth/auth.service';
 import { CommonModule } from '@angular/common';
 import { KlcsConfig } from './config/KlcsConfig';
+import { NotificationContainerComponent } from "./components/notification-container/notification-container.component";
 
 @Component({
   selector: 'klcs-root',
   imports: [
-    RouterOutlet, 
-    AppBarComponent, 
+    RouterOutlet,
+    AppBarComponent,
     SideNavComponent,
     CommonModule,
-  ],
+    NotificationContainerComponent
+],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
