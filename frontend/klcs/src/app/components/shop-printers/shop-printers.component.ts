@@ -2,6 +2,9 @@ import { Component, effect, input, signal, untracked, WritableSignal } from '@an
 import { Printer } from '../../domain/Printer';
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
 import { CreatePrinterDialogComponent } from "../../dialogs/create-printer-dialog/create-printer-dialog.component";
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-shop-printers',
@@ -17,6 +20,7 @@ export class ShopPrintersComponent {
 
   constructor(
     private shopAdminApi: ShopAdminApiService,
+    private notify: NotificationService,
   ){
     effect(() => {
       const shopId = this.shopId()
@@ -27,7 +31,7 @@ export class ShopPrintersComponent {
   refreshPrinters(shopId: string) {
     const sub = this.shopAdminApi.getPrinters(shopId).subscribe({
       next: p =>  this._printers.set(p),
-      error: err => console.error(err),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }
@@ -36,7 +40,7 @@ export class ShopPrintersComponent {
     if(confirm(`Do you realy want to delete ${printer.Name}?`)){
       const sub = this.shopAdminApi.deletePrinter(printer.Id).subscribe({
         next: _ => this.refreshPrinters(this.shopId()),
-        error: err => console.error(err),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe(),
       })
     }

@@ -1,9 +1,11 @@
-import { Component, input, OnInit, output, Signal, signal } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { ShoppingCartService } from '../../services/shopping-cart/shopping-cart.service';
 import { CommonModule } from '@angular/common';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
 import { FormsModule } from '@angular/forms';
-import { OrderPosition } from '../../domain/OrderPosition';
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-checkout-dialog',
@@ -26,6 +28,7 @@ export class CheckoutDialogComponent {
   constructor(
     protected shoppingCart: ShoppingCartService,
     private sellerApi: SellerApiService,
+    private notify: NotificationService,
   ){}
 
   _dialogClosed(){
@@ -41,7 +44,7 @@ export class CheckoutDialogComponent {
           console.log(JSON.stringify(val))
           this.shoppingCart.clearCart()
         },
-        error: err => console.error(err),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })
     }
@@ -51,7 +54,7 @@ export class CheckoutDialogComponent {
           console.log(JSON.stringify(val))
           this.shoppingCart.clearCart()
         },
-        error: err => console.error(err),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })
     }

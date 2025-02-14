@@ -5,6 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { ShoppingCartService } from '../../services/shopping-cart/shopping-cart.service';
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-edit-cart-dialog',
@@ -29,6 +32,7 @@ export class EditCartDialogComponent {
   constructor(
     protected shoppingCart: ShoppingCartService,
     private sellerApi: SellerApiService,
+    private notify: NotificationService,
   ){}
 
   checkout() {
@@ -38,7 +42,7 @@ export class EditCartDialogComponent {
           console.log(JSON.stringify(val))
           this.shoppingCart.clearCart()
         },
-        error: err => console.error(err),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })
     }
@@ -48,7 +52,7 @@ export class EditCartDialogComponent {
           console.log(JSON.stringify(val))
           this.shoppingCart.clearCart()
         },
-        error: err => console.error(err),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })
     }

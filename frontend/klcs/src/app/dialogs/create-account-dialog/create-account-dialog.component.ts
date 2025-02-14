@@ -2,6 +2,9 @@ import { Component, computed, input, InputSignal, output, OutputEmitterRef, sign
 import { Account } from '../../domain/Account';
 import { FormsModule } from '@angular/forms';
 import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-create-account-dialog',
@@ -21,6 +24,7 @@ export class CreateAccountDialogComponent {
 
   constructor(
     private accountManagerApi: AccountManagerApiService,
+    private notify: NotificationService,
   ){}
 
   _dialogClosed() {
@@ -35,7 +39,7 @@ export class CreateAccountDialogComponent {
   createAccount(){
     const sub = this.accountManagerApi.createAccount(this._account()).subscribe({
       next: val => this.accountCreated.emit(val),
-      error: err => console.error(err),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

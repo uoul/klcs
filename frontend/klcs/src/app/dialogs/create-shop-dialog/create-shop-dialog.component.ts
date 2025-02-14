@@ -2,6 +2,9 @@ import { Component, input, InputSignal, model, ModelSignal, output, OutputEmitte
 import { KlcsAdminApiService } from '../../services/klcs-admin-api/klcs-admin-api.service';
 import { FormsModule } from '@angular/forms';
 import { Shop } from '../../domain/Shop';
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-create-shop-dialog',
@@ -20,13 +23,14 @@ export class CreateShopDialogComponent {
 
   constructor(
     private klcsAdminApi: KlcsAdminApiService,
+    private notify: NotificationService,
   ){}
 
   createShop() {
     if(this._shop().Name.length > 0) {
       const sub = this.klcsAdminApi.createShop(this._shop()).subscribe({
         next: val => this.shopCreated.emit(val),
-        error: err => console.error(err),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe()
       });
     }

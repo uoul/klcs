@@ -9,16 +9,4 @@ import { Notification, NotificationService } from '../../services/notification/n
 })
 export class HomeViewComponent {
 
-  constructor(
-    private notificationService: NotificationService,
-  ){}
-
-  createNotification(){
-    const n: Notification = {
-      duration: 3000,
-      message: `${Math.random()}`,
-      type: "warning"
-    }
-    this.notificationService.show(n)
-  }
 }

@@ -10,6 +10,8 @@ import { ShopArticlesComponent } from "../../components/shop-articles/shop-artic
 import { ShopPrintersComponent } from "../../components/shop-printers/shop-printers.component";
 import { ShopUsersComponent } from "../../components/shop-users/shop-users.component";
 import { Article } from '../../domain/Article';
+import { NotificationService } from '../../services/notification/notification.service';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-shop-view',
@@ -34,6 +36,7 @@ export class ShopViewComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private sellerApi: SellerApiService,
+    private notify: NotificationService,
   ){}
 
   ngOnInit(): void {
@@ -45,7 +48,7 @@ export class ShopViewComponent implements OnInit {
       mergeMap(params => this.sellerApi.getShopDetails(params.get("shopId") ?? ""))
     ).subscribe({
       next: resp => this.shop.set(resp),
-      error: err => console.error(err),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

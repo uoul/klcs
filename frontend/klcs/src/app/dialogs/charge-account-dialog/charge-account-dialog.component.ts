@@ -4,6 +4,9 @@ import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
 import { AccountDetails } from '../../domain/AccountDetails';
 import { CommonModule } from '@angular/common';
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-charge-account-dialog',
@@ -27,6 +30,7 @@ export class ChargeAccountDialogComponent {
 
   constructor(
     private accountManagerApi: AccountManagerApiService,
+    private notify: NotificationService,
   ){}
 
   onScanSuccess(data: string) {
@@ -54,7 +58,7 @@ export class ChargeAccountDialogComponent {
   chargeAccount(){
     const sub = this.accountManagerApi.postToAccount(this.accountId(), this.amount() * 100).subscribe({
       next: val => this.newAccountDetails.set(val),
-      error: err => console.error(err),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

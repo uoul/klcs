@@ -11,6 +11,8 @@ import { subscribeOn } from 'rxjs';
 import { CheckAccountDialogComponent } from "../../dialogs/check-account-dialog/check-account-dialog.component";
 import { ChargeAccountDialogComponent } from "../../dialogs/charge-account-dialog/charge-account-dialog.component";
 import { CloseAccountDialogComponent } from "../../dialogs/close-account-dialog/close-account-dialog.component";
+import { NotificationService } from '../../services/notification/notification.service';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-side-nav',
@@ -30,6 +32,7 @@ export class SideNavComponent implements OnInit, AfterViewInit {
     protected sideNav: SideNavService,
     protected authService: AuthService,
     protected sellerApi: SellerApiService,
+    private notify: NotificationService
   ){}
 
   protected readonly CHECK_CREDIT_DIALOG_ID = "check-credit-dialog"
@@ -46,7 +49,7 @@ export class SideNavComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     const sub = this.sellerApi.getShops().subscribe({
       next: val => this.shops = val,
-      error: err => console.error(err),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

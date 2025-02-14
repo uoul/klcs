@@ -3,6 +3,9 @@ import { Shop } from '../../domain/Shop';
 import { CreateShopDialogComponent } from "../../dialogs/create-shop-dialog/create-shop-dialog.component";
 import { KlcsAdminApiService } from '../../services/klcs-admin-api/klcs-admin-api.service';
 import { UpdateShopDialogComponent } from "../../dialogs/update-shop-dialog/update-shop-dialog.component";
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-admin-view',
@@ -23,6 +26,7 @@ export class AdminViewComponent implements OnInit {
   
   constructor(
     private klcsAdminApi: KlcsAdminApiService,
+    private notify: NotificationService,
   ){}
 
   ngOnInit(): void {
@@ -44,7 +48,7 @@ export class AdminViewComponent implements OnInit {
     if(confirm(`Do you realy want to delete shop ${shop.Name}?`)){
       const sub = this.klcsAdminApi.deleteShop(shop.Id).subscribe({
         next: _ => console.log("deleted successfully"),
-        error: err => console.error(err),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => {
           this.refresh();
           sub.unsubscribe();
@@ -56,7 +60,7 @@ export class AdminViewComponent implements OnInit {
   refresh(){
     const sub = this.klcsAdminApi.getShops().subscribe({
       next: s => this.shops.set(s),
-      error: err => console.error(err),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

@@ -2,6 +2,9 @@ import { Component, EventEmitter, input, Input, InputSignal, model, OnInit, outp
 import { Shop } from '../../domain/Shop';
 import { FormsModule } from '@angular/forms';
 import { KlcsAdminApiService } from '../../services/klcs-admin-api/klcs-admin-api.service';
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-update-shop-dialog',
@@ -19,12 +22,13 @@ export class UpdateShopDialogComponent {
 
   constructor(
     private klcsAdminApi: KlcsAdminApiService,
+    private notify: NotificationService,
   ){}
 
   updateShop() {
     const sub = this.klcsAdminApi.updateShop(this.shop()).subscribe({
       next: val => this.shop.set(val),
-      error: err => console.error(err),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

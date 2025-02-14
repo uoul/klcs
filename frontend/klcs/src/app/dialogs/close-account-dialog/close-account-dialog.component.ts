@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import { AccountDetails } from '../../domain/AccountDetails';
 import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-close-account-dialog',
@@ -25,6 +28,7 @@ export class CloseAccountDialogComponent {
 
   constructor(
     private accountManagerApi: AccountManagerApiService,
+    private notify: NotificationService,
   ){}
 
   showScanner(){
@@ -51,7 +55,7 @@ export class CloseAccountDialogComponent {
   closeAccount(){
     const sub = this.accountManagerApi.closeAccount(this.accountId()).subscribe({
       next: val => this.accountDetails.set(val),
-      error: err => console.error(err),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

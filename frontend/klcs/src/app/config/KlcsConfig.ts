@@ -15,4 +15,8 @@ export const KlcsConfig = {
   KlcsRoleAdmin: "KLCS_ADMIN",
 
   ShopRoleAdmin: "ADMIN",
+
+  durationShort: 5000,
+  durationMedium: 10000,
+  durationLong: 15000,
 }

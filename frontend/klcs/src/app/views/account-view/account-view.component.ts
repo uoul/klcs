@@ -5,6 +5,9 @@ import { CreateAccountDialogComponent } from "../../dialogs/create-account-dialo
 import { FormsModule } from '@angular/forms';
 import { ReadQrDialogComponent } from "../../dialogs/read-qr-dialog/read-qr-dialog.component";
 import { EditAccountDialogComponent } from "../../dialogs/edit-account-dialog/edit-account-dialog.component";
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-account-view',
@@ -45,6 +48,7 @@ export class AccountViewComponent implements OnInit {
 
   constructor(
     private accountManagerApi: AccountManagerApiService,
+    private notify: NotificationService,
   ){}
 
   ngOnInit(): void {
@@ -54,7 +58,7 @@ export class AccountViewComponent implements OnInit {
   refresh() {
     const sub = this.accountManagerApi.getAccounts().subscribe({
       next: a => this.accounts.set(a),
-      error: err => console.error(err),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }
@@ -64,7 +68,7 @@ export class AccountViewComponent implements OnInit {
       account.Locked = state
       const sub = this.accountManagerApi.updateAccount(account).subscribe({
         next: _ => this.refresh(),
-        error: err => console.error(err),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe(),
       })
     }

@@ -8,6 +8,9 @@ import { ArticleDetails } from '../../domain/ArticleDetails';
 import { CreateArticleDialogComponent } from "../../dialogs/create-article-dialog/create-article-dialog.component";
 import { Printer } from '../../domain/Printer';
 import { UpdateArticleDialogComponent } from "../../dialogs/update-article-dialog/update-article-dialog.component";
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-shop-articles',
@@ -30,6 +33,7 @@ export class ShopArticlesComponent {
 
   constructor(
     private shopAdminApi: ShopAdminApiService,
+    private notify: NotificationService,
   ){}
 
   _printers: WritableSignal<Printer[]> = signal([])
@@ -39,7 +43,7 @@ export class ShopArticlesComponent {
     if(confirm(`Do you realy want to delete Article?`)){
       const sub = this.shopAdminApi.deleteArticle(articleId).subscribe({
         next: _ => this.articlesChanged.emit(),
-        error: err => console.error(err),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe(),
       });
     }
@@ -48,7 +52,7 @@ export class ShopArticlesComponent {
   refreshPrinters(shopId: string) {
     const sub = this.shopAdminApi.getPrinters(shopId).subscribe({
       next: p =>  this._printers.set(p),
-      error: err => console.error(err),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }
@@ -67,7 +71,7 @@ export class ShopArticlesComponent {
         const dialog = document.getElementById(this.EDIT_DIALOG_ID) as HTMLDialogElement
         dialog.showModal();
       },
-      error: err => console.error(err),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

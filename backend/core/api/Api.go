@@ -21,8 +21,8 @@ type Api struct {
 }
 
 type ErrorResponse struct {
-	Type    string
-	Message string
+	Type    string `json:"type"`
+	Message string `json:"message"`
 }
 
 func (e *Api) Run(port uint16) {

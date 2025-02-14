@@ -4,6 +4,9 @@ import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-ap
 import { ActivatedRoute } from '@angular/router';
 import { mergeMap } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-create-printer-dialog',
@@ -23,6 +26,7 @@ export class CreatePrinterDialogComponent {
   constructor(
     private shopAdminApi: ShopAdminApiService,
     private route: ActivatedRoute,
+    private notify: NotificationService,
   ){}
 
   createPrinter() {
@@ -31,7 +35,7 @@ export class CreatePrinterDialogComponent {
         mergeMap(params => this.shopAdminApi.createPrinterForShop(params.get("shopId") ?? "", this._printer()))
       ).subscribe({
         next: p => this.printerCreated.emit(p),
-        error: err => console.error(err),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe(),
       })
     }

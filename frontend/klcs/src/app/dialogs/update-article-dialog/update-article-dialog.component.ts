@@ -3,6 +3,9 @@ import { ArticleDetails } from '../../domain/ArticleDetails';
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
 import { Printer } from '../../domain/Printer';
 import { FormsModule } from '@angular/forms';
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-update-article-dialog',
@@ -31,6 +34,7 @@ export class UpdateArticleDialogComponent {
 
   constructor(
     private shopAdminApi: ShopAdminApiService,
+    private notify: NotificationService,
   ){}
 
   updateArticle() {
@@ -38,7 +42,7 @@ export class UpdateArticleDialogComponent {
     this.article().Printer = (!this._uiArticle().Printer || this._uiArticle().Printer!.Id.length <= 0) ? null : this._uiArticle().Printer;
     const sub = this.shopAdminApi.updateArticle(this.article()).subscribe({
       next: a => this.articleUpdated.emit(a),
-      error: err => console.error(err),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

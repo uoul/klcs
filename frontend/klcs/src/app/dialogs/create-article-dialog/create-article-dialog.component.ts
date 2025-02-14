@@ -1,10 +1,11 @@
-import { Component, computed, EventEmitter, input, Input, InputSignal, output, Output, OutputEmitterRef, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, input,  InputSignal, output, OutputEmitterRef } from '@angular/core';
 import { ArticleDetails } from '../../domain/ArticleDetails';
-import { mergeMap } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
 import { FormsModule } from '@angular/forms';
 import { Printer } from '../../domain/Printer';
+import { NotificationService } from '../../services/notification/notification.service';
+import { KlcsConfig } from '../../config/KlcsConfig';
+import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
   selector: 'klcs-create-article-dialog',
@@ -30,7 +31,7 @@ export class CreateArticleDialogComponent {
 
   constructor(
     private shopAdminApi: ShopAdminApiService,
-    private route: ActivatedRoute,
+    private notify: NotificationService,
   ){}
 
   createArticle() {
@@ -38,7 +39,7 @@ export class CreateArticleDialogComponent {
     this.articleDetails.Printer = this.printer.Id === "" ? null : this.printer;
     const sub = this.shopAdminApi.createArticle(this.shopId(), this.articleDetails).subscribe({
       next: a => this.articleCreated.emit(a),
-      error: err => console.error(err),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
     this.init()
