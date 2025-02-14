@@ -1,4 +1,4 @@
-<div class="flex flex-col xl:flex-row m-2">
+<div class="flex flex-col xl:flex-row">
   <div class="w-full xl:w-1/2 mx-2">
     @for (category of categories() | keyvalue; track $index) {
       <div class="collapse collapse-arrow bg-base-100 border border-base-300 my-1">
@@ -20,9 +20,9 @@
     <button class="btn btn-secondary btn-outline my-1" (click)="showCheckout(true)">Checkout Card</button>
     <klcs-checkout-dialog [dialogId]="CHECKOUT_DIALOG_ID" [withCard]="checkoutCard()"/>
   </div>
-  <div class="xl:hidden flex-grow flex flex-col justify-end sticky bottom-0">
+  <div class="xl:hidden flex-grow flex flex-col justify-end fixed w-full bottom-0">
     <div class="w-full h-16 bg-secondary text-xl flex items-center" (click)="showShoppingCartDialog()">
-      <span class="font-bold ml-4 underline underline-offset-4">Total:</span>
+      <span class="font-bold underline underline-offset-4">Total:</span>
       <span class="flex flex-grow justify-end mr-4">{{ shoppingCart.getSum() / 100 | currency: 'EUR' }}</span>
     </div>
   </div>

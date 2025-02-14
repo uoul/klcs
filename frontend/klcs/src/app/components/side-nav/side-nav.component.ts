@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NavItemComponent } from "../nav-item/nav-item.component";
 import { SideNavService } from '../../services/side-nav/side-nav.service';
@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { Shop } from '../../domain/Shop';
 import { subscribeOn } from 'rxjs';
 import { CheckAccountDialogComponent } from "../../dialogs/check-account-dialog/check-account-dialog.component";
+import { ChargeAccountDialogComponent } from "../../dialogs/charge-account-dialog/charge-account-dialog.component";
 
 @Component({
   selector: 'klcs-side-nav',
@@ -16,12 +17,13 @@ import { CheckAccountDialogComponent } from "../../dialogs/check-account-dialog/
     CommonModule,
     RouterModule,
     NavItemComponent,
-    CheckAccountDialogComponent
+    CheckAccountDialogComponent,
+    ChargeAccountDialogComponent
 ],
   templateUrl: './side-nav.component.html',
   styleUrl: './side-nav.component.css'
 })
-export class SideNavComponent implements OnInit {
+export class SideNavComponent implements OnInit, AfterViewInit {
   constructor(
     protected sideNav: SideNavService,
     protected authService: AuthService,
@@ -29,6 +31,10 @@ export class SideNavComponent implements OnInit {
   ){}
 
   protected readonly CHECK_CREDIT_DIALOG_ID = "check-credit-dialog"
+  protected readonly CHARGE_CREDIT_DIALOG_ID = "charge-credit-dialog"
+
+  _checkAccountDialog: HTMLDialogElement|null = null
+  _chargeAccountDialog: HTMLDialogElement|null = null
 
   shops: Shop[] = [];
   klcsConfig = KlcsConfig;
@@ -41,6 +47,11 @@ export class SideNavComponent implements OnInit {
     })
   }
 
+  ngAfterViewInit(): void {
+    this._checkAccountDialog = document.getElementById(this.CHECK_CREDIT_DIALOG_ID) as HTMLDialogElement
+    this._chargeAccountDialog = document.getElementById(this.CHARGE_CREDIT_DIALOG_ID) as HTMLDialogElement
+  }
+
   checkUserRole(role: string): boolean {
     return this.authService.getIdentity().roles.find((r) => r == role) ? true : false;
   }
@@ -48,10 +59,5 @@ export class SideNavComponent implements OnInit {
   updateMenuState() {
     if(this.sideNav.isMobile() && this.sideNav.isOpen())
       this.sideNav.toggle()
-  }
-
-  showCheckCreditDialog() {
-    const dialog = document.getElementById(this.CHECK_CREDIT_DIALOG_ID) as HTMLDialogElement
-    dialog.showModal()
   }
 }

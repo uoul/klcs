@@ -30,6 +30,12 @@ export class AccountViewComponent implements OnInit {
       } catch (e) {
         return true
       }
+    }).sort((a: Account, b: Account) => {
+      if(a == b)
+        return 0;
+      if(a.HolderName < b.HolderName)
+        return -1
+      return 1
     })
   })
 
