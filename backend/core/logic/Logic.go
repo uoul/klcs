@@ -85,6 +85,9 @@ func (l *Logic) CloseAccount(ctx context.Context, username, accountId string) (*
 				}
 				return nil, appError.NewErrDataAccess("failed to get balance for account(%s) - %v", accountId, err)
 			}
+			if accountDetails.Locked {
+				return nil, appError.NewErrValidation("cannot close account(%s), that is locked", accountDetails.Id)
+			}
 			if accountDetails.Balance != 0 {
 				user := <-l.userDao.GetUserByUsername(tx, username)
 				if user.Error != nil {
@@ -137,6 +140,16 @@ func (l *Logic) PostToAccount(ctx context.Context, username, accountId string, a
 			user := <-l.userDao.GetUserByUsername(tx, username)
 			if user.Error != nil {
 				return nil, appError.NewErrDataAccess("failed to get user(%s) - %v", username, user.Error)
+			}
+			account := <-l.accountDao.GetAccount(tx, accountId)
+			if account.Error != nil {
+				if account.Error == sql.ErrNoRows {
+					return nil, appError.NewErrNotFound("accout(%s) not found - %v", accountId, account.Error)
+				}
+				return nil, appError.NewErrDataAccess("failed to get account(%s) - %v", accountId, account.Error)
+			}
+			if account.Result.Locked {
+				return nil, appError.NewErrValidation("cannot charge locked account(%s)", accountId)
 			}
 			transaction := <-l.transactionDao.CreateTransaction(
 				tx,

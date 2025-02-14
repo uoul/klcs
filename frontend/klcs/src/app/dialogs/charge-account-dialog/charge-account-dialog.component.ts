@@ -41,6 +41,10 @@ export class ChargeAccountDialogComponent {
 
   _dialogClosed() {
     this.dialogClosed.emit()
+    this.scannerActive.set(false)
+    this.accountId.set("")
+    this.amount.set(0)
+    this.newAccountDetails.set(null)
   }
 
   showScanner(){

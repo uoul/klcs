@@ -1,8 +1,8 @@
 <dialog [id]="dialogId()" class="modal" (close)="_dialogClosed()">
   <div class="modal-box">
       <form #f="ngForm">
-        <h3 class="text-lg font-bold">Charge Credit</h3>
-        @if (newAccountDetails() === null) {
+        <h3 class="text-lg font-bold">Close Account</h3>
+        @if (accountDetails() === null) {
           @if (!scannerActive()) {
             <!-- AccountID -->
             <label class="form-control w-full mt-2">
@@ -18,28 +18,21 @@
                 </button>
               </div>
             </label>
-            <!-- Amount -->
-            <label class="form-control w-full mt-2">
-              <div class="label">
-                <span class="label-text">Amount</span>
-              </div>
-              <input name="amount" type="number" step="0.01" min="0" class="input input-bordered w-full" [(ngModel)]="amount"/>
-            </label>
           } @else {
             <zxing-scanner (scanSuccess)="onScanSuccess($event)" (scanError)="onScanError($event)" previewFitMode="scale-down"></zxing-scanner>
           }
         } @else {
           <div class="flex flex-col justify-between w-full items-center">
-            <h3 class="text-4xl my-4">{{ newAccountDetails()?.HolderName }}</h3>
-            <span class="text-6xl my-4">{{ (newAccountDetails()?.Balance ?? 0) / 100 | currency: 'EUR'}}</span>
-            @if(newAccountDetails()?.Locked){
+            <h3 class="text-4xl my-4">{{ accountDetails()?.HolderName }}</h3>
+            <span class="text-6xl my-4">{{ (accountDetails()?.Balance ?? 0) / 100 | currency: 'EUR'}}</span>
+            @if(accountDetails()?.Locked){
               <span class="badge badge-error badge-lg">LOCKED</span>
             }
           </div>   
         }
         <div class="modal-action">
-          @if (newAccountDetails() === null) {
-            <button class="btn btn-secondary" [disabled]="f.invalid && !scannerActive()" (click)="chargeAccount()">Charge</button>
+          @if (accountDetails() === null) {
+            <button class="btn btn-secondary" [disabled]="f.invalid && !scannerActive()" (click)="closeAccount()">Confirm</button>
           }
           <form method="dialog">
             <button class="btn btn-outline btn-neutral">Close</button>

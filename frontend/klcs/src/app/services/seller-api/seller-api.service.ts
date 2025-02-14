@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Observable, tap} from "rxjs";
+import {finalize, Observable, tap} from "rxjs";
 import {ShoppingCartService} from "../shopping-cart/shopping-cart.service";
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { Order } from '../../domain/Order';
@@ -51,7 +51,7 @@ export class SellerApiService {
   private placeOrder(order: Order): Observable<Order> {
     this.cartService.lock();
     return this.http.post<Order>(`${KlcsConfig.BackendRoot}/api/v1/orders`, order).pipe(
-      tap(() => {
+      finalize(() => {
         this.cartService.unlock();
       }),
     );

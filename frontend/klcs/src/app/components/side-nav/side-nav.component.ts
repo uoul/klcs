@@ -10,6 +10,7 @@ import { Shop } from '../../domain/Shop';
 import { subscribeOn } from 'rxjs';
 import { CheckAccountDialogComponent } from "../../dialogs/check-account-dialog/check-account-dialog.component";
 import { ChargeAccountDialogComponent } from "../../dialogs/charge-account-dialog/charge-account-dialog.component";
+import { CloseAccountDialogComponent } from "../../dialogs/close-account-dialog/close-account-dialog.component";
 
 @Component({
   selector: 'klcs-side-nav',
@@ -18,7 +19,8 @@ import { ChargeAccountDialogComponent } from "../../dialogs/charge-account-dialo
     RouterModule,
     NavItemComponent,
     CheckAccountDialogComponent,
-    ChargeAccountDialogComponent
+    ChargeAccountDialogComponent,
+    CloseAccountDialogComponent
 ],
   templateUrl: './side-nav.component.html',
   styleUrl: './side-nav.component.css'
@@ -32,9 +34,11 @@ export class SideNavComponent implements OnInit, AfterViewInit {
 
   protected readonly CHECK_CREDIT_DIALOG_ID = "check-credit-dialog"
   protected readonly CHARGE_CREDIT_DIALOG_ID = "charge-credit-dialog"
+  protected readonly CLOSE_ACCOUNT_DIALOG_ID = "close-account-dialog"
 
   _checkAccountDialog: HTMLDialogElement|null = null
   _chargeAccountDialog: HTMLDialogElement|null = null
+  _closeAccountDialog: HTMLDialogElement|null = null
 
   shops: Shop[] = [];
   klcsConfig = KlcsConfig;
@@ -50,6 +54,7 @@ export class SideNavComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this._checkAccountDialog = document.getElementById(this.CHECK_CREDIT_DIALOG_ID) as HTMLDialogElement
     this._chargeAccountDialog = document.getElementById(this.CHARGE_CREDIT_DIALOG_ID) as HTMLDialogElement
+    this._closeAccountDialog = document.getElementById(this.CLOSE_ACCOUNT_DIALOG_ID) as HTMLDialogElement
   }
 
   checkUserRole(role: string): boolean {

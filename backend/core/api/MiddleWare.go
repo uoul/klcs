@@ -81,7 +81,7 @@ func (e *Api) errorTranslation() func(*gin.Context) {
 		ctx.Next()
 		if !ctx.IsAborted() {
 			for _, err := range ctx.Errors {
-				resp := NewErrorResponse(err)
+				resp := NewErrorResponse(err.Err)
 				switch err.Err.(type) {
 				case appError.ErrForbidden:
 					ctx.JSON(http.StatusForbidden, resp)
