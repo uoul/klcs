@@ -6,7 +6,7 @@ import (
 	"github.com/lib/pq"
 	"github.com/uoul/go-common/async"
 	"github.com/uoul/go-common/db"
-	"github.com/uoul/klcs/backend/oos-core/domain"
+	"github.com/uoul/klcs/backend/core/domain"
 )
 
 type ShopDao struct{}

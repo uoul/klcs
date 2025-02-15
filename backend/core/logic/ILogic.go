@@ -3,7 +3,7 @@ package logic
 import (
 	"context"
 
-	"github.com/uoul/klcs/backend/oos-core/domain"
+	"github.com/uoul/klcs/backend/core/domain"
 )
 
 type ILogic interface {

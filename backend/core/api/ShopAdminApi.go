@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/uoul/klcs/backend/oos-core/api/dto"
-	"github.com/uoul/klcs/backend/oos-core/domain"
-	appError "github.com/uoul/klcs/backend/oos-core/error"
+	"github.com/uoul/klcs/backend/core/api/dto"
+	"github.com/uoul/klcs/backend/core/domain"
+	appError "github.com/uoul/klcs/backend/core/error"
 )
 
 func (e *Api) getArticlesForShop(ctx *gin.Context) {

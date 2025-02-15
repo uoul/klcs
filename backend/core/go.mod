@@ -1,8 +1,11 @@
-module github.com/uoul/klcs/backend/oos-core
+module github.com/uoul/klcs/backend/core
 
-go 1.23.0
+go 1.24.0
 
-require github.com/uoul/go-common v0.0.16
+require (
+	github.com/gin-gonic/contrib v0.0.0-20250113154928-93b827325fec
+	github.com/uoul/go-common v0.0.16
+)
 
 require (
 	github.com/bytedance/sonic v1.11.6 // indirect

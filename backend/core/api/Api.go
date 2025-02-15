@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/uoul/go-common/auth"
-	"github.com/uoul/klcs/backend/oos-core/domain"
-	"github.com/uoul/klcs/backend/oos-core/logic"
+	"github.com/uoul/klcs/backend/core/domain"
+	"github.com/uoul/klcs/backend/core/logic"
 )
 
 const (
@@ -18,6 +19,8 @@ const (
 type Api struct {
 	logic         logic.ILogic
 	authenticator auth.IAuthenticator[*domain.OidcUser]
+
+	wwwRootDir string
 }
 
 type ErrorResponse struct {
@@ -32,6 +35,8 @@ func (e *Api) Run(port uint16) {
 		gin.Logger(),
 		gin.Recovery(),
 		e.useCors(),
+
+		static.Serve("/", static.LocalFile(e.wwwRootDir, true)),
 	)
 	rootGroup := router.Group("/api/v1")
 	// Setup global middleware
@@ -97,10 +102,19 @@ func (e *Api) setupUserRg(router *gin.RouterGroup, prefix string) *gin.RouterGro
 	return rg
 }
 
-func NewApi(logic logic.ILogic, authenticator auth.IAuthenticator[*domain.OidcUser]) *Api {
+func WithApiWwwRootDir(dir string) func(*Api) {
+	return func(a *Api) {
+		a.wwwRootDir = dir
+
+	}
+}
+
+func NewApi(logic logic.ILogic, authenticator auth.IAuthenticator[*domain.OidcUser], opts ...func(*Api)) *Api {
 	return &Api{
 		logic:         logic,
 		authenticator: authenticator,
+
+		wwwRootDir: "wwwroot",
 	}
 }
 

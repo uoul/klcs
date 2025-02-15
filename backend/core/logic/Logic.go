@@ -7,9 +7,9 @@ import (
 	"slices"
 
 	"github.com/uoul/go-common/db"
-	"github.com/uoul/klcs/backend/oos-core/dal"
-	"github.com/uoul/klcs/backend/oos-core/domain"
-	appError "github.com/uoul/klcs/backend/oos-core/error"
+	"github.com/uoul/klcs/backend/core/dal"
+	"github.com/uoul/klcs/backend/core/domain"
+	appError "github.com/uoul/klcs/backend/core/error"
 )
 
 const (

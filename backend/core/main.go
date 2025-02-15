@@ -6,9 +6,9 @@ import (
 	"github.com/uoul/go-common/auth"
 	"github.com/uoul/go-common/config"
 	"github.com/uoul/go-common/db"
-	"github.com/uoul/klcs/backend/oos-core/api"
-	"github.com/uoul/klcs/backend/oos-core/domain"
-	"github.com/uoul/klcs/backend/oos-core/logic"
+	"github.com/uoul/klcs/backend/core/api"
+	"github.com/uoul/klcs/backend/core/domain"
+	"github.com/uoul/klcs/backend/core/logic"
 )
 
 func main() {

@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/uoul/klcs/backend/oos-core/domain"
+import "github.com/uoul/klcs/backend/core/domain"
 
 type ShopUserDto struct {
 	Id        string

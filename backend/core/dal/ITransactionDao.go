@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/uoul/go-common/async"
-	"github.com/uoul/klcs/backend/oos-core/domain"
+	"github.com/uoul/klcs/backend/core/domain"
 )
 
 type ITransactionDao interface {
