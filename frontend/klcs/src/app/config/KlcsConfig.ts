@@ -1,7 +1,7 @@
 export const KlcsConfig = {
   OAuth: {
-    issuer: 'http://localhost:8081/realms/klcs',
-    tokenEndpoint: 'http://localhost:8081/realms/klcs/protocol/openid-connect/token',
+    issuer: 'https://kc.uoul.net/realms/klcs',
+    tokenEndpoint: 'https://kc.uoul.net/realms/klcs/protocol/openid-connect/token',
     redirectUri: window.location.origin + "/home",
     postLogoutRedirectUri: window.location.origin,
     clientId: 'klcs',

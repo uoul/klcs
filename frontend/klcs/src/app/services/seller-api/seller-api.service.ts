@@ -53,6 +53,7 @@ export class SellerApiService {
     return this.http.post<Order>(`${KlcsConfig.BackendRoot}/api/v1/orders`, order).pipe(
       finalize(() => {
         this.cartService.unlock();
+        this.cartService.clearCart();
       }),
     );
   }

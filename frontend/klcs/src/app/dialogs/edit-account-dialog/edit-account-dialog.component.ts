@@ -5,11 +5,13 @@ import { AccountManagerApiService } from '../../services/account-manager-api/acc
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { QRCodeComponent } from 'angularx-qrcode';
 
 @Component({
   selector: 'klcs-edit-account-dialog',
   imports: [
     FormsModule,
+    QRCodeComponent,
   ],
   templateUrl: './edit-account-dialog.component.html',
   styleUrl: './edit-account-dialog.component.css'

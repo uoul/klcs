@@ -1,10 +1,11 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, signal, WritableSignal } from '@angular/core';
 import { ShoppingCartService } from '../../services/shopping-cart/shopping-cart.service';
 import { CommonModule } from '@angular/common';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
 import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
+import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import { ErrorResponse } from '../../domain/ErrorResponse';
 
 @Component({
@@ -12,6 +13,7 @@ import { ErrorResponse } from '../../domain/ErrorResponse';
   imports: [
     CommonModule,
     FormsModule,
+    ZXingScannerModule,
   ],
   templateUrl: './checkout-dialog.component.html',
   styleUrl: './checkout-dialog.component.css'
@@ -22,8 +24,9 @@ export class CheckoutDialogComponent {
 
   dialogClosed = output<void>();
 
-  accountId: string = "";
-  description: string ="";
+  accountId: WritableSignal<string> = signal("");
+  description: WritableSignal<string> = signal("");
+  scannerActive: WritableSignal<boolean> = signal(false);
 
   constructor(
     protected shoppingCart: ShoppingCartService,
@@ -32,31 +35,36 @@ export class CheckoutDialogComponent {
   ){}
 
   _dialogClosed(){
-    this.accountId = "";
-    this.description = "";
+    this.accountId.set("")
+    this.description.set("")
+    this.scannerActive.set(false)
     this.dialogClosed.emit();
   }
 
   checkout() {
     if(this.withCard()){
-      const sub = this.sellerApi.checkoutCard(this.accountId, this.description).subscribe({
-        next: val => {
-          console.log(JSON.stringify(val))
-          this.shoppingCart.clearCart()
-        },
+      const sub = this.sellerApi.checkoutCard(this.accountId(), this.description()).subscribe({
+        next: _ => this.notify.show({type: "success", duration: KlcsConfig.durationMedium, message: "Successfully placed order"}),
         error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })
     }
     else {
-      const sub = this.sellerApi.checkoutCash(this.description).subscribe({
-        next: val => {
-          console.log(JSON.stringify(val))
-          this.shoppingCart.clearCart()
-        },
+      const sub = this.sellerApi.checkoutCash(this.description()).subscribe({
+        next: _ => this.notify.show({type: "success", duration: KlcsConfig.durationMedium, message: "Successfully placed order"}),
         error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })
     }
+  }
+
+  onScanSuccess(data: string) {
+    this.accountId.set(data);
+    this.scannerActive.set(false);
+  }
+
+  onScanError(error: Error){
+    console.error(error)
+    this.scannerActive.set(false);
   }
 }

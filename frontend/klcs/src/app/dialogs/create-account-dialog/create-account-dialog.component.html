@@ -1,6 +1,6 @@
 <dialog [id]="dialogId()" class="modal" (close)="_dialogClosed()">
   <div class="modal-box">
-    <h3 class="text-lg font-bold mb-4">Create Printer</h3>
+    <h3 class="text-lg font-bold mb-4">Create Account</h3>
     <form #f="ngForm" method="dialog" (submit)="createAccount()">
       <div class="flex items-center">
         <input name="accountName" type="text" placeholder="Holder Name" class="input input-bordered flex-grow" [(ngModel)]="_account().HolderName"/>

@@ -38,20 +38,14 @@ export class EditCartDialogComponent {
   checkout() {
     if(this.paymentMethod == 2){
       const sub = this.sellerApi.checkoutCard(this.accountId, this.description).subscribe({
-        next: val => {
-          console.log(JSON.stringify(val))
-          this.shoppingCart.clearCart()
-        },
+        next: _ => this.notify.show({type: "success", duration: KlcsConfig.durationMedium, message: "Successfully placed order"}),
         error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })
     }
     else if(this.paymentMethod == 1) {
       const sub = this.sellerApi.checkoutCash(this.description).subscribe({
-        next: val => {
-          console.log(JSON.stringify(val))
-          this.shoppingCart.clearCart()
-        },
+        next: _ => this.notify.show({type: "success", duration: KlcsConfig.durationMedium, message: "Successfully placed order"}),
         error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })

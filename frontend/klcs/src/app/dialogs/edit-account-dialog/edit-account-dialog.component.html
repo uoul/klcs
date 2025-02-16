@@ -23,6 +23,10 @@
             </label>
           </div>
         </label>
+        <!-- QrCode -->
+        <div class="flex w-full justify-center">
+          <qrcode [qrdata]="account().Id" [width]="256" [errorCorrectionLevel]="'M'" />
+        </div>
         <div class="modal-action">
           <button class="btn btn-secondary">Save</button>
           <form method="dialog">

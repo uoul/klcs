@@ -47,7 +47,7 @@ export class AdminViewComponent implements OnInit {
   deleteShop(shop: Shop) {
     if(confirm(`Do you realy want to delete shop ${shop.Name}?`)){
       const sub = this.klcsAdminApi.deleteShop(shop.Id).subscribe({
-        next: _ => console.log("deleted successfully"),
+        next: _ => this.notify.show({type: "success", duration: KlcsConfig.durationMedium, message: "Shop deleted successfully"}),
         error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => {
           this.refresh();
