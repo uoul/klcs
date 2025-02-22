@@ -16,8 +16,8 @@ import (
 // Type
 // -------------------------------------------------------------------------------
 type PrintService struct {
-	logger     log.ILogger
-	klcsClient INotificationService[domain.PrintJob]
+	logger      log.ILogger
+	printJobSrc INotificationService[domain.PrintJob]
 
 	printBufferSize int
 	connectPrinter  func() (io.Writer, error)
@@ -38,7 +38,8 @@ func (p *PrintService) Close() error {
 // Run implements IService.
 func (p *PrintService) Run() {
 	// Subscribe to klcs api
-	jobs := p.klcsClient.Subscribe(uint(p.printBufferSize))
+	jobs := p.printJobSrc.Subscribe(uint(p.printBufferSize))
+	defer p.printJobSrc.Unsubscribe(jobs)
 	// Run
 LP1:
 	for {
@@ -46,7 +47,9 @@ LP1:
 		case job := <-jobs:
 			if job.Error == nil {
 				err := p.printOrder(&job.Result)
-				p.logger.Errorf("%v", err)
+				if err != nil {
+					p.logger.Errorf("%v", err)
+				}
 			}
 		case <-p.stop:
 			break LP1
@@ -169,7 +172,7 @@ func WithPrintBufferSize(size int) func(*PrintService) {
 func NewPrintService(logger log.ILogger, klcsClient INotificationService[domain.PrintJob], opts ...func(*PrintService)) IService {
 	ps := &PrintService{
 		logger:          logger,
-		klcsClient:      klcsClient,
+		printJobSrc:     klcsClient,
 		printBufferSize: 10,
 		connectPrinter:  nil,
 		stop:            make(chan any, 1),
