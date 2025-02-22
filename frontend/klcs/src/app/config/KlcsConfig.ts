@@ -1,15 +1,15 @@
 export const KlcsConfig = {
   OAuth: {
-    issuer: 'https://kc.uoul.net/realms/klcs',
-    tokenEndpoint: 'https://kc.uoul.net/realms/klcs/protocol/openid-connect/token',
-    redirectUri: window.location.origin + "/home",
+    issuer: 'http://localhost:8081/realms/klcs',
+    tokenEndpoint: 'http://localhost:8081/realms/klcs/protocol/openid-connect/token',
+    redirectUri: window.location.origin,
     postLogoutRedirectUri: window.location.origin,
     clientId: 'klcs',
     responseType: 'code',
     scope: 'profile email',
     showDebugInformation: true,
   },
-  BackendRoot: "",
+  BackendRoot: "http://localhost:8082",
   
   KlcsRoleAccountManager: "KLCS_ACCOUNT_MANAGER",
   KlcsRoleAdmin: "KLCS_ADMIN",
