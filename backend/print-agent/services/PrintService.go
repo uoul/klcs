@@ -5,6 +5,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"time"
 
 	"github.com/hennedo/escpos"
 	"github.com/uoul/go-common/log"
@@ -128,9 +129,29 @@ func (ps *PrintService) printOrder(job *domain.PrintJob) error {
 		}
 		p.Size(1, 1).Justify(escpos.JustifyCenter)
 		_, err = p.Write(job.Description)
+		p.LineFeed()
 		if err != nil {
 			return appError.NewErrPrint("%v", err)
 		}
+	}
+	// Write Timestamp
+	p.Size(2, 1)
+	_, err = p.Write("------------------------")
+	if err != nil {
+		return appError.NewErrPrint("%v", err)
+	}
+	_, err = p.LineFeed()
+	if err != nil {
+		return appError.NewErrPrint("%v", err)
+	}
+	p.Size(1, 1).Justify(escpos.JustifyCenter)
+	_, err = p.Write(time.Now().Format("02.01.2006 15:04:05"))
+	if err != nil {
+		return appError.NewErrPrint("%v", err)
+	}
+	_, err = p.LineFeed()
+	if err != nil {
+		return appError.NewErrPrint("%v", err)
 	}
 	// Print
 	err = p.PrintAndCut()

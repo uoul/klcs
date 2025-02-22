@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/uoul/go-common/async"
 	"github.com/uoul/go-common/log"
@@ -23,10 +24,10 @@ const (
 type KlcsClientService struct {
 	logger log.ILogger
 
-	stop       chan any
-	clients    map[async.Stream[domain.PrintJob]]bool
-	httpClient http.Client
+	stop    chan any
+	clients map[async.Stream[domain.PrintJob]]bool
 
+	retryCooldown   time.Duration
 	klcsBackendHost string
 	printerId       string
 }
@@ -52,6 +53,7 @@ LP1:
 			err := k.connectKlcsEventStream()
 			if err != nil {
 				k.logger.Errorf("%v", err)
+				time.Sleep(k.retryCooldown)
 			}
 		}
 	}
@@ -150,7 +152,8 @@ func NewKlcsClientService(logger log.ILogger, klcsBackendHost string, printerId 
 		klcsBackendHost: klcsBackendHost,
 		printerId:       printerId,
 
-		clients: map[async.Stream[domain.PrintJob]]bool{},
-		stop:    make(chan any, 1),
+		clients:       map[async.Stream[domain.PrintJob]]bool{},
+		stop:          make(chan any, 1),
+		retryCooldown: 30 * time.Second,
 	}
 }

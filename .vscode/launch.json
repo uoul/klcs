@@ -11,7 +11,7 @@
             "mode": "auto",
             "program": "${workspaceFolder}/backend/core/main.go",
             "env": {
-                "KLCS_JWKS_URI": "http://flamboyant_dewdney:8080/realms/klcs/protocol/openid-connect/certs",
+                "KLCS_JWKS_URI": "https://kc.uoul.net/realms/klcs/protocol/openid-connect/certs",
                 "KLCS_HTTP_PORT": "8082",
                 "KLCS_LOG_LVL": "TRACE",
                 "KLCS_DB_HOST": "klcs-pg",

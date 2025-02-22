@@ -7,9 +7,11 @@ import (
 	"slices"
 
 	"github.com/uoul/go-common/db"
+	"github.com/uoul/go-common/log"
 	"github.com/uoul/klcs/backend/core/dal"
 	"github.com/uoul/klcs/backend/core/domain"
 	appError "github.com/uoul/klcs/backend/core/error"
+	"github.com/uoul/klcs/backend/core/services"
 )
 
 const (
@@ -18,6 +20,8 @@ const (
 
 type Logic struct {
 	cf             db.IConnectionFactory
+	logger         log.ILogger
+	printService   *services.PrintService
 	shopDao        dal.IShopDao
 	userDao        dal.IUserDao
 	articleDao     dal.IArticleDao
@@ -282,6 +286,18 @@ func (l *Logic) Checkout(ctx context.Context, username string, order *domain.Ord
 			err = l.createTransactionForCheckout(tx, username, order, orderSum)
 			if err != nil {
 				return nil, err
+			}
+			// Generate PrintJobs for order
+			printJobs, err := l.createPrintJobsForOrder(tx, order)
+			if err != nil {
+				return nil, err
+			}
+			// Print
+			for printerId, job := range printJobs {
+				err := l.printService.PrintJob(printerId, job)
+				if err != nil {
+					l.logger.Warningf("failed to send printjob to printer(%s) - %v", printerId, err)
+				}
 			}
 			sum := float32(orderSum)
 			order.Sum = &sum
@@ -804,7 +820,7 @@ func (l *Logic) updateStockAmountAndCalculateSumOfOrder(tx *sql.Tx, order *domai
 	ordersum := 0
 	for articleId, amount := range order.Articles {
 		if stock[articleId].StockAmount != nil && *stock[articleId].StockAmount < amount {
-			return 0, appError.NewErrValidation("current StockAmount of article %s to low for order - need: %v, current: %v", articleId, amount, stock[articleId].StockAmount)
+			return 0, appError.NewErrValidation("current StockAmount of article %s to low for order - need: %v, current: %v", articleId, amount, *stock[articleId].StockAmount)
 		}
 		ordersum += stock[articleId].Price * amount
 		// update StockAmount
@@ -911,9 +927,57 @@ func (l *Logic) getAccountDetails(tx *sql.Tx, accountId string) (*domain.Account
 	}
 }
 
-func NewLogic(cf db.IConnectionFactory) ILogic {
+func (l *Logic) createPrintJobsForOrder(tx *sql.Tx, order *domain.Order) (map[string]domain.PrintJob, error) {
+	jobs := map[string]domain.PrintJob{}
+	for articleId, amount := range order.Articles {
+		// Get Printer for article
+		p := <-l.printerDao.GetPrinterForArticle(tx, articleId)
+		if p.Error != nil {
+			if p.Error == sql.ErrNoRows {
+				continue
+			}
+			return nil, appError.NewErrDataAccess("failed to get printer for article(%s) - %v", articleId, p.Error)
+		}
+		// Check if printer already exists --> if not add new map entry
+		_, exists := jobs[p.Result.Id]
+		if !exists {
+			// Get shop for article
+			shop := <-l.shopDao.GetShopForArticle(tx, articleId)
+			if shop.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to get shop for article(%s) - %v", articleId, shop.Error)
+			}
+			// Get Account
+			holderName := ""
+			if order.AccountId != nil {
+				account := <-l.accountDao.GetAccount(tx, *order.AccountId)
+				if account.Error != nil {
+					return nil, appError.NewErrDataAccess("failed to get account(%s) - %v", *order.AccountId, account.Error)
+				}
+				holderName = account.Result.HolderName
+			}
+			jobs[p.Result.Id] = domain.PrintJob{
+				ShopName:          shop.Result.Name,
+				Description:       order.Description,
+				AccountHolderName: holderName,
+				OrderPositions:    map[string]int{},
+			}
+		}
+		// Add article amount to mapentry
+		article := <-l.articleDao.GetArticle(tx, articleId)
+		if article.Error != nil {
+			return nil, appError.NewErrDataAccess("failed to get article(%s) - %v", articleId, article.Error)
+		}
+		jobs[p.Result.Id].OrderPositions[article.Result.Name] = amount
+	}
+	return jobs, nil
+}
+
+func NewLogic(cf db.IConnectionFactory, logger log.ILogger, printService *services.PrintService) ILogic {
 	return &Logic{
 		cf: cf,
+
+		printService: printService,
+		logger:       logger,
 
 		shopDao:        dal.NewShopDao(),
 		userDao:        dal.NewUserDao(),

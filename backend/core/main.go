@@ -6,17 +6,23 @@ import (
 	"github.com/uoul/go-common/auth"
 	"github.com/uoul/go-common/config"
 	"github.com/uoul/go-common/db"
+	"github.com/uoul/go-common/log"
 	"github.com/uoul/klcs/backend/core/api"
 	"github.com/uoul/klcs/backend/core/domain"
 	"github.com/uoul/klcs/backend/core/logic"
+	"github.com/uoul/klcs/backend/core/services"
 )
 
 func main() {
 	cp := config.NewEnvVarProvider()
 	cf := setupDbConnection(cp)
-	logic := logic.NewLogic(cf)
+	logger := log.NewConsoleLogger(
+		log.StringToLogLevel(cp.StringOrDefault("KLCS_LOG_LVL", "INFO"), log.INFO),
+	)
 	authenticator := auth.NewKeyCloakAuthenticator[*domain.OidcUser](cp.StringOrDefault("KLCS_JWKS_URI", ""))
-	api := api.NewApi(logic, authenticator)
+	printService := services.NewPrintService()
+	logic := logic.NewLogic(cf, logger, printService)
+	api := api.NewApi(logic, authenticator, printService)
 	api.Run(cp.UInt16OrDefault("KLCS_HTTP_PORT", 8080))
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/uoul/go-common/auth"
 	"github.com/uoul/klcs/backend/core/domain"
 	"github.com/uoul/klcs/backend/core/logic"
+	"github.com/uoul/klcs/backend/core/services"
 )
 
 const (
@@ -19,6 +20,7 @@ const (
 type Api struct {
 	logic         logic.ILogic
 	authenticator auth.IAuthenticator[*domain.OidcUser]
+	printService  *services.PrintService
 
 	wwwRootDir string
 }
@@ -38,6 +40,7 @@ func (e *Api) Run(port uint16) {
 
 		static.Serve("/", static.LocalFile(e.wwwRootDir, true)),
 	)
+	router.GET("/api/v1/printers/:printerId/jobs", e.getPrintJobs)
 	rootGroup := router.Group("/api/v1")
 	// Setup global middleware
 	rootGroup.Use(
@@ -109,10 +112,11 @@ func WithApiWwwRootDir(dir string) func(*Api) {
 	}
 }
 
-func NewApi(logic logic.ILogic, authenticator auth.IAuthenticator[*domain.OidcUser], opts ...func(*Api)) *Api {
+func NewApi(logic logic.ILogic, authenticator auth.IAuthenticator[*domain.OidcUser], printService *services.PrintService, opts ...func(*Api)) *Api {
 	return &Api{
 		logic:         logic,
 		authenticator: authenticator,
+		printService:  printService,
 
 		wwwRootDir: "wwwroot",
 	}
