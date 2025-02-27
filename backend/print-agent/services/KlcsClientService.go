@@ -95,6 +95,7 @@ func (k *KlcsClientService) connectKlcsEventStream() error {
 	if err != nil {
 		return appError.NewErrNet("failed to do request on klcs-printer-api - %v", err)
 	}
+	k.logger.Infof("listening for printJobs on %s ...", resp.Request.URL)
 
 	msg := []byte{}
 LP1:

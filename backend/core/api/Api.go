@@ -41,17 +41,17 @@ func (e *Api) Run(port uint16) {
 		static.Serve("/", static.LocalFile(e.wwwRootDir, true)),
 	)
 	router.GET("/api/v1/printers/:printerId/jobs", e.getPrintJobs)
-	rootGroup := router.Group("/api/v1")
+	apiV1 := router.Group("/api/v1")
 	// Setup global middleware
-	rootGroup.Use(
+	apiV1.Use(
 		e.checkUserLoggedIn(),
 		e.updateUserByOidcData(),
 		e.errorTranslation(),
 	)
 	// Setup routergroups
-	e.setupSysAdminRg(rootGroup, "/admin")
-	e.setupUserRg(rootGroup, "")
-	e.setupAccountManagerRg(rootGroup, "/accounts")
+	e.setupSysAdminRg(apiV1, "/admin")
+	e.setupUserRg(apiV1, "")
+	e.setupAccountManagerRg(apiV1, "/accounts")
 	// Run api
 	router.Run(fmt.Sprintf(":%v", port))
 }
