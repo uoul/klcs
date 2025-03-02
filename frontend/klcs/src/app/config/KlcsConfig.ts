@@ -9,7 +9,7 @@ export const KlcsConfig = {
     scope: 'profile email',
     showDebugInformation: true,
   },
-  BackendRoot: "http://localhost:8082",
+  BackendRoot: "",
   
   KlcsRoleAccountManager: "KLCS_ACCOUNT_MANAGER",
   KlcsRoleAdmin: "KLCS_ADMIN",

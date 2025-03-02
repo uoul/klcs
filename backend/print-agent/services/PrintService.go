@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/hennedo/escpos"
+	"github.com/uoul/escpos"
 	"github.com/uoul/go-common/log"
 	"github.com/uoul/klcs/backend/print-agent/domain"
 	appError "github.com/uoul/klcs/backend/print-agent/error"
@@ -21,7 +21,7 @@ type PrintService struct {
 	printJobSrc INotificationService[domain.PrintJob]
 
 	printBufferSize int
-	connectPrinter  func() (io.Writer, func() error, error)
+	connectPrinter  func() (io.ReadWriter, func() error, error)
 
 	stop chan any
 }
@@ -61,7 +61,6 @@ LP1:
 // -------------------------------------------------------------------------------
 // Private
 // -------------------------------------------------------------------------------
-
 func (ps *PrintService) printOrder(job *domain.PrintJob) error {
 	if ps.connectPrinter == nil {
 		return appError.NewErrConfig("no printer connection type has been configured (WithTcpConnector, WithUsbConnector)")
@@ -71,94 +70,75 @@ func (ps *PrintService) printOrder(job *domain.PrintJob) error {
 		return appError.NewErrIO("failed to connect to printer - %v", err)
 	}
 	defer close()
-	// Create printer
-	p := escpos.New(conn)
-	_, err = p.Initialize()
-	if err != nil {
-		return appError.NewErrPrint("failed to initialize printer - %v", err)
+	// Create Printer
+	p := escpos.NewPrinter(conn)
+
+	// Print Headline (ShopName)
+	if err := p.Print(
+		fmt.Sprintf("%s\n\n", job.ShopName),
+		escpos.WithSize(3, 2),
+		escpos.WithUnderline(2),
+		escpos.WithJustifyCenter(),
+	); err != nil {
+		return appError.NewErrPrint("failed to print headline - %v", err)
 	}
-	// Write Job name
-	p.Size(2, 2).Justify(escpos.JustifyCenter).Underline(2)
-	_, err = p.Write(job.ShopName)
-	if err != nil {
-		return appError.NewErrPrint("%v", err)
-	}
-	_, err = p.Underline(0).Size(2, 1).Justify(escpos.JustifyLeft).LineFeedD(2)
-	if err != nil {
-		return appError.NewErrPrint("%v", err)
-	}
-	// Write Articles
+	// Print Articles
 	for article, count := range job.OrderPositions {
-		_, err = p.Write(fmt.Sprintf("%dx - %s", count, article))
-		if err != nil {
-			return appError.NewErrPrint("%v", err)
-		}
-		_, err = p.LineFeedD(2)
-		if err != nil {
-			return appError.NewErrPrint("%v", err)
+		if err := p.Print(
+			fmt.Sprintf("%dx - %s\n", count, article),
+			escpos.WithSize(1, 2),
+		); err != nil {
+			return appError.NewErrPrint("failed to print order position - %v", err)
 		}
 	}
-	// Write Account if exists
-	if len(job.AccountHolderName) > 0 {
-		_, err = p.Write("------------------------")
-		if err != nil {
-			return appError.NewErrPrint("%v", err)
-		}
-		_, err = p.LineFeed()
-		if err != nil {
-			return appError.NewErrPrint("%v", err)
-		}
-		p.Justify(escpos.JustifyCenter)
-		_, err = p.Write(fmt.Sprintf("Account: %s", job.AccountHolderName))
-		if err != nil {
-			return appError.NewErrPrint("%v", err)
-		}
-		_, err = p.LineFeed()
-		if err != nil {
-			return appError.NewErrPrint("%v", err)
-		}
-	}
+	// Print Description
 	if len(job.Description) > 0 {
-		_, err = p.Write("------------------------")
-		if err != nil {
-			return appError.NewErrPrint("%v", err)
+		if err := p.Print(
+			"------------------------\n",
+			escpos.WithSize(1, 2),
+			escpos.WithJustifyCenter(),
+		); err != nil {
+			return appError.NewErrPrint("failed to print divider - %v", err)
 		}
-		_, err = p.LineFeed()
-		if err != nil {
-			return appError.NewErrPrint("%v", err)
-		}
-		p.Size(1, 1).Justify(escpos.JustifyCenter)
-		_, err = p.Write(job.Description)
-		p.LineFeed()
-		if err != nil {
-			return appError.NewErrPrint("%v", err)
+		if err := p.Print(
+			fmt.Sprintf("%s\n", job.Description),
+			escpos.WithJustifyCenter(),
+		); err != nil {
+			return appError.NewErrPrint("failed to print description")
 		}
 	}
-	// Write Timestamp
-	p.Size(2, 1)
-	_, err = p.Write("------------------------")
-	if err != nil {
-		return appError.NewErrPrint("%v", err)
+	// Print Account if exists
+	if len(job.AccountHolderName) > 0 {
+		if err := p.Print(
+			"------------------------\n",
+			escpos.WithSize(1, 2),
+			escpos.WithJustifyCenter(),
+		); err != nil {
+			return appError.NewErrPrint("failed to print divider - %v", err)
+		}
+		if err := p.Print(
+			fmt.Sprintf("Account: %s\n", job.AccountHolderName),
+			escpos.WithJustifyCenter(),
+		); err != nil {
+			return appError.NewErrPrint("failed to print account holder - %v", err)
+		}
 	}
-	_, err = p.LineFeed()
-	if err != nil {
-		return appError.NewErrPrint("%v", err)
+	// Print Timestamp
+	if err := p.Print(
+		"------------------------\n",
+		escpos.WithSize(1, 2),
+		escpos.WithJustifyCenter(),
+	); err != nil {
+		return appError.NewErrPrint("failed to print divider - %v", err)
 	}
-	p.Size(1, 1).Justify(escpos.JustifyCenter)
-	_, err = p.Write(time.Now().Format("02.01.2006 15:04:05"))
-	if err != nil {
-		return appError.NewErrPrint("%v", err)
+	if err := p.Print(
+		time.Now().Format("02.01.2006 15:04:05"),
+		escpos.WithJustifyCenter(),
+	); err != nil {
+		return appError.NewErrPrint("failed to print timestamp - %v", err)
 	}
-	_, err = p.LineFeed()
-	if err != nil {
-		return appError.NewErrPrint("%v", err)
-	}
-	// Print
-	err = p.PrintAndCut()
-	if err != nil {
-		return appError.NewErrPrint("%v", err)
-	}
-	return nil
+	// Cut
+	return p.Cut()
 }
 
 // -------------------------------------------------------------------------------
@@ -167,7 +147,7 @@ func (ps *PrintService) printOrder(job *domain.PrintJob) error {
 
 func WithTcpConnector(addr string) func(*PrintService) {
 	return func(ps *PrintService) {
-		ps.connectPrinter = func() (io.Writer, func() error, error) {
+		ps.connectPrinter = func() (io.ReadWriter, func() error, error) {
 			conn, err := net.Dial("tcp", addr)
 			return conn, conn.Close, err
 		}
@@ -176,7 +156,7 @@ func WithTcpConnector(addr string) func(*PrintService) {
 
 func WithUsbConnector(usbDev string) func(*PrintService) {
 	return func(ps *PrintService) {
-		ps.connectPrinter = func() (io.Writer, func() error, error) {
+		ps.connectPrinter = func() (io.ReadWriter, func() error, error) {
 			f, err := os.OpenFile(usbDev, os.O_RDWR, 0)
 			return f, f.Close, err
 		}
