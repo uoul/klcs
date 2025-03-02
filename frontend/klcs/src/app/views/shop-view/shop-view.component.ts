@@ -1,7 +1,6 @@
 import { Component, computed, OnInit, signal, WritableSignal } from '@angular/core';
-import { ActivatedRoute, Route } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
-import { mergeMap, Observable } from 'rxjs';
 import { ShopDetails } from '../../domain/ShopDetails';
 import { CommonModule } from '@angular/common';
 import { CashdeskComponent } from "../../components/cashdesk/cashdesk.component";
@@ -9,7 +8,6 @@ import { KlcsConfig } from '../../config/KlcsConfig';
 import { ShopArticlesComponent } from "../../components/shop-articles/shop-articles.component";
 import { ShopPrintersComponent } from "../../components/shop-printers/shop-printers.component";
 import { ShopUsersComponent } from "../../components/shop-users/shop-users.component";
-import { Article } from '../../domain/Article';
 import { NotificationService } from '../../services/notification/notification.service';
 import { ErrorResponse } from '../../domain/ErrorResponse';
 
@@ -27,29 +25,20 @@ import { ErrorResponse } from '../../domain/ErrorResponse';
 })
 export class ShopViewComponent implements OnInit {
 
-  shop: WritableSignal<ShopDetails> = signal(new ShopDetails());
   currentTab = signal<number>(1)
-
-  articles = computed(() => this.shop().Categories);
-  isAdmin = computed(() => this.shop().UserRoles.find(r => r == KlcsConfig.ShopRoleAdmin) ? true : false);
+  isAdmin = computed(() => this.sellerApi.getShopDetails().UserRoles.find(r => r == KlcsConfig.ShopRoleAdmin) ? true : false);
 
   constructor(
-    private route: ActivatedRoute,
-    private sellerApi: SellerApiService,
+    protected sellerApi: SellerApiService,
     private notify: NotificationService,
+    private route: ActivatedRoute,
   ){}
 
   ngOnInit(): void {
-    this.refresh();
-  }
-
-  refresh(): void {
-    const sub = this.route.paramMap.pipe(
-      mergeMap(params => this.sellerApi.getShopDetails(params.get("shopId") ?? ""))
-    ).subscribe({
-      next: resp => this.shop.set(resp),
+    const sub = this.route.paramMap.subscribe({
+      next: params => this.sellerApi.updateShopId(params.get("shopId") ?? ""),
       error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
-      complete: () => sub.unsubscribe(),
+      complete: () => sub.unsubscribe()
     })
   }
 }

@@ -5,6 +5,7 @@ import { CreatePrinterDialogComponent } from "../../dialogs/create-printer-dialo
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { SellerApiService } from '../../services/seller-api/seller-api.service';
 
 @Component({
   selector: 'klcs-shop-printers',
@@ -15,21 +16,21 @@ import { ErrorResponse } from '../../domain/ErrorResponse';
 export class ShopPrintersComponent {
   protected readonly CREATE_DIALOG_ID = "create-printer-dialog"
 
-  shopId = input.required<string>()
   _printers: WritableSignal<Printer[]> = signal([])
 
   constructor(
     private shopAdminApi: ShopAdminApiService,
+    protected sellerApi: SellerApiService,
     private notify: NotificationService,
   ){
     effect(() => {
-      const shopId = this.shopId()
-      untracked(() => this.refreshPrinters(shopId)) 
+      const shopId = this.sellerApi.getShopDetails().Id
+      untracked(() => this.refreshPrinters()) 
     })
   }
 
-  refreshPrinters(shopId: string) {
-    const sub = this.shopAdminApi.getPrinters(shopId).subscribe({
+  refreshPrinters() {
+    const sub = this.shopAdminApi.getPrinters(this.sellerApi.getShopDetails().Id).subscribe({
       next: p =>  this._printers.set(p),
       error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
       complete: () => sub.unsubscribe(),
@@ -39,7 +40,7 @@ export class ShopPrintersComponent {
   deletePrinter(printer: Printer) {
     if(confirm(`Do you realy want to delete ${printer.Name}?`)){
       const sub = this.shopAdminApi.deletePrinter(printer.Id).subscribe({
-        next: _ => this.refreshPrinters(this.shopId()),
+        next: _ => this.refreshPrinters(),
         error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe(),
       })

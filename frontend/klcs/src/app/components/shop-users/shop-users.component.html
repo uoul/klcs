@@ -15,7 +15,7 @@
           <td class="lg:flex">
             @for (role of u.roles | keyvalue; track $index) {
               <div class="flex items-center">
-                <input type="checkbox" [checked]="role.value" class="checkbox" class="checkbox checkbox-secondary" (change)="setUserRole(shopId(), u.Id, role.key, $event)" [disabled]="currentUser().username === u.Username && role.key.Name === klcsConfig.ShopRoleAdmin" />
+                <input type="checkbox" [checked]="role.value" class="checkbox" class="checkbox checkbox-secondary" (change)="setUserRole(this.sellerApi.getShopDetails().Id, u.Id, role.key, $event)" [disabled]="currentUser().username === u.Username && role.key.Name === klcsConfig.ShopRoleAdmin" />
                 <label class="label">{{ role.key.Name }}</label>
               </div>
             }

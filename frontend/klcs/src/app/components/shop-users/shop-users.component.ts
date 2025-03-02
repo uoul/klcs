@@ -11,6 +11,7 @@ import { KlcsConfig } from '../../config/KlcsConfig';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../services/notification/notification.service';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { SellerApiService } from '../../services/seller-api/seller-api.service';
 
 interface _InternalUser {
   Id: string,
@@ -32,10 +33,11 @@ export class ShopUsersComponent {
   constructor(
     private shopAdminApi: ShopAdminApiService,
     private authService: AuthService,
+    protected sellerApi: SellerApiService,
     private notify: NotificationService,
   ){
     effect(() => {
-      const shopId = this.shopId()
+      const shopId = this.sellerApi.getShopDetails().Id
       untracked(() => {
         this.refreshUsers(shopId);
         this.refreshRoles();
@@ -43,8 +45,6 @@ export class ShopUsersComponent {
       })
     })
   }
-
-  shopId = input.required<string>()
   
   currentUser: WritableSignal<UserIdentity> = signal(new UserIdentity())
   klcsUsers: WritableSignal<ShopUser[]> = signal([])

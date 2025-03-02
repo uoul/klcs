@@ -1,11 +1,12 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Signal, signal, WritableSignal} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {finalize, Observable, tap} from "rxjs";
+import {finalize, Observable, subscribeOn, tap} from "rxjs";
 import {ShoppingCartService} from "../shopping-cart/shopping-cart.service";
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { Order } from '../../domain/Order';
 import { Shop } from '../../domain/Shop';
 import { ShopDetails } from '../../domain/ShopDetails';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,14 +16,33 @@ export class SellerApiService {
   constructor(
     private http: HttpClient,
     private cartService: ShoppingCartService,
+    private notify: NotificationService,
   ) { }
+
+  _shopId: WritableSignal<string> = signal("")
+  _shopDetails: WritableSignal<ShopDetails> = signal(new ShopDetails())
 
   public getShops(): Observable<Shop[]> {
     return this.http.get<Shop[]>(`${KlcsConfig.BackendRoot}/api/v1/shops`);
   }
 
-  public getShopDetails(shopId: string): Observable<ShopDetails> {
-    return this.http.get<ShopDetails>(`${KlcsConfig.BackendRoot}/api/v1/shops/${shopId}`);
+  public get getShopDetails(): Signal<ShopDetails> {
+    return this._shopDetails
+  }
+
+  public updateShopId(shopId: string): void {
+    this._shopId.set(shopId)
+    this.refreshShopDetails()
+  }
+
+  public refreshShopDetails(): void {
+    if(this._shopId().length > 0) {
+      const sub = this.http.get<ShopDetails>(`${KlcsConfig.BackendRoot}/api/v1/shops/${this._shopId()}`).subscribe({
+        next: s => this._shopDetails.set(s),
+        error: err => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        complete: () => sub.unsubscribe()
+      })
+    }
   }
 
   public checkoutCard(accountId: string, description: string): Observable<Order> {

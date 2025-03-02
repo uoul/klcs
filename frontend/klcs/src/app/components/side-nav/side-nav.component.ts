@@ -7,7 +7,6 @@ import { KlcsConfig } from '../../config/KlcsConfig';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
 import { CommonModule } from '@angular/common';
 import { Shop } from '../../domain/Shop';
-import { subscribeOn } from 'rxjs';
 import { CheckAccountDialogComponent } from "../../dialogs/check-account-dialog/check-account-dialog.component";
 import { ChargeAccountDialogComponent } from "../../dialogs/charge-account-dialog/charge-account-dialog.component";
 import { CloseAccountDialogComponent } from "../../dialogs/close-account-dialog/close-account-dialog.component";

@@ -6,6 +6,7 @@ import { ShoppingCartService } from '../../services/shopping-cart/shopping-cart.
 import { ShoppingCartComponent } from "../shopping-cart/shopping-cart.component";
 import { EditCartDialogComponent } from "../../dialogs/edit-cart-dialog/edit-cart-dialog.component";
 import { CheckoutDialogComponent } from "../../dialogs/checkout-dialog/checkout-dialog.component";
+import { SellerApiService } from '../../services/seller-api/seller-api.service';
 
 @Component({
   selector: 'klcs-cashdesk',
@@ -20,7 +21,6 @@ import { CheckoutDialogComponent } from "../../dialogs/checkout-dialog/checkout-
   styleUrl: './cashdesk.component.css'
 })
 export class CashdeskComponent {
-  categories = input.required<Map<string, Article[]>>()
 
   protected readonly EDIT_CART_DIALOG_ID = "edit-cart-dialog"
   protected readonly CHECKOUT_DIALOG_ID = "checkout-dialog"
@@ -29,6 +29,7 @@ export class CashdeskComponent {
 
   constructor(
     protected shoppingCart: ShoppingCartService,
+    protected sellerApi: SellerApiService,
   ){}
 
   addToShoppingCart(article: Article) {
@@ -44,5 +45,14 @@ export class CashdeskComponent {
     this.checkoutCard.set(withCard)
     const dialog = document.getElementById(this.CHECKOUT_DIALOG_ID) as HTMLDialogElement
     dialog.showModal()
+  }
+
+  checkCategoryEmpty(articles: Article[]): boolean {
+    for(let article of articles){
+      if(article.StockAmount === null || article.StockAmount > 0){
+        return false
+      }
+    }
+    return true
   }
 }

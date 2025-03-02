@@ -1,17 +1,19 @@
 <div class="flex flex-col xl:flex-row">
   <div class="w-full xl:w-1/2 xl:mx-2 mb-20 xl:mb-0 px-2 xl:px-0">
-    @for (category of categories() | keyvalue; track $index) {
-      <div class="collapse collapse-arrow bg-base-100 border border-base-300 my-1">
-        <input type="checkbox" />
-        <div class="collapse-title font-semibold">{{ category.key }}</div>
-        <div class="collapse-content text-sm flex flex-wrap">
-          @for (article of category.value; track $index) {
-            @if (article.StockAmount === null || article.StockAmount > 0) {
-              <klcs-cashdesk-article [article]="article" (articleClicked)="addToShoppingCart($event)"/>
+    @for (category of sellerApi.getShopDetails().Categories | keyvalue; track $index) {
+      @if (!checkCategoryEmpty(category.value)) {
+        <div class="collapse collapse-arrow bg-base-100 border border-base-300 my-1">
+          <input type="checkbox" />
+          <div class="collapse-title font-semibold">{{ category.key }}</div>
+          <div class="collapse-content text-sm flex flex-wrap">
+            @for (article of category.value; track $index) {
+              @if (article.StockAmount === null || article.StockAmount > 0) {
+                <klcs-cashdesk-article [article]="article" (articleClicked)="addToShoppingCart($event)"/>
+              }
             }
-          }
+          </div>
         </div>
-      </div>
+      }
     }
   </div>
   <div class="hidden xl:flex xl:w-1/2 flex-col xl:mx-2">

@@ -44,14 +44,20 @@ export class CheckoutDialogComponent {
   checkout() {
     if(this.withCard()){
       const sub = this.sellerApi.checkoutCard(this.accountId(), this.description()).subscribe({
-        next: _ => this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: "Successfully placed order"}),
+        next: _ => {
+          this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: "Successfully placed order"})
+          this.sellerApi.refreshShopDetails()
+        },
         error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })
     }
     else {
       const sub = this.sellerApi.checkoutCash(this.description()).subscribe({
-        next: _ => this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: "Successfully placed order"}),
+        next: _ => {
+          this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: "Successfully placed order"})
+          this.sellerApi.refreshShopDetails()
+        },
         error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })

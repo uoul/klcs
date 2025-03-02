@@ -8,19 +8,19 @@
     </div>
     <div class="flex-grow">
       <div class="w-full" [hidden]="currentTab() != 1">
-        <klcs-cashdesk [categories]="shop().Categories" />
+        <klcs-cashdesk />
       </div>
       <div class="w-full" [hidden]="currentTab() != 2">
-        <klcs-shop-articles [hidden]="currentTab() != 2" [shopId]="shop().Id" [categories]="articles()" (articlesChanged)="refresh()"/>
+        <klcs-shop-articles [hidden]="currentTab() != 2"/>
       </div>
       <div class="w-full" [hidden]="currentTab() != 3">
-        <klcs-shop-printers [shopId]="shop().Id"/>
+        <klcs-shop-printers />
       </div>
       <div class="w-full" [hidden]="currentTab() != 4">
-        <klcs-shop-users [shopId]="shop().Id" />
+        <klcs-shop-users  />
       </div>
     </div>
   } @else {
-    <klcs-cashdesk [categories]="shop().Categories" />
+    <klcs-cashdesk />
   }
 </div>

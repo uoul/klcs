@@ -11,6 +11,8 @@ import { UpdateArticleDialogComponent } from "../../dialogs/update-article-dialo
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { SellerApiService } from '../../services/seller-api/seller-api.service';
+import { ShopDetails } from '../../domain/ShopDetails';
 
 @Component({
   selector: 'klcs-shop-articles',
@@ -24,15 +26,12 @@ import { ErrorResponse } from '../../domain/ErrorResponse';
 })
 export class ShopArticlesComponent {
 
-  shopId = input.required<string>()
-  categories: InputSignal<Map<string, Article[]>> = input.required<Map<string, Article[]>>();
-  articlesChanged: OutputEmitterRef<void> = output();
-
   protected readonly CREATE_DIALOG_ID = "create-article-dialog"
   protected readonly EDIT_DIALOG_ID = "edit-article-dialog"
 
   constructor(
     private shopAdminApi: ShopAdminApiService,
+    protected sellerApi: SellerApiService,
     private notify: NotificationService,
   ){}
 
@@ -42,7 +41,7 @@ export class ShopArticlesComponent {
   deleteArticle(articleId: string) {
     if(confirm(`Do you realy want to delete Article?`)){
       const sub = this.shopAdminApi.deleteArticle(articleId).subscribe({
-        next: _ => this.articlesChanged.emit(),
+        next: _ => this.sellerApi.refreshShopDetails(),
         error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe(),
       });
@@ -58,13 +57,13 @@ export class ShopArticlesComponent {
   }
 
   showCreateDialog(){
-    this.refreshPrinters(this.shopId())
+    this.refreshPrinters(this.sellerApi.getShopDetails().Id)
     const dialog = document.getElementById(this.CREATE_DIALOG_ID) as HTMLDialogElement
     dialog.showModal();
   }
 
   showUpdateDialog(articleId: string){
-    this.refreshPrinters(this.shopId())
+    this.refreshPrinters(this.sellerApi.getShopDetails().Id)
     const sub = this.shopAdminApi.getArticle(articleId).subscribe({
       next: artilce => {
         this._articleDetails.set(artilce)
