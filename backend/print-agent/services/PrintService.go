@@ -132,7 +132,7 @@ func (ps *PrintService) printOrder(job *domain.PrintJob) error {
 		return appError.NewErrPrint("failed to print divider - %v", err)
 	}
 	if err := p.Print(
-		time.Now().Format("02.01.2006 15:04:05"),
+		time.Now().Format("02.01.2006 15:04:05\n"),
 		escpos.WithJustifyCenter(),
 	); err != nil {
 		return appError.NewErrPrint("failed to print timestamp - %v", err)
