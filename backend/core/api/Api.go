@@ -88,6 +88,7 @@ func (e *Api) setupUserRg(router *gin.RouterGroup, prefix string) *gin.RouterGro
 	rg.GET("/shops/:shopId", e.getShopdetailsForUser)
 	rg.POST("/orders", e.checkout)
 	rg.GET("/accounts/:accountId", e.getAccountDetails)
+	rg.GET("/history", e.getHistoryForUser)
 	// shopadmin api
 	rg.GET("/shops/:shopId/articles", e.getArticlesForShop)
 	rg.POST("/shops/:shopId/articles", e.createArticle)

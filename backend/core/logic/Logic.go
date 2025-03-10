@@ -29,6 +29,22 @@ type Logic struct {
 	printerDao     dal.IPrinterDao
 	accountDao     dal.IAccountDao
 	transactionDao dal.ITransactionDao
+	historyDao     dal.IHistoryDao
+}
+
+// GetHistory implements ILogic.
+func (l *Logic) GetHistory(ctx context.Context, username string, length int) ([]domain.HistoryItem, error) {
+	return db.ExecInTransactionContext(
+		ctx,
+		l.cf,
+		func(ctx context.Context, tx *sql.Tx) ([]domain.HistoryItem, error) {
+			history := <-l.historyDao.GetHistoryForUser(tx, username, length)
+			if history.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to get history for user(%s) - %v", username, history.Error)
+			}
+			return history.Result, nil
+		},
+	)
 }
 
 // GetAllAccounts implements ILogic.
@@ -986,5 +1002,6 @@ func NewLogic(cf db.IConnectionFactory, logger log.ILogger, printService *servic
 		printerDao:     dal.NewPrinterDao(),
 		accountDao:     dal.NewAccountDao(),
 		transactionDao: dal.NewTransactionDao(),
+		historyDao:     dal.NewHistoryDao(),
 	}
 }

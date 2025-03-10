@@ -7,6 +7,7 @@ import { NotificationService } from '../../services/notification/notification.se
 import { KlcsConfig } from '../../config/KlcsConfig';
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { FocusDirective } from '../../directives/focus/focus.directive';
 
 @Component({
   selector: 'klcs-checkout-dialog',
@@ -14,6 +15,7 @@ import { ErrorResponse } from '../../domain/ErrorResponse';
     CommonModule,
     FormsModule,
     ZXingScannerModule,
+    FocusDirective,
   ],
   templateUrl: './checkout-dialog.component.html',
   styleUrl: './checkout-dialog.component.css'

@@ -8,6 +8,7 @@ import { SellerApiService } from '../../services/seller-api/seller-api.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { FocusDirective } from '../../directives/focus/focus.directive';
 
 @Component({
   selector: 'klcs-edit-cart-dialog',
@@ -16,6 +17,7 @@ import { ErrorResponse } from '../../domain/ErrorResponse';
     FormsModule,
     ShoppingCartComponent,
     ZXingScannerModule,
+    FocusDirective,
   ],
   templateUrl: './edit-cart-dialog.component.html',
   styleUrl: './edit-cart-dialog.component.css'

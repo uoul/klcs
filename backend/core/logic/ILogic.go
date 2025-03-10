@@ -21,6 +21,7 @@ type ILogic interface {
 	GetShopDetailsForUser(ctx context.Context, username string, shopId string) (*domain.ShopDetails, error)
 	Checkout(ctx context.Context, username string, order *domain.Order) (*domain.Order, error)
 	GetAccountDetails(ctx context.Context, accountId string) (*domain.AccountDetails, error)
+	GetHistory(ctx context.Context, username string, length int) ([]domain.HistoryItem, error)
 
 	// Shop-Admin
 	GetArticlesForShop(ctx context.Context, username string, shopId string) ([]domain.Article, error)

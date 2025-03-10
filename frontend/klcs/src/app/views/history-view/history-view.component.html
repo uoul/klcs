@@ -1,0 +1,53 @@
+<div class="px-2">
+  <form #f="ngForm" (submit)="refresh()">
+    <div class="join join-horizontal w-full py-2">
+      <input name="search-text" type="number" min="0" required class="input input-bordered join-item w-full"  [(ngModel)]="historyLength"/>
+      <button class="btn btn-primary join-item" [disabled]="f.invalid">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-6 w-6 fill-neutral-content"><path d="M480-120q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-480q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840q82 0 155.5 35T760-706v-94h80v240H600v-80h110q-41-56-101-88t-129-32q-117 0-198.5 81.5T200-480q0 117 81.5 198.5T480-200q105 0 183.5-68T756-440h82q-15 137-117.5 228.5T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/></svg>
+      </button>
+    </div>
+  </form>
+  @for (item of history(); track $index) {
+    <div class="collapse collapse-arrow bg-base-100 border border-base-300 my-1">
+      <input type="checkbox" />
+      <div class="collapse-title flex">
+        <span class="text-nowrap mr-4">{{ item.Timestamp.getFullYear() }}-{{ item.Timestamp.getMonth() }}-{{ item.Timestamp.getDate() }} {{ item.Timestamp.getHours() }}:{{ item.Timestamp.getMinutes() }}:{{ item.Timestamp.getSeconds() }}</span>
+        <span class="flex flex-grow justify-end text-wrap">{{ item.Description }}</span>
+      </div>
+      <div class="collapse-content text-sm flex flex-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Article</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (article of item.Articles; track $index) {
+              <tr>
+                <td>{{ article.Name }}</td>
+                <td>{{ article.Pieces }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        @if (item.AccountHolder) {
+          <div role="alert" class="alert flex mt-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              class="stroke-info h-6 w-6 fill-none">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Account: {{ item.AccountHolder }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
+

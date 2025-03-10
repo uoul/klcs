@@ -2,11 +2,32 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/uoul/klcs/backend/core/domain"
 	appError "github.com/uoul/klcs/backend/core/error"
 )
+
+func (e *Api) getHistoryForUser(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
+	if err != nil {
+		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		return
+	}
+	lengthStr := ctx.DefaultQuery("length", "10")
+	len, err := strconv.Atoi(lengthStr)
+	if err != nil {
+		ctx.Error(appError.NewErrInvalidInput("length(%s) parameter has to be a number", lengthStr))
+		return
+	}
+	history, err := e.logic.GetHistory(ctx, user.GetUsername(), len)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+	ctx.JSON(http.StatusOK, history)
+}
 
 func (e *Api) getShopsForUser(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentity(ctx.Request.Header)

@@ -7,6 +7,7 @@ import { Order } from '../../domain/Order';
 import { Shop } from '../../domain/Shop';
 import { ShopDetails } from '../../domain/ShopDetails';
 import { NotificationService } from '../notification/notification.service';
+import { HistoryItem } from '../../domain/HistoryItem';
 
 @Injectable({
   providedIn: 'root'
@@ -66,6 +67,16 @@ export class SellerApiService {
       Sum: undefined,
     }
     return this.placeOrder(order);
+  }
+
+  public getHistory(len: number): Observable<HistoryItem[]> {
+    return this.http.get<HistoryItem[]>(`${KlcsConfig.BackendRoot}/api/v1/history?length=${len}`).pipe(
+      tap(history => {
+        for(let h of history){
+          h.Timestamp = new Date(h.Timestamp)
+        }
+      })
+    )
   }
 
   private placeOrder(order: Order): Observable<Order> {
