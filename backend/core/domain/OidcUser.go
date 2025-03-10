@@ -5,7 +5,6 @@ import "github.com/uoul/go-common/auth"
 type OidcUser struct {
 	JwtId                      string   `json:"jti,omitempty"`
 	Issuer                     string   `json:"iss,omitempty"`
-	Audience                   string   `json:"aud,omitempty"`
 	Subject                    string   `json:"sub,omitempty"`
 	Type                       string   `json:"typ,omitempty"`
 	AuthorizedParty            string   `json:"azp,omitempty"`
