@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/uoul/escpos"
+	"github.com/uoul/escpos/netum/ns8360l"
 	"github.com/uoul/go-common/log"
 	"github.com/uoul/klcs/backend/print-agent/domain"
 	appError "github.com/uoul/klcs/backend/print-agent/error"
@@ -71,14 +71,14 @@ func (ps *PrintService) printOrder(job *domain.PrintJob) error {
 	}
 	defer close()
 	// Create Printer
-	p := escpos.NewPrinter(conn)
+	p := ns8360l.NewPrinter(conn)
 
 	// Print Headline (ShopName)
 	if err := p.Print(
 		fmt.Sprintf("%s\n\n", job.ShopName),
-		escpos.WithSize(3, 2),
-		escpos.WithUnderline(2),
-		escpos.WithJustifyCenter(),
+		p.WithSize(3, 2),
+		p.WithUnderline(2),
+		p.WithJustifyCenter(),
 	); err != nil {
 		return appError.NewErrPrint("failed to print headline - %v", err)
 	}
@@ -86,7 +86,7 @@ func (ps *PrintService) printOrder(job *domain.PrintJob) error {
 	for article, count := range job.OrderPositions {
 		if err := p.Print(
 			fmt.Sprintf("%dx - %s\n", count, article),
-			escpos.WithSize(1, 2),
+			p.WithSize(1, 2),
 		); err != nil {
 			return appError.NewErrPrint("failed to print order position - %v", err)
 		}
@@ -95,14 +95,14 @@ func (ps *PrintService) printOrder(job *domain.PrintJob) error {
 	if len(job.Description) > 0 {
 		if err := p.Print(
 			"------------------------\n",
-			escpos.WithSize(1, 2),
-			escpos.WithJustifyCenter(),
+			p.WithSize(1, 2),
+			p.WithJustifyCenter(),
 		); err != nil {
 			return appError.NewErrPrint("failed to print divider - %v", err)
 		}
 		if err := p.Print(
 			fmt.Sprintf("%s\n", job.Description),
-			escpos.WithJustifyCenter(),
+			p.WithJustifyCenter(),
 		); err != nil {
 			return appError.NewErrPrint("failed to print description")
 		}
@@ -111,14 +111,14 @@ func (ps *PrintService) printOrder(job *domain.PrintJob) error {
 	if len(job.AccountHolderName) > 0 {
 		if err := p.Print(
 			"------------------------\n",
-			escpos.WithSize(1, 2),
-			escpos.WithJustifyCenter(),
+			p.WithSize(1, 2),
+			p.WithJustifyCenter(),
 		); err != nil {
 			return appError.NewErrPrint("failed to print divider - %v", err)
 		}
 		if err := p.Print(
 			fmt.Sprintf("Account: %s\n", job.AccountHolderName),
-			escpos.WithJustifyCenter(),
+			p.WithJustifyCenter(),
 		); err != nil {
 			return appError.NewErrPrint("failed to print account holder - %v", err)
 		}
@@ -126,14 +126,14 @@ func (ps *PrintService) printOrder(job *domain.PrintJob) error {
 	// Print Timestamp
 	if err := p.Print(
 		"------------------------\n",
-		escpos.WithSize(1, 2),
-		escpos.WithJustifyCenter(),
+		p.WithSize(1, 2),
+		p.WithJustifyCenter(),
 	); err != nil {
 		return appError.NewErrPrint("failed to print divider - %v", err)
 	}
 	if err := p.Print(
 		time.Now().Format("02.01.2006 15:04:05\n"),
-		escpos.WithJustifyCenter(),
+		p.WithJustifyCenter(),
 	); err != nil {
 		return appError.NewErrPrint("failed to print timestamp - %v", err)
 	}

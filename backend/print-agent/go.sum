@@ -1,6 +1,6 @@
-github.com/uoul/escpos v0.1.0 h1:zXbw4ZZ9gNbKb/M4dDdkR99DjThJVZczhyWipXBOnrk=
-github.com/uoul/escpos v0.1.0/go.mod h1:Bvw9GjaORsRLP+zzAy2/LuPxiAf9e5R/ovKsBky8lL4=
-github.com/uoul/go-common v0.0.18 h1:PG1Y2xR7xTbePRV0c84nu/ZEzIa5YBnS4zk4+X8LTko=
-github.com/uoul/go-common v0.0.18/go.mod h1:e21+uMW11SpmW6eXBSZifwZWfq9TQSvrFBVlbaXXFkk=
+github.com/uoul/escpos v0.2.0 h1:3XYxYHCYO2xf6Dn85Az829VwZItSGNbcWsoFVpBcBFM=
+github.com/uoul/escpos v0.2.0/go.mod h1:Bvw9GjaORsRLP+zzAy2/LuPxiAf9e5R/ovKsBky8lL4=
+github.com/uoul/go-common v0.0.19 h1:cAIES8E2VLxkWL3od+IKIcYpQBhC8Bqb0DKu+agCff8=
+github.com/uoul/go-common v0.0.19/go.mod h1:bgsx2Gy16dlcT70Ng12FJInQvtbUAR+353siwxycUMY=
 golang.org/x/sys v0.31.0 h1:ioabZlmFYtWhL+TRYpcnNlLwhyxaM9kWTDEmfnprqik=
 golang.org/x/sys v0.31.0/go.mod h1:BJP2sWEmIv4KK5OTEluFJCKSidICx8ciO85XgH3Ak8k=
