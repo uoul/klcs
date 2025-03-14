@@ -13,7 +13,7 @@ type AccountDao struct{}
 // GetAll implements IAccountDao.
 func (a *AccountDao) GetAll(tx *sql.Tx) chan async.ActionResult[[]domain.Account] {
 	sql := `
-		SELECT a.id, a.holder_name, a.locked
+		SELECT a.id, a.holder_name, a.locked, a.external_id
 		FROM klcs.account a
 	`
 	return db.QueryStatementTx(
@@ -25,18 +25,36 @@ func (a *AccountDao) GetAll(tx *sql.Tx) chan async.ActionResult[[]domain.Account
 
 // CreateAccount implements IAccountDao.
 func (a *AccountDao) CreateAccount(tx *sql.Tx, account *domain.Account) chan async.ActionResult[domain.Account] {
-	sql := `
-		INSERT INTO klcs.account (holder_name, locked) 
-		VALUES ($1,$2)
-		RETURNING id, holder_name, locked
-	`
-	return db.QuerySingleTx(
-		tx,
-		accountMapper,
-		sql,
-		account.HolderName,
-		account.Locked,
-	)
+	if len(account.Id) > 0 {
+		sql := `
+			INSERT INTO klcs.account (id, holder_name, locked, external_id) 
+			VALUES ($1,$2,$3,$4)
+			RETURNING id, holder_name, locked, external_id
+		`
+		return db.QuerySingleTx(
+			tx,
+			accountMapper,
+			sql,
+			account.Id,
+			account.HolderName,
+			account.Locked,
+			account.ExternalId,
+		)
+	} else {
+		sql := `
+			INSERT INTO klcs.account (holder_name, locked, external_id) 
+			VALUES ($1,$2,$3)
+			RETURNING id, holder_name, locked, external_id
+		`
+		return db.QuerySingleTx(
+			tx,
+			accountMapper,
+			sql,
+			account.HolderName,
+			account.Locked,
+			account.ExternalId,
+		)
+	}
 }
 
 // DeleteAccount implements IAccountDao.
@@ -54,7 +72,7 @@ func (a *AccountDao) DeleteAccount(tx *sql.Tx, accountId string) chan async.Acti
 // GetAccount implements IAccountDao.
 func (a *AccountDao) GetAccount(tx *sql.Tx, accountId string) chan async.ActionResult[domain.Account] {
 	sql := `
-		SELECT a.id, a.holder_name, a.locked
+		SELECT a.id, a.holder_name, a.locked, a.external_id
 		FROM klcs.account a
 		WHERE a.id = $1
 	`
@@ -70,7 +88,7 @@ func (a *AccountDao) GetAccount(tx *sql.Tx, accountId string) chan async.ActionR
 func (a *AccountDao) UpdateAccount(tx *sql.Tx, account *domain.Account) chan async.ActionResult[db.EffectedRows] {
 	sql := `
 		UPDATE klcs.account
-		SET holder_name=$2,locked=$3
+		SET holder_name=$2,locked=$3,external_id=$4
 		WHERE id = $1
 	`
 	return db.ExecStatementTx(
@@ -79,12 +97,13 @@ func (a *AccountDao) UpdateAccount(tx *sql.Tx, account *domain.Account) chan asy
 		account.Id,
 		account.HolderName,
 		account.Locked,
+		account.ExternalId,
 	)
 }
 
 func accountMapper() ([]any, *domain.Account) {
 	v := domain.Account{}
-	return []any{&v.Id, &v.HolderName, &v.Locked}, &v
+	return []any{&v.Id, &v.HolderName, &v.Locked, &v.ExternalId}, &v
 }
 
 func NewAccountDao() IAccountDao {

@@ -934,6 +934,7 @@ func (l *Logic) getAccountDetails(tx *sql.Tx, accountId string) (*domain.Account
 			Id:         account.Result.Id,
 			HolderName: account.Result.HolderName,
 			Locked:     account.Result.Locked,
+			ExternalId: account.Result.ExternalId,
 			Balance:    balance.Result,
 		}, nil
 	case sql.ErrNoRows:
