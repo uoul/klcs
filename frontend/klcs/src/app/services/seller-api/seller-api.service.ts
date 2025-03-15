@@ -8,6 +8,7 @@ import { Shop } from '../../domain/Shop';
 import { ShopDetails } from '../../domain/ShopDetails';
 import { NotificationService } from '../notification/notification.service';
 import { HistoryItem } from '../../domain/HistoryItem';
+import { Article } from '../../domain/Article';
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +40,12 @@ export class SellerApiService {
   public refreshShopDetails(): void {
     if(this._shopId().length > 0) {
       const sub = this.http.get<ShopDetails>(`${KlcsConfig.BackendRoot}/api/v1/shops/${this._shopId()}`).subscribe({
-        next: s => this._shopDetails.set(s),
+        next: s => {
+          for(let [name, articles] of Object.entries(s.Categories)){
+            articles.sort((a: Article, b: Article) => a.Name == b.Name  ? 0 : a.Name < b.Name ? -1 : 1 )
+          }
+          this._shopDetails.set(s)
+        },
         error: err => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })
