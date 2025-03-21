@@ -25,6 +25,7 @@ export class ChargeAccountDialogComponent {
   scannerActive: WritableSignal<boolean> = signal(false)
   accountId: WritableSignal<string> = signal("")
   amount: WritableSignal<number> = signal(0)
+  chargeActive: WritableSignal<boolean> = signal(false)
 
   newAccountDetails: WritableSignal<AccountDetails|null> = signal(null)
 
@@ -56,10 +57,18 @@ export class ChargeAccountDialogComponent {
   }
 
   chargeAccount(){
-    const sub = this.accountManagerApi.postToAccount(this.accountId(), this.amount() * 100).subscribe({
-      next: val => this.newAccountDetails.set(val),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
-      complete: () => sub.unsubscribe(),
-    })
+    if(!this.chargeActive()){
+      this.chargeActive.set(true)
+      const sub = this.accountManagerApi.postToAccount(this.accountId(), this.amount() * 100).subscribe({
+        next: val => this.newAccountDetails.set(val),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        complete: () => {
+          this.chargeActive.set(false)
+          sub.unsubscribe()
+        },
+      })
+    } else {
+      this.notify.show({type: "warning", duration: KlcsConfig.durationMedium, message: "Cannot charge twice"})
+    }
   }
 }

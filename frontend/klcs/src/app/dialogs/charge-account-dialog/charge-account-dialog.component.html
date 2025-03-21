@@ -39,7 +39,7 @@
         }
         <div class="modal-action">
           @if (newAccountDetails() === null) {
-            <button class="btn btn-secondary" [disabled]="f.invalid && !scannerActive()" (click)="chargeAccount()">Charge</button>
+            <button class="btn btn-secondary" [disabled]="(f.invalid && !scannerActive()) || chargeActive()" (click)="chargeAccount()">Charge</button>
           }
           <form method="dialog">
             <button class="btn btn-outline btn-neutral">Close</button>
