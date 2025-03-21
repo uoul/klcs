@@ -11,7 +11,15 @@ import (
 )
 
 func (e *Api) getAccounts(ctx *gin.Context) {
-	accounts, err := e.logic.GetAllAccounts(ctx)
+	externalId := ctx.DefaultQuery("externalId", "")
+
+	var err error = nil
+	var accounts []domain.Account = nil
+	if len(externalId) <= 0 {
+		accounts, err = e.logic.GetAllAccounts(ctx)
+	} else {
+		accounts, err = e.logic.GetAccountsByExternalId(ctx, externalId)
+	}
 	if err != nil {
 		ctx.Error(err)
 		return

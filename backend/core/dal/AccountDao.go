@@ -84,6 +84,21 @@ func (a *AccountDao) GetAccount(tx *sql.Tx, accountId string) chan async.ActionR
 	)
 }
 
+// GetAccountByExternalId implements IAccountDao.
+func (a *AccountDao) GetAccountsByExternalId(tx *sql.Tx, externalId string) chan async.ActionResult[[]domain.Account] {
+	sql := `
+		SELECT a.id, a.holder_name, a.locked, a.external_id
+		FROM klcs.account a
+		WHERE a.external_id = $1 
+	`
+	return db.QueryStatementTx(
+		tx,
+		accountMapper,
+		sql,
+		externalId,
+	)
+}
+
 // UpdateAccount implements IAccountDao.
 func (a *AccountDao) UpdateAccount(tx *sql.Tx, account *domain.Account) chan async.ActionResult[db.EffectedRows] {
 	sql := `

@@ -10,6 +10,7 @@ import (
 
 type IAccountDao interface {
 	GetAccount(tx *sql.Tx, accountId string) chan async.ActionResult[domain.Account]
+	GetAccountsByExternalId(tx *sql.Tx, externalId string) chan async.ActionResult[[]domain.Account]
 	CreateAccount(tx *sql.Tx, account *domain.Account) chan async.ActionResult[domain.Account]
 	DeleteAccount(tx *sql.Tx, accountId string) chan async.ActionResult[db.EffectedRows]
 	UpdateAccount(tx *sql.Tx, account *domain.Account) chan async.ActionResult[db.EffectedRows]

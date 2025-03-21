@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS klcs."shop" (
 CREATE TABLE IF NOT EXISTS klcs.account (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     locked BOOLEAN DEFAULT false,
-    holder_name VARCHAR(30) DEFAULT '',
+    holder_name VARCHAR(100) DEFAULT '',
     external_id UUID
 );
 

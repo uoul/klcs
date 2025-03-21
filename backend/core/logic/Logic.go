@@ -32,6 +32,21 @@ type Logic struct {
 	historyDao     dal.IHistoryDao
 }
 
+// GetAccountsByExternalId implements ILogic.
+func (l *Logic) GetAccountsByExternalId(ctx context.Context, externalId string) ([]domain.Account, error) {
+	return db.ExecInTransactionContext(
+		ctx,
+		l.cf,
+		func(ctx context.Context, tx *sql.Tx) ([]domain.Account, error) {
+			accounts := <-l.accountDao.GetAccountsByExternalId(tx, externalId)
+			if accounts.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to obtain accounts for given externalId(%s) - %v", externalId, accounts.Error)
+			}
+			return accounts.Result, nil
+		},
+	)
+}
+
 // GetHistory implements ILogic.
 func (l *Logic) GetHistory(ctx context.Context, username string, length int) ([]domain.HistoryItem, error) {
 	return db.ExecInTransactionContext(
@@ -144,7 +159,7 @@ func (l *Logic) CreateAccount(ctx context.Context, account *domain.Account) (*do
 		func(ctx context.Context, tx *sql.Tx) (*domain.Account, error) {
 			a := <-l.accountDao.CreateAccount(tx, account)
 			if a.Error != nil {
-				return nil, appError.NewErrDataAccess("failed to create account(%s)", account.HolderName)
+				return nil, appError.NewErrDataAccess("failed to create account(%s) - %v", account.HolderName, a.Error)
 			}
 			return &a.Result, nil
 		},

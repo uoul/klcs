@@ -42,6 +42,7 @@ type ILogic interface {
 
 	// Account-Manager
 	GetAllAccounts(ctx context.Context) ([]domain.Account, error)
+	GetAccountsByExternalId(ctx context.Context, externalId string) ([]domain.Account, error)
 	CreateAccount(ctx context.Context, account *domain.Account) (*domain.Account, error)
 	UpdateAccount(ctx context.Context, account *domain.Account) (*domain.Account, error)
 	CloseAccount(ctx context.Context, username, accountId string) (*domain.AccountDetails, error)
