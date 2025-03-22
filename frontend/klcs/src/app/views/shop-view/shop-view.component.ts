@@ -37,7 +37,7 @@ export class ShopViewComponent implements OnInit {
   ngOnInit(): void {
     const sub = this.route.paramMap.subscribe({
       next: params => this.sellerApi.updateShopId(params.get("shopId") ?? ""),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe()
     })
   }

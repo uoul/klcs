@@ -58,7 +58,7 @@ export class AccountViewComponent implements OnInit {
   refresh() {
     const sub = this.accountManagerApi.getAccounts().subscribe({
       next: a => this.accounts.set(a),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }
@@ -68,7 +68,7 @@ export class AccountViewComponent implements OnInit {
       account.Locked = state
       const sub = this.accountManagerApi.updateAccount(account).subscribe({
         next: _ => this.refresh(),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
         complete: () => sub.unsubscribe(),
       })
     }

@@ -32,7 +32,7 @@ export class HistoryViewComponent implements OnInit {
   refresh(): void {
     const sub = this.sellerApi.getHistory(this.historyLength()).subscribe({
       next: history => this.history.set(history),
-      error: err => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err}),
+      error: err => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err}),
       complete: () => sub.unsubscribe(),
     })
   }

@@ -30,7 +30,7 @@ export class CreateShopDialogComponent {
     if(this._shop().Name.length > 0) {
       const sub = this.klcsAdminApi.createShop(this._shop()).subscribe({
         next: val => this.shopCreated.emit(val),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
         complete: () => sub.unsubscribe()
       });
     }

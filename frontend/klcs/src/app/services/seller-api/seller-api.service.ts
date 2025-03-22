@@ -46,7 +46,7 @@ export class SellerApiService {
           }
           this._shopDetails.set(s)
         },
-        error: err => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        error: err => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })
     }

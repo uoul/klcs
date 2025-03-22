@@ -28,7 +28,7 @@ export class UpdateShopDialogComponent {
   updateShop() {
     const sub = this.klcsAdminApi.updateShop(this.shop()).subscribe({
       next: val => this.shop.set(val),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

@@ -55,7 +55,7 @@ export class CloseAccountDialogComponent {
   closeAccount(){
     const sub = this.accountManagerApi.closeAccount(this.accountId()).subscribe({
       next: val => this.accountDetails.set(val),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

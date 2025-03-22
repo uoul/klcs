@@ -44,7 +44,7 @@ export class EditCartDialogComponent {
           this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: "Successfully placed order"})
           this.sellerApi.refreshShopDetails()
         },
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })
     }
@@ -54,7 +54,7 @@ export class EditCartDialogComponent {
           this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: "Successfully placed order"})
           this.sellerApi.refreshShopDetails()
         },
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
         complete: () => sub.unsubscribe()
       })
     }

@@ -39,7 +39,7 @@ export class CreateAccountDialogComponent {
   createAccount(){
     const sub = this.accountManagerApi.createAccount(this._account()).subscribe({
       next: val => this.accountCreated.emit(val),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

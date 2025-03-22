@@ -35,7 +35,7 @@ export class CreatePrinterDialogComponent {
         mergeMap(params => this.shopAdminApi.createPrinterForShop(params.get("shopId") ?? "", this._printer()))
       ).subscribe({
         next: p => this.printerCreated.emit(p),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
         complete: () => sub.unsubscribe(),
       })
     }

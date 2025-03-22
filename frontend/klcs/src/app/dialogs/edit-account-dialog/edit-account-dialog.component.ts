@@ -35,7 +35,7 @@ export class EditAccountDialogComponent {
   updateAccount(){
     const sub = this.accountManagerApi.updateAccount(this.account()).subscribe({
       next: _ => this.accountUpdated.emit(this.account()),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

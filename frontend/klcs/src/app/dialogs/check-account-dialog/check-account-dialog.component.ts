@@ -54,7 +54,7 @@ export class CheckAccountDialogComponent {
   checkAccount() {
     const sub = this.accountManagerApi.getAccountDetails(this.accountId).subscribe({
       next: details => this.accountData.set(details),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

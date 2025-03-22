@@ -73,7 +73,7 @@ export class ShopUsersComponent {
   refreshRoles() {
     const sub = this.shopAdminApi.getRoles().subscribe({
       next: r => this.roles.set(r),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }
@@ -81,7 +81,7 @@ export class ShopUsersComponent {
   refreshUsers(shopId: string) {
     const sub = this.shopAdminApi.getUsersForShop(shopId).subscribe({
       next: u => this.klcsUsers.set(u),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }
@@ -100,13 +100,13 @@ export class ShopUsersComponent {
     if (event.target.checked) {
       const sub = this.shopAdminApi.addUserRoleForShop(shopId, userId, role).subscribe({
         next: _ => this.refreshUsers(shopId),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
         complete: () => sub.unsubscribe(),
       })
     } else {
       const sub = this.shopAdminApi.deleteUserRoleForShop(shopId, userId, role.Id).subscribe({
         next: _ => this.refreshUsers(shopId),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
         complete: () => sub.unsubscribe(),
       })
     }

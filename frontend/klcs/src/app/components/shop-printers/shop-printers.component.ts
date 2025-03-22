@@ -32,7 +32,7 @@ export class ShopPrintersComponent {
   refreshPrinters() {
     const sub = this.shopAdminApi.getPrinters(this.sellerApi.getShopDetails().Id).subscribe({
       next: p =>  this._printers.set(p),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }
@@ -41,7 +41,7 @@ export class ShopPrintersComponent {
     if(confirm(`Do you realy want to delete ${printer.Name}?`)){
       const sub = this.shopAdminApi.deletePrinter(printer.Id).subscribe({
         next: _ => this.refreshPrinters(),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
         complete: () => sub.unsubscribe(),
       })
     }

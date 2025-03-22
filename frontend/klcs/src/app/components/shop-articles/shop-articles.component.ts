@@ -42,7 +42,7 @@ export class ShopArticlesComponent {
     if(confirm(`Do you realy want to delete Article?`)){
       const sub = this.shopAdminApi.deleteArticle(articleId).subscribe({
         next: _ => this.sellerApi.refreshShopDetails(),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
         complete: () => sub.unsubscribe(),
       });
     }
@@ -51,7 +51,7 @@ export class ShopArticlesComponent {
   refreshPrinters(shopId: string) {
     const sub = this.shopAdminApi.getPrinters(shopId).subscribe({
       next: p =>  this._printers.set(p),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }
@@ -70,7 +70,7 @@ export class ShopArticlesComponent {
         const dialog = document.getElementById(this.EDIT_DIALOG_ID) as HTMLDialogElement
         dialog.showModal();
       },
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

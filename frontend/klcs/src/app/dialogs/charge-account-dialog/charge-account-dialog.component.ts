@@ -61,14 +61,14 @@ export class ChargeAccountDialogComponent {
       this.chargeActive.set(true)
       const sub = this.accountManagerApi.postToAccount(this.accountId(), this.amount() * 100).subscribe({
         next: val => this.newAccountDetails.set(val),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
         complete: () => {
           this.chargeActive.set(false)
           sub.unsubscribe()
         },
       })
     } else {
-      this.notify.show({type: "warning", duration: KlcsConfig.durationMedium, message: "Cannot charge twice"})
+      this.notify.show({type: "warning", duration: KlcsConfig.durationError, message: "Cannot charge twice"})
     }
   }
 }

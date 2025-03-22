@@ -42,7 +42,7 @@ export class UpdateArticleDialogComponent {
     this.article().Printer = (!this._uiArticle().Printer || this._uiArticle().Printer!.Id.length <= 0) ? null : this._uiArticle().Printer;
     const sub = this.shopAdminApi.updateArticle(this.article()).subscribe({
       next: a => this.articleUpdated.emit(a),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

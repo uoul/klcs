@@ -48,7 +48,7 @@ export class SideNavComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     const sub = this.sellerApi.getShops().subscribe({
       next: val => this.shops = val,
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }

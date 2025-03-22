@@ -47,8 +47,8 @@ export class AdminViewComponent implements OnInit {
   deleteShop(shop: Shop) {
     if(confirm(`Do you realy want to delete shop ${shop.Name}?`)){
       const sub = this.klcsAdminApi.deleteShop(shop.Id).subscribe({
-        next: _ => this.notify.show({type: "success", duration: KlcsConfig.durationMedium, message: "Shop deleted successfully"}),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+        next: _ => this.notify.show({type: "success", duration: KlcsConfig.durationError, message: "Shop deleted successfully"}),
+        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
         complete: () => {
           this.refresh();
           sub.unsubscribe();
@@ -60,7 +60,7 @@ export class AdminViewComponent implements OnInit {
   refresh(){
     const sub = this.klcsAdminApi.getShops().subscribe({
       next: s => this.shops.set(s),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationMedium, message: err.error.message}),
+      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
       complete: () => sub.unsubscribe(),
     })
   }
