@@ -35,7 +35,7 @@ func setupDbConnection(cp config.IConfigProvider) db.IConnectionFactory {
 			cp.StringOrDefault("KLCS_DB_USER", ""),
 			cp.StringOrDefault("KLCS_DB_PW", ""),
 			cp.StringOrDefault("KLCS_DB_NAME", "postgres"),
-			cp.StringOrDefault("KLCS_DB_SSL", "enabled"),
+			cp.StringOrDefault("KLCS_DB_SSL", "verify-full"),
 		),
 		"postgres",
 	)
