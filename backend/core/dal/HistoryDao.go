@@ -49,9 +49,9 @@ func (h *HistoryDao) GetHistoryForUser(tx *sql.Tx, username string, length int) 
 func (h *HistoryDao) getHistoryItems(tx *sql.Tx, length int, username string) chan async.ActionResult[[]domain.HistoryItem] {
 	sql := `
 		SELECT t.id, t.timestamp, t.description, ac.holder_name
-		FROM klcs.user_article_transaction uat
-			JOIN klcs.transaction t ON (uat.transaction_id = t.id)
-			JOIN klcs.user u ON (uat.user_id = u.id)
+		FROM klcs.article_transaction at
+			JOIN klcs.transaction t ON (at.transaction_id = t.id)
+			JOIN klcs.user u ON (t.user_id = u.id)
 			LEFT JOIN klcs.account ac ON (t.account_id = ac.id)
 		WHERE u.username ILIKE $1
 		GROUP BY t.id, t.timestamp, ac.holder_name, t.description
@@ -72,10 +72,10 @@ func (h *HistoryDao) getHistoryItems(tx *sql.Tx, length int, username string) ch
 
 func (h *HistoryDao) getHistoryArticlesForTransaction(tx *sql.Tx, transactionId string) chan async.ActionResult[[]domain.HistoryArtilce] {
 	sql := `
-		SELECT a.id, a.name, a.description, uat.pieces
-		FROM klcs.user_article_transaction uat
-			JOIN klcs.article a ON (uat.article_id = a.id)
-		WHERE uat.transaction_id = $1
+		SELECT a.id, a.name, a.description, at.pieces
+		FROM klcs.article_transaction at
+			JOIN klcs.article a ON (at.article_id = a.id)
+		WHERE at.transaction_id = $1
 	`
 	return db.QueryStatementTx(
 		tx,

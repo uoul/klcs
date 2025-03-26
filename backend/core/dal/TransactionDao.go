@@ -14,14 +14,14 @@ type TransactionDao struct{}
 func (d *TransactionDao) CreateTransaction(tx *sql.Tx, userId string, accountId *string, articles map[string]int, transaction *domain.Transaction) chan async.ActionResult[domain.Transaction] {
 	retVal := make(chan async.ActionResult[domain.Transaction])
 	go func() {
-		t := <-createTransaction(tx, accountId, transaction)
+		t := <-createTransaction(tx, userId, accountId, transaction)
 		if t.Error != nil {
 			retVal <- async.ActionResult[domain.Transaction]{
 				Result: *new(domain.Transaction),
 				Error:  t.Error,
 			}
 		}
-		err := createUserArticleReferenceForTransaction(tx, userId, t.Result.Id, articles)
+		err := createUserArticleReferenceForTransaction(tx, t.Result.Id, articles)
 		retVal <- async.ActionResult[domain.Transaction]{
 			Result: t.Result,
 			Error:  err,
@@ -63,10 +63,10 @@ func (d *TransactionDao) GetTranscation(tx *sql.Tx, transactionId string) chan a
 	)
 }
 
-func createTransaction(tx *sql.Tx, accountId *string, transaction *domain.Transaction) chan async.ActionResult[domain.Transaction] {
+func createTransaction(tx *sql.Tx, userId string, accountId *string, transaction *domain.Transaction) chan async.ActionResult[domain.Transaction] {
 	sql := `
-		INSERT INTO klcs.transaction (type,amount,description,account_id)
-		VALUES ($1,$2,$3,$4)
+		INSERT INTO klcs.transaction (type,amount,description,account_id,user_id)
+		VALUES ($1,$2,$3,$4,$5)
 		RETURNING id,timestamp,type,amount,description
 	`
 	return db.QuerySingleTx(
@@ -77,13 +77,14 @@ func createTransaction(tx *sql.Tx, accountId *string, transaction *domain.Transa
 		transaction.Amount,
 		transaction.Description,
 		accountId,
+		userId,
 	)
 }
 
-func createUserArticleReferenceForTransaction(tx *sql.Tx, userId, transactionId string, articles map[string]int) error {
+func createUserArticleReferenceForTransaction(tx *sql.Tx, transactionId string, articles map[string]int) error {
 	sql := `
-		INSERT INTO klcs.user_article_transaction (article_id, transaction_id, user_id, pieces)
-		VALUES ($1,$2,$3,$4)
+		INSERT INTO klcs.article_transaction (article_id, transaction_id, pieces)
+		VALUES ($1,$2,$3)
 	`
 	for articleId, amount := range articles {
 		r := <-db.ExecStatementTx(
@@ -91,7 +92,6 @@ func createUserArticleReferenceForTransaction(tx *sql.Tx, userId, transactionId 
 			sql,
 			articleId,
 			transactionId,
-			userId,
 			amount,
 		)
 		if r.Error != nil {
