@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS klcs.transaction (
     amount INTEGER NOT NULL,
     description VARCHAR(100),
     account_id UUID,
+    user_id UUID NOT NULL,
     CHECK (type = 'CASH' OR type = 'CARD'),
     CHECK (type = 'CASH' AND account_id IS NULL OR type = 'CARD' AND account_id IS NOT NULL)
 );
@@ -72,10 +73,9 @@ CREATE TABLE IF NOT EXISTS klcs.user_shop_role (
     PRIMARY KEY (user_id, shop_id, role_id)
 );
 
-CREATE TABLE IF NOT EXISTS klcs.user_article_transaction (
-    user_id UUID NOT NULL,
-    article_id UUID,
-    transaction_id UUID,
+CREATE TABLE IF NOT EXISTS klcs.article_transaction (
+    article_id UUID NOT NULL,
+    transaction_id UUID NOT NULL,
     pieces INTEGER DEFAULT 1,
     PRIMARY KEY (article_id, transaction_id)
 );
@@ -89,9 +89,9 @@ ALTER TABLE klcs.user_shop_role ADD CONSTRAINT fk_user_shop_role_role FOREIGN KE
 ALTER TABLE klcs.article ADD CONSTRAINT fk_article_shop FOREIGN KEY (shop_id) REFERENCES klcs."shop" (id) ON DELETE CASCADE;
 ALTER TABLE klcs.article ADD CONSTRAINT fk_article_printer FOREIGN KEY (printer_id) REFERENCES klcs.printer (id) ON DELETE SET NULL;
 ALTER TABLE klcs.transaction ADD CONSTRAINT fk_transaction_account FOREIGN KEY (account_id) REFERENCES klcs.account (id) ON DELETE RESTRICT;
-ALTER TABLE klcs.user_article_transaction ADD CONSTRAINT fk_user_article_transaction_user FOREIGN KEY (user_id) REFERENCES klcs."user" (id) ON DELETE RESTRICT;
-ALTER TABLE klcs.user_article_transaction ADD CONSTRAINT fk_user_article_transaction_article FOREIGN KEY (article_id) REFERENCES klcs.article (id) ON DELETE RESTRICT;
-ALTER TABLE klcs.user_article_transaction ADD CONSTRAINT fk_user_article_transaction_transaction FOREIGN KEY (transaction_id) REFERENCES klcs.transaction (id) ON DELETE CASCADE;
+ALTER TABLE klcs.transaction ADD CONSTRAINT fk_transaction_user FOREIGN KEY (user_id) REFERENCES klcs."user" (id) ON DELETE RESTRICT;
+ALTER TABLE klcs.article_transaction ADD CONSTRAINT fk_article_transaction_article FOREIGN KEY (article_id) REFERENCES klcs.article (id) ON DELETE RESTRICT;
+ALTER TABLE klcs.article_transaction ADD CONSTRAINT fk_article_transaction_transaction FOREIGN KEY (transaction_id) REFERENCES klcs.transaction (id) ON DELETE CASCADE;
 ALTER TABLE klcs.printer ADD CONSTRAINT fk_printer_shop FOREIGN KEY (shop_id) REFERENCES klcs.shop (id) ON DELETE CASCADE;
 
 --------------------------------------------------------------------------
