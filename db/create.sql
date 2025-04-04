@@ -17,7 +17,6 @@ CREATE TABLE IF NOT EXISTS klcs.role (
     name VARCHAR(30) NOT NULL UNIQUE,
     CHECK (
         name = 'ADMIN'
-        OR name = 'UHD'
         OR name = 'SELLER'
     )
 );
@@ -77,6 +76,7 @@ CREATE TABLE IF NOT EXISTS klcs.article_transaction (
     article_id UUID NOT NULL,
     transaction_id UUID NOT NULL,
     pieces INTEGER DEFAULT 1,
+    printer_ack BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (article_id, transaction_id)
 );
 

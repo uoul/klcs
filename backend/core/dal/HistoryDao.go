@@ -72,7 +72,7 @@ func (h *HistoryDao) getHistoryItems(tx *sql.Tx, length int, username string) ch
 
 func (h *HistoryDao) getHistoryArticlesForTransaction(tx *sql.Tx, transactionId string) chan async.ActionResult[[]domain.HistoryArtilce] {
 	sql := `
-		SELECT a.id, a.name, a.description, at.pieces
+		SELECT a.id, a.name, a.description, at.pieces, at.printer_ack
 		FROM klcs.article_transaction at
 			JOIN klcs.article a ON (at.article_id = a.id)
 		WHERE at.transaction_id = $1
@@ -81,7 +81,7 @@ func (h *HistoryDao) getHistoryArticlesForTransaction(tx *sql.Tx, transactionId 
 		tx,
 		func() ([]any, *domain.HistoryArtilce) {
 			v := domain.HistoryArtilce{}
-			return []any{&v.Id, &v.Name, &v.Description, &v.Pieces}, &v
+			return []any{&v.Id, &v.Name, &v.Description, &v.Pieces, &v.PrinterAck}, &v
 		},
 		sql,
 		transactionId,

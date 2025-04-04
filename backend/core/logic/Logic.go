@@ -30,6 +30,7 @@ type Logic struct {
 	accountDao     dal.IAccountDao
 	transactionDao dal.ITransactionDao
 	historyDao     dal.IHistoryDao
+	printJobDao    dal.IPrintJobDao
 }
 
 // GetAccountsByExternalId implements ILogic.
@@ -314,17 +315,17 @@ func (l *Logic) Checkout(ctx context.Context, username string, order *domain.Ord
 				return nil, err
 			}
 			// Create transaction in database
-			err = l.createTransactionForCheckout(tx, username, order, orderSum)
+			transaction, err := l.createTransactionForCheckout(tx, username, order, orderSum)
 			if err != nil {
 				return nil, err
 			}
 			// Generate PrintJobs for order
-			printJobs, err := l.createPrintJobsForOrder(tx, order)
-			if err != nil {
-				return nil, err
+			printJobs := <-l.printJobDao.GetPrintOpenJobsForTransaction(tx, transaction.Id)
+			if printJobs.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to get printjobs or transaction - %v", printJobs.Error)
 			}
 			// Print
-			for printerId, job := range printJobs {
+			for printerId, job := range printJobs.Result {
 				err := l.printService.PrintJob(printerId, job)
 				if err != nil {
 					l.logger.Warningf("failed to send printjob to printer(%s) - %v", printerId, err)
@@ -898,13 +899,13 @@ func (l *Logic) checkAccountConditionsForCheckOutWithCard(tx *sql.Tx, order *dom
 	return nil
 }
 
-func (l *Logic) createTransactionForCheckout(tx *sql.Tx, username string, order *domain.Order, sumOfOrder int) error {
+func (l *Logic) createTransactionForCheckout(tx *sql.Tx, username string, order *domain.Order, sumOfOrder int) (*domain.Transaction, error) {
 	user := <-l.userDao.GetUserByUsername(tx, username)
 	if user.Error != nil {
 		if user.Error == sql.ErrNoRows {
-			return appError.NewErrNotFound("user(%s) not found - %v", username, user.Error)
+			return nil, appError.NewErrNotFound("user(%s) not found - %v", username, user.Error)
 		}
-		return appError.NewErrDataAccess("failed to get user(%s) - %v", username, user.Error)
+		return nil, appError.NewErrDataAccess("failed to get user(%s) - %v", username, user.Error)
 	}
 	transaction := <-l.transactionDao.CreateTransaction(
 		tx,
@@ -918,9 +919,9 @@ func (l *Logic) createTransactionForCheckout(tx *sql.Tx, username string, order 
 		},
 	)
 	if transaction.Error != nil {
-		return appError.NewErrDataAccess("failed to create transaction - %v", transaction.Error)
+		return nil, appError.NewErrDataAccess("failed to create transaction - %v", transaction.Error)
 	}
-	return nil
+	return &transaction.Result, nil
 }
 
 func (l *Logic) checkUserPermissionsForArticles(tx *sql.Tx, username string, articleIds []string) error {
@@ -959,51 +960,6 @@ func (l *Logic) getAccountDetails(tx *sql.Tx, accountId string) (*domain.Account
 	}
 }
 
-func (l *Logic) createPrintJobsForOrder(tx *sql.Tx, order *domain.Order) (map[string]domain.PrintJob, error) {
-	jobs := map[string]domain.PrintJob{}
-	for articleId, amount := range order.Articles {
-		// Get Printer for article
-		p := <-l.printerDao.GetPrinterForArticle(tx, articleId)
-		if p.Error != nil {
-			if p.Error == sql.ErrNoRows {
-				continue
-			}
-			return nil, appError.NewErrDataAccess("failed to get printer for article(%s) - %v", articleId, p.Error)
-		}
-		// Check if printer already exists --> if not add new map entry
-		_, exists := jobs[p.Result.Id]
-		if !exists {
-			// Get shop for article
-			shop := <-l.shopDao.GetShopForArticle(tx, articleId)
-			if shop.Error != nil {
-				return nil, appError.NewErrDataAccess("failed to get shop for article(%s) - %v", articleId, shop.Error)
-			}
-			// Get Account
-			holderName := ""
-			if order.AccountId != nil {
-				account := <-l.accountDao.GetAccount(tx, *order.AccountId)
-				if account.Error != nil {
-					return nil, appError.NewErrDataAccess("failed to get account(%s) - %v", *order.AccountId, account.Error)
-				}
-				holderName = account.Result.HolderName
-			}
-			jobs[p.Result.Id] = domain.PrintJob{
-				ShopName:          shop.Result.Name,
-				Description:       order.Description,
-				AccountHolderName: holderName,
-				OrderPositions:    map[string]int{},
-			}
-		}
-		// Add article amount to mapentry
-		article := <-l.articleDao.GetArticle(tx, articleId)
-		if article.Error != nil {
-			return nil, appError.NewErrDataAccess("failed to get article(%s) - %v", articleId, article.Error)
-		}
-		jobs[p.Result.Id].OrderPositions[article.Result.Name] = amount
-	}
-	return jobs, nil
-}
-
 func NewLogic(cf db.IConnectionFactory, logger log.ILogger, printService *services.PrintService) ILogic {
 	return &Logic{
 		cf: cf,
@@ -1019,5 +975,6 @@ func NewLogic(cf db.IConnectionFactory, logger log.ILogger, printService *servic
 		accountDao:     dal.NewAccountDao(),
 		transactionDao: dal.NewTransactionDao(),
 		historyDao:     dal.NewHistoryDao(),
+		printJobDao:    dal.NewPrintJobDao(),
 	}
 }

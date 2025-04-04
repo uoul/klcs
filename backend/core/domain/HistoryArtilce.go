@@ -5,4 +5,5 @@ type HistoryArtilce struct {
 	Name        string
 	Description string
 	Pieces      int
+	PrinterAck  bool
 }
