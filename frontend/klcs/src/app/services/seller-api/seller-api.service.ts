@@ -85,6 +85,10 @@ export class SellerApiService {
     )
   }
 
+  public reprintOrder(transactionId: string): Observable<void> {
+    return this.http.post<void>(`${KlcsConfig.BackendRoot}/api/v1/orders/${transactionId}/printjob`, null)
+  }
+
   private placeOrder(order: Order): Observable<Order> {
     this.cartService.lock();
     return this.http.post<Order>(`${KlcsConfig.BackendRoot}/api/v1/orders`, order).pipe(

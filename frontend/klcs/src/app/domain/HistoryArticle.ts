@@ -4,5 +4,6 @@ export class HistoryArticle {
     public Name: string = "",
     public Description: string = "",
     public Pieces: number = 0,
+    public PrinterAck: boolean = false,
   ){}
 }

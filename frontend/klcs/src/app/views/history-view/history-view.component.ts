@@ -19,6 +19,8 @@ export class HistoryViewComponent implements OnInit {
   
   historyLength: WritableSignal<number> = signal(10)
   history: WritableSignal<HistoryItem[]> = signal([])
+
+  reprintRequestRunning: WritableSignal<boolean> = signal(false)
   
   constructor(
     private sellerApi: SellerApiService,
@@ -35,5 +37,22 @@ export class HistoryViewComponent implements OnInit {
       error: err => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err}),
       complete: () => sub.unsubscribe(),
     })
+  }
+
+  checkAnyNotPrinted(entry: HistoryItem): boolean {
+    return entry.Articles.find(a => !!!a.PrinterAck) ? true : false
+  }
+
+  sendPrintJob(transactionId: string) {
+    if(!this.reprintRequestRunning()){
+      this.reprintRequestRunning.set(true)
+      const sub = this.sellerApi.reprintOrder(transactionId).subscribe({
+        error: err => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err}),
+        complete: () => {
+          sub.unsubscribe()
+          this.reprintRequestRunning.set(false)
+        },
+      })
+    }
   }
 }
