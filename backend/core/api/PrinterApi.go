@@ -2,6 +2,7 @@ package api
 
 import (
 	"io"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -30,4 +31,14 @@ func (a *Api) getPrintJobs(ctx *gin.Context) {
 			return true
 		}
 	})
+}
+
+func (a *Api) acknowledgePrintJob(ctx *gin.Context) {
+	printerId := ctx.Param("printerId")
+	transactionId := ctx.Param("transactionId")
+	if err := a.logic.AcknowledgePrintJob(ctx, printerId, transactionId); err != nil {
+		ctx.Error(err)
+		return
+	}
+	ctx.Status(http.StatusNoContent)
 }

@@ -22,6 +22,7 @@ type ILogic interface {
 	Checkout(ctx context.Context, username string, order *domain.Order) (*domain.Order, error)
 	GetAccountDetails(ctx context.Context, accountId string) (*domain.AccountDetails, error)
 	GetHistory(ctx context.Context, username string, length int) ([]domain.HistoryItem, error)
+	Reprint(ctx context.Context, transactionId string) error
 
 	// Shop-Admin
 	GetArticlesForShop(ctx context.Context, username string, shopId string) ([]domain.Article, error)
@@ -47,4 +48,7 @@ type ILogic interface {
 	UpdateAccount(ctx context.Context, account *domain.Account) (*domain.Account, error)
 	CloseAccount(ctx context.Context, username, accountId string) (*domain.AccountDetails, error)
 	PostToAccount(ctx context.Context, username, accountId string, amount int) (*domain.AccountDetails, error)
+
+	// PrinterApi
+	AcknowledgePrintJob(ctx context.Context, printerId string, transactionId string) error
 }

@@ -33,6 +33,44 @@ type Logic struct {
 	printJobDao    dal.IPrintJobDao
 }
 
+// ReprintOpenTransaction implements ILogic.
+func (l *Logic) Reprint(ctx context.Context, transactionId string) error {
+	_, err := db.ExecInTransactionContext(
+		ctx,
+		l.cf,
+		func(ctx context.Context, tx *sql.Tx) (any, error) {
+			jobs := <-l.printJobDao.GetPrintOpenJobsForTransaction(tx, transactionId)
+			if jobs.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to get open printjobs for transaction(%s) - %v", transactionId, jobs.Error)
+			}
+			for printerId, job := range jobs.Result {
+				err := l.printService.PrintJob(printerId, job)
+				if err != nil {
+					l.logger.Warningf("failed to send printjob to printer(%s) - %v", printerId, err)
+				}
+			}
+			return nil, nil
+		},
+	)
+	return err
+}
+
+// AcknowledgePrintJob implements ILogic.
+func (l *Logic) AcknowledgePrintJob(ctx context.Context, printerId string, transactionId string) error {
+	_, err := db.ExecInTransactionContext(
+		ctx,
+		l.cf,
+		func(ctx context.Context, tx *sql.Tx) (any, error) {
+			a := <-l.printJobDao.AcknowledgeByTransactionId(tx, printerId, transactionId)
+			if a.Error != nil {
+				return nil, appError.NewErrDataAccess("failed to store acknowledgement - %v", a.Error)
+			}
+			return nil, nil
+		},
+	)
+	return err
+}
+
 // GetAccountsByExternalId implements ILogic.
 func (l *Logic) GetAccountsByExternalId(ctx context.Context, externalId string) ([]domain.Account, error) {
 	return db.ExecInTransactionContext(

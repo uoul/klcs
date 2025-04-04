@@ -40,7 +40,6 @@ func (e *Api) Run(port uint16) {
 
 		static.Serve("/", static.LocalFile(e.wwwRootDir, true)),
 	)
-	router.GET("/api/v1/printers/:printerId/jobs", e.getPrintJobs)
 	apiV1 := router.Group("/api/v1")
 	// Setup global middleware
 	apiV1.Use(
@@ -52,6 +51,7 @@ func (e *Api) Run(port uint16) {
 	e.setupSysAdminRg(apiV1, "/admin")
 	e.setupUserRg(apiV1, "")
 	e.setupAccountManagerRg(apiV1, "/accounts")
+	e.setupPrinterApi(&router.RouterGroup, "/api/v1/printers")
 	// Run api
 	router.Run(fmt.Sprintf(":%v", port))
 }
@@ -81,6 +81,12 @@ func (e *Api) setupAccountManagerRg(router *gin.RouterGroup, prefix string) {
 	rg.POST("/:accountId/balance", e.postToAccount)
 }
 
+func (a *Api) setupPrinterApi(router *gin.RouterGroup, prefix string) {
+	rg := router.Group(prefix)
+	rg.GET("/:printerId/jobs", a.getPrintJobs)
+	rg.POST("/:printerId/jobs/acknowledgement/:transactionId", a.acknowledgePrintJob)
+}
+
 func (e *Api) setupUserRg(router *gin.RouterGroup, prefix string) *gin.RouterGroup {
 	rg := router.Group(prefix)
 	// seller api
@@ -89,6 +95,7 @@ func (e *Api) setupUserRg(router *gin.RouterGroup, prefix string) *gin.RouterGro
 	rg.POST("/orders", e.checkout)
 	rg.GET("/accounts/:accountId", e.getAccountDetails)
 	rg.GET("/history", e.getHistoryForUser)
+	rg.POST("/orders/:transactionId/printjob", e.reprint)
 	// shopadmin api
 	rg.GET("/shops/:shopId/articles", e.getArticlesForShop)
 	rg.POST("/shops/:shopId/articles", e.createArticle)

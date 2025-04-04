@@ -52,6 +52,22 @@ func (p *PrintJobDao) GetPrintOpenJobsForTransaction(tx *sql.Tx, transactionId s
 	return r
 }
 
+// AcknowledgeByTransactionId implements IPrintJobDao.
+func (p *PrintJobDao) AcknowledgeByTransactionId(tx *sql.Tx, printerId string, transactionId string) chan async.ActionResult[db.EffectedRows] {
+	sql := `
+		UPDATE klcs.article_transaction
+		SET printer_ack=true 
+		from klcs.article a
+		where a.printer_id = $1 and transaction_id = $2 and article_id = a.id 
+	`
+	return db.ExecStatementTx(
+		tx,
+		sql,
+		printerId,
+		transactionId,
+	)
+}
+
 func (p *PrintJobDao) getJobRows(tx *sql.Tx, transactionId string) chan async.ActionResult[[]printJobRow] {
 	sql := `
 		select a.printer_id, coalesce(t.description, ''), s.name, a.name, coalesce(ac.holder_name, ''), at.pieces

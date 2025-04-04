@@ -9,6 +9,15 @@ import (
 	appError "github.com/uoul/klcs/backend/core/error"
 )
 
+func (e *Api) reprint(ctx *gin.Context) {
+	transactionId := ctx.Param("transactionId")
+	if err := e.logic.Reprint(ctx, transactionId); err != nil {
+		ctx.Error(err)
+		return
+	}
+	ctx.Status(http.StatusNoContent)
+}
+
 func (e *Api) getHistoryForUser(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentity(ctx.Request.Header)
 	if err != nil {
