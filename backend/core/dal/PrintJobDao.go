@@ -12,6 +12,7 @@ type PrintJobDao struct{}
 
 type printJobRow struct {
 	PrinterId     string
+	Timestamp     string
 	Description   string
 	ShopName      string
 	ArticleName   string
@@ -35,6 +36,7 @@ func (p *PrintJobDao) GetPrintOpenJobsForTransaction(tx *sql.Tx, transactionId s
 			if _, exists := printers[r.PrinterId]; !exists {
 				printers[r.PrinterId] = domain.PrintJob{
 					TransactionId:     transactionId,
+					Timestamp:         r.Timestamp,
 					ShopName:          r.ShopName,
 					Description:       r.Description,
 					AccountHolderName: r.AccountHolder,
@@ -70,7 +72,7 @@ func (p *PrintJobDao) AcknowledgeByTransactionId(tx *sql.Tx, printerId string, t
 
 func (p *PrintJobDao) getJobRows(tx *sql.Tx, transactionId string) chan async.ActionResult[[]printJobRow] {
 	sql := `
-		select a.printer_id, coalesce(t.description, ''), s.name, a.name, coalesce(ac.holder_name, ''), at.pieces
+		select a.printer_id, t.timestamp, coalesce(t.description, ''), s.name, a.name, coalesce(ac.holder_name, ''), at.pieces
 		from klcs."transaction" t 
 			join klcs.article_transaction at on (t.id = at.transaction_id)
 			join klcs.article a on (at.article_id = a.id)
@@ -82,7 +84,7 @@ func (p *PrintJobDao) getJobRows(tx *sql.Tx, transactionId string) chan async.Ac
 		tx,
 		func() ([]any, *printJobRow) {
 			v := printJobRow{}
-			return []any{&v.PrinterId, &v.Description, &v.ShopName, &v.ArticleName, &v.AccountHolder, &v.Amount}, &v
+			return []any{&v.PrinterId, &v.Timestamp, &v.Description, &v.ShopName, &v.ArticleName, &v.AccountHolder, &v.Amount}, &v
 		},
 		sql,
 		transactionId,

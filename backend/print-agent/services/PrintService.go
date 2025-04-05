@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/uoul/escpos/netum/ns8360l"
 	"github.com/uoul/go-common/log"
+	"github.com/uoul/klcs/backend/print-agent/dal"
 	"github.com/uoul/klcs/backend/print-agent/domain"
 	appError "github.com/uoul/klcs/backend/print-agent/error"
 )
@@ -17,8 +19,11 @@ import (
 // Type
 // -------------------------------------------------------------------------------
 type PrintService struct {
-	logger      log.ILogger
-	printJobSrc INotificationService[domain.PrintJob]
+	logger       log.ILogger
+	printJobSrc  INotificationService[domain.PrintJob]
+	klcsApi      dal.IKlcsApi
+	printerId    string
+	timeLocation *time.Location
 
 	printBufferSize int
 	connectPrinter  func() (io.ReadWriter, func() error, error)
@@ -131,14 +136,21 @@ func (ps *PrintService) printOrder(job *domain.PrintJob) error {
 	); err != nil {
 		return appError.NewErrPrint("failed to print divider - %v", err)
 	}
+	dt, err := time.ParseInLocation("2006-01-02 15:04:05-0700", job.Timestamp, ps.timeLocation)
 	if err := p.Print(
-		time.Now().Format("02.01.2006 15:04:05\n"),
+		dt.Format("02.01.2006 15:04:05\n"),
 		p.WithJustifyCenter(),
 	); err != nil {
 		return appError.NewErrPrint("failed to print timestamp - %v", err)
 	}
 	// Cut
-	return p.Cut()
+	if err := p.Cut(); err != nil {
+		return appError.NewErrPrint("failed to cut paper - %v", err)
+	}
+	// Acknowledge print job
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	return ps.klcsApi.AcknowledgePrintJob(ctx, ps.printerId, job.TransactionId)
 }
 
 // -------------------------------------------------------------------------------
@@ -173,9 +185,12 @@ func WithPrintBufferSize(size int) func(*PrintService) {
 // Constructor
 // ----------------------------------------------------------------------
 
-func NewPrintService(logger log.ILogger, klcsClient INotificationService[domain.PrintJob], opts ...func(*PrintService)) IService {
+func NewPrintService(logger log.ILogger, klcsApi dal.IKlcsApi, klcsClient INotificationService[domain.PrintJob], printerId string, timeLocation *time.Location, opts ...func(*PrintService)) IService {
 	ps := &PrintService{
 		logger:          logger,
+		klcsApi:         klcsApi,
+		printerId:       printerId,
+		timeLocation:    timeLocation,
 		printJobSrc:     klcsClient,
 		printBufferSize: 50,
 		connectPrinter:  nil,
