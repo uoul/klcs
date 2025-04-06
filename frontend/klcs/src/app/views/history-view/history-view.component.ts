@@ -47,6 +47,7 @@ export class HistoryViewComponent implements OnInit {
     if(!this.reprintRequestRunning()){
       this.reprintRequestRunning.set(true)
       const sub = this.sellerApi.reprintOrder(transactionId).subscribe({
+        next: _ => setTimeout(() => this.refresh(), 1000),
         error: err => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err}),
         complete: () => {
           sub.unsubscribe()

@@ -15,7 +15,7 @@ type KlcsApi struct {
 
 // AcknowledgePrintJob implements IKlcsApi.
 func (k *KlcsApi) AcknowledgePrintJob(ctx context.Context, printerId string, transactionId string) error {
-	req, err := http.NewRequestWithContext(ctx, "POST", fmt.Sprintf("%s/", k.klcsBackendHost), nil)
+	req, err := http.NewRequestWithContext(ctx, "POST", fmt.Sprintf("%s/api/v1/printers/%s/jobs/acknowledgement/%s", k.klcsBackendHost, printerId, transactionId), nil)
 	if err != nil {
 		return appError.NewErrNet("failed to create http request - %v", err)
 	}
@@ -33,5 +33,6 @@ func (k *KlcsApi) AcknowledgePrintJob(ctx context.Context, printerId string, tra
 func NewKlcsApi(klcsBackendHost string) IKlcsApi {
 	return &KlcsApi{
 		klcsBackendHost: klcsBackendHost,
+		httpClient:      http.DefaultClient,
 	}
 }

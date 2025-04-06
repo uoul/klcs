@@ -136,9 +136,12 @@ func (ps *PrintService) printOrder(job *domain.PrintJob) error {
 	); err != nil {
 		return appError.NewErrPrint("failed to print divider - %v", err)
 	}
-	dt, err := time.ParseInLocation("2006-01-02 15:04:05-0700", job.Timestamp, ps.timeLocation)
+	dt, err := time.Parse(time.RFC3339, job.Timestamp)
+	if err != nil {
+		return appError.NewErrPrint("failed to parse timestamp - %v", err)
+	}
 	if err := p.Print(
-		dt.Format("02.01.2006 15:04:05\n"),
+		dt.In(ps.timeLocation).Format("02.01.2006 15:04:05\n"),
 		p.WithJustifyCenter(),
 	); err != nil {
 		return appError.NewErrPrint("failed to print timestamp - %v", err)
