@@ -1,0 +1,125 @@
+name: golang-pipeline
+permissions: 
+  contents: write
+on: 
+  push:
+    tags:
+      - 'v*'
+jobs:
+  build-klcs:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.VERSION }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Get tag version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Replace single file
+        uses: richardrigutins/replace-in-files@v2
+        with:
+          files: './backend/core/main.go'
+          search-text: '{VERSION}'
+          replacement-text: ${{ steps.get_version.outputs.VERSION }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: |
+            uoul/klcs:${{ steps.get_version.outputs.VERSION }}
+            uoul/klcs:latest
+          platforms: linux/arm64,linux/arm/v7,linux/amd64
+          context: .
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.get_version.outputs.VERSION }}
+
+  build-print-agent:
+    runs-on: ubuntu-latest
+    needs: build-klcs
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Replace single file
+        uses: richardrigutins/replace-in-files@v2
+        with:
+          files: './print-agent/main.go'
+          search-text: '{VERSION}'
+          replacement-text: ${{ needs.build-klcs.outputs.version }}
+
+      - name: Get dependencies
+        run: cd ./print-agent && go mod download
+
+      - name: Build for Linux (amd64)
+        run: |
+          cd ./print-agent
+          GOOS=linux GOARCH=amd64 go build -o ../build/klcs-print-agent-linux-amd64 .
+
+      - name: Build for Linux (arm64)
+        run: |
+          cd ./print-agent
+          GOOS=linux GOARCH=arm64 go build -o ../build/klcs-print-agent-linux-arm64 .
+
+      - name: Build for Linux (arm/v7)
+        run: |
+          cd ./print-agent
+          GOOS=linux GOARCH=arm GOARM=7 go build -o ../build/klcs-print-agent-linux-armv7 .
+
+      - name: Build for Windows
+        run: |
+          cd ./print-agent
+          GOOS=windows GOARCH=amd64 go build -o ../build/klcs-print-agent-windows-amd64.exe .
+
+      - name: Build for macOS (Intel)
+        run: |
+          cd ./print-agent
+          GOOS=darwin GOARCH=amd64 go build -o ../build/klcs-print-agent-darwin-amd64 .
+
+      - name: Build for macOS (Apple Silicon)
+        run: |
+          cd ./print-agent
+          GOOS=darwin GOARCH=arm64 go build -o ../build/klcs-print-agent-darwin-arm64 .
+
+      - name: Create checksums
+        run: |
+          cd build
+          sha256sum * > checksums.txt
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ needs.build-klcs.outputs.version }}
+          files: |
+            build/klcs-print-agent-linux-amd64
+            build/klcs-print-agent-linux-arm64
+            build/klcs-print-agent-linux-armv7
+            build/klcs-print-agent-windows-amd64.exe
+            build/klcs-print-agent-darwin-amd64
+            build/klcs-print-agent-darwin-arm64
+            build/checksums.txt

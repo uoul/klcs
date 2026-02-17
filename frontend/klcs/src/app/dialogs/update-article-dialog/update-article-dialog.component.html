@@ -1,0 +1,38 @@
+<dialog [id]="dialogId()" class="modal" (close)="dialogClosed.emit()">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">Edit {{ article().Name }}</h3>
+    <form #f="ngForm" class="mt-4" method="dialog" (submit)="updateArticle()">
+      <fieldset class="fieldset flex flex-col">
+        <label class="fieldset-label m-2">Name</label>
+        <input name="name" type="text" class="input input-bordered" placeholder="Name" [(ngModel)]="article().Name" required/>
+        
+        <label class="fieldset-label m-2">Description</label>
+        <input name="description" type="text" class="input input-bordered" placeholder="Description" [(ngModel)]="article().Description"/>
+
+        <label class="fieldset-label m-2">Category</label>
+        <input name="category" type="text" class="input input-bordered" placeholder="Category" [(ngModel)]="article().Category" required/>
+
+        <label class="fieldset-label m-2">Price</label>
+        <input name="price" type="number" class="input input-bordered" placeholder="Price" [(ngModel)]="_uiArticle().Price" required min="0.0" step=".01" pattern="^\d+(?:\.\d{1,2})?$"/>
+
+        <label class="fieldset-label m-2">Amount</label>
+        <input name="amount" type="number" min="0" class="input input-bordered" placeholder="Amount" [(ngModel)]="article().StockAmount"/>
+
+        <label class="fieldset-label m-2">Printer</label>
+        <select name="printer" class="select select-bordered" [(ngModel)]="_uiArticle().Printer" [compareWith]="comparePriner">
+          <option [ngValue]="nonePrinter">{{ nonePrinter.Name }}</option>
+          @for (p of printers(); track $index) {
+            <option [ngValue]="p">{{ p.Name }}</option>
+          }
+        </select>
+        
+        <div class="modal-action">
+          <button class="btn btn-secondary" [disabled]="f.invalid">Save</button>
+          <form method="dialog">
+            <button class="btn btn-outline btn-neutral">Close</button>
+          </form>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</dialog>

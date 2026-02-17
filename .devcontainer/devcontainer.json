@@ -1,0 +1,17 @@
+{
+    "name": "KLCS Development Environment",
+    "build": {
+        "dockerfile": "./Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+        "extensions": [
+            "golang.go",
+            "gruntfuggly.todo-tree",
+            "bradlc.vscode-tailwindcss",
+            "esbenp.prettier-vscode",
+            "angular.ng-template"
+        ]
+        }
+    }
+}

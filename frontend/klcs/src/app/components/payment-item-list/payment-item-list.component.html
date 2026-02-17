@@ -1,0 +1,33 @@
+<div class="flex flex-col">
+  <table class="table table-lg">
+    <thead>
+      <tr>
+        <th>Article</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (article of articles(); track $index) {
+        <tr [style.background-color]="isSelected(article) ? '#E67817' : ''" (click)="selectArticle(article)">
+          <td>{{ article.Name }}</td>
+          <td>{{ article.Price / 100 | currency: 'EUR'}}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <div class="py-4 border-t border-black w-full">
+    <span class="pb-2 border-b-4 border-double border-black text-2xl flex justify-between">
+      <span class="font-bold pr-2">Sum:</span>
+      <span>{{ sum() / 100 | currency: 'EUR' }} </span>
+    </span>
+  </div>
+  <div class="flex">
+    <label class="label">
+    <input type="checkbox" class="checkbox mr-3" (change)="handleMarkCheckbox($event)"/>
+    Select All
+  </label>
+  </div>
+  <div class="modal-action">
+    <button class="btn btn-outline btn-primary w-full" [disabled]="selected().length <= 0" (click)="cashed()">Paid</button>
+  </div>
+</div>

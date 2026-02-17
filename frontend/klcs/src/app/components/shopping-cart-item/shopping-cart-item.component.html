@@ -1,0 +1,12 @@
+<div class="flex justify-between m-3">
+  <button class="btn xl:btn-lg btn-secondary btn-circle" (click)="decrementClicked.emit(orderPosition())" type="button">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="w-10 h-10 fill-secondary-content"><path d="M200-440v-80h560v80H200Z"/></svg>
+  </button>
+  <div class="flex flex-col items-center justify-around">
+    <span class="text-md xl:text-lg">{{ orderPosition().article.Name }}</span>
+    <span class="text-sm">{{ orderPosition().count }}</span>
+  </div>
+  <button class="btn xl:btn-lg btn-secondary btn-circle" (click)="incrementClicked.emit(orderPosition())" type="button">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="w-10 h-10 fill-secondary-content"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+  </button>
+</div>

@@ -1,0 +1,27 @@
+<div class="w-full flex flex-col px-2 xl:px-0">
+  <table class="table">
+    <thead>
+      <tr>
+        <td>Name</td>
+        <td>User</td>
+        <td>Roles</td>
+      </tr>
+    </thead>
+    <tbody>
+      @for (u of users().sort(compareUser); track $index) {
+        <tr>
+          <td>{{ u.Name }}</td>
+          <td>{{ u.Username }}</td>
+          <td class="lg:flex">
+            @for (role of u.roles | keyvalue; track $index) {
+              <div class="flex items-center">
+                <input type="checkbox" [checked]="role.value" class="checkbox" class="checkbox checkbox-secondary" (change)="setUserRole(this.sellerApi.getShopDetails().Id, u.Id, role.key, $event)" [disabled]="currentUser().username === u.Username && role.key.Name === klcsConfig.ShopRoleAdmin" />
+                <label class="label">{{ role.key.Name }}</label>
+              </div>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

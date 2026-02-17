@@ -1,0 +1,53 @@
+<div class="flex flex-col items-center m-2">
+  <div class="flex w-full justify-end">
+      <div class="join join-horizontal w-full">
+        <input name="search-text" type="text" class="input input-bordered join-item w-full" placeholder="Search..." [(ngModel)]="searchText"/>
+        <button class="btn btn-primary join-item" (click)="showReadQrDialog()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-6 w-6 fill-neutral-content">
+            <path d="M80-680v-200h200v80H160v120H80Zm0 600v-200h80v120h120v80H80Zm600 0v-80h120v-120h80v200H680Zm120-600v-120H680v-80h200v200h-80ZM700-260h60v60h-60v-60Zm0-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm120-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm240-320v240H520v-240h240ZM440-440v240H200v-240h240Zm0-320v240H200v-240h240Zm-60 500v-120H260v120h120Zm0-320v-120H260v120h120Zm320 0v-120H580v120h120Z"/>
+          </svg>
+        </button>
+      </div>
+    <klcs-read-qr-dialog [(data)]="searchText" [dialogId]="READ_QR_DIALOG_ID"/>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>AccountID</th>
+        <th>Holder</th>
+        <th class="hidden xl:table-cell"></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (account of filteredAccounts(); track $index) {
+      <tr>
+        <td>{{ account.Id }}</td>
+        <td>{{ account.HolderName }}</td>
+        <td class="hidden xl:table-cell">
+          @if (account.Locked) {
+            <div class="w-full flex justify-center">
+              <span class="badge badge-error flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-4 fill-error-content"><path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm240-120q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z"/></svg>
+                Locked
+              </span>
+            </div> 
+          }
+        </td>
+        <td class="flex justify-end">
+          <button class="btn btn-circle btn-ghost" (click)="showEditAccountDialog(account)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="fill-base-content w-6 h-6"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z"/></svg>
+          </button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  <div data-tip="Create Account" class="tooltip tooltip-bottom m-2">
+    <button class="btn btn-circle btn-ghost" (click)="showCreateAccountDialog()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="fill-base-content w-6 h-6"><path d="M440-280h80v-160h160v-80H520v-160h-80v160H280v80h160v160Zm40 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
+    </button>
+  </div>
+  <klcs-create-account-dialog [dialogId]="CREATE_ACCOUNT_DIALOG_ID" (accountCreated)="refresh()" />
+  <klcs-edit-account-dialog [dialogId]="EDIT_ACCOUNT_DIALOG_ID" [account]="selectedAccount()" (accountUpdated)="refresh()" />
+</div>

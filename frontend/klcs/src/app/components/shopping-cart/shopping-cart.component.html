@@ -1,0 +1,17 @@
+<div class="flex flex-col py-1">
+  <div class="flex flex-col w-full border-b border-black">
+    @if (orderPositions().length <= 0) {
+      <span class="w-full h-32 flex justify-center text-opacity-30 text-base-content items-center border-neutral border-2 rounded-lg border-opacity-5 mb-2">Empty cart</span>
+    }
+    @for (pos of orderPositions(); track $index) {
+      <hr />
+      <klcs-shopping-cart-item [orderPosition]="pos" (incrementClicked)="addArticle($event.article)" (decrementClicked)="removeArticle($event.article)"/>
+    }
+  </div>
+  <div class="flex w-full flex-col flex-grow">
+    <div class="flex justify-between pb-2 m-1 text-lg border-b-4 border-double border-black px-2">
+      <span class="font-bold">Total:</span>
+      <span>{{ sum() / 100 | currency: 'EUR'}}</span>
+    </div>
+  </div>
+</div>

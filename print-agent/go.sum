@@ -1,0 +1,6 @@
+github.com/uoul/escpos v0.2.0 h1:3XYxYHCYO2xf6Dn85Az829VwZItSGNbcWsoFVpBcBFM=
+github.com/uoul/escpos v0.2.0/go.mod h1:Bvw9GjaORsRLP+zzAy2/LuPxiAf9e5R/ovKsBky8lL4=
+github.com/uoul/go-async v1.0.1 h1:e5g09uLILAwjVjyUmBzsNSq0Lq+Nnd1CXB747PNyHjA=
+github.com/uoul/go-async v1.0.1/go.mod h1:c7cFFnSklwBXarQOlzBvuy4cRygp0qPOrjhd31tlsU4=
+github.com/uoul/go-config v1.1.0 h1:1ew2Dnqi366a1IZx62DNJ5S05jWTInsxff5W0d0QrMg=
+github.com/uoul/go-config v1.1.0/go.mod h1:7trEjTtPWM/hTpr/8uwyWsCL4bCJSm04sd0Ihp77+RQ=

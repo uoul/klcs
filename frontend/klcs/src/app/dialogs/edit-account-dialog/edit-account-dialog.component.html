@@ -1,0 +1,38 @@
+<dialog [id]="dialogId()" class="modal" (close)="_dialogClosed()">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold mb-4">Edit Account</h3>
+      <form #f="ngForm" method="dialog" (submit)="updateAccount()" class="mt-4 w-full flex flex-col">
+        <!-- AccountID -->
+        <label class="form-control w-full">
+          <div class="label">
+            <span class="label-text">AccountID</span>
+          </div>
+          <input disabled name="accountId" type="text" class="input input-bordered w-full" [(ngModel)]="account().Id"/>
+        </label>
+        <!-- HolderName -->
+        <label class="form-control w-full">
+          <div class="label">
+            <span class="label-text">Holder</span>
+          </div>
+          <div class="flex">
+            <input name="holderName" type="text" class="input input-bordered w-full" [(ngModel)]="account().HolderName"/>
+            <label class="swap swap-rotate mx-4">
+              <input name="accountLock" type="checkbox" [(ngModel)]="account().Locked"/>
+              <svg xmlns="http://www.w3.org/2000/svg"viewBox="0 -960 960 960" class="h-6 fill-error swap-on"><path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm240-120q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-6 fill-success swap-off"><path d="M240-640h360v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85h-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640Zm0 480h480v-400H240v400Zm240-120q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM240-160v-400 400Z"/></svg>
+            </label>
+          </div>
+        </label>
+        <!-- QrCode -->
+        <div class="flex w-full justify-center mt-2">
+          <qrcode [allowEmptyString]="true" [qrdata]="account().Id" [width]="256" [errorCorrectionLevel]="'M'" />
+        </div>
+        <div class="modal-action">
+          <button class="btn btn-secondary">Save</button>
+          <form method="dialog">
+            <button class="btn btn-outline btn-neutral">Close</button>
+          </form>
+        </div>
+      </form>
+  </div>
+</dialog>

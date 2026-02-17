@@ -1,0 +1,14 @@
+@if (authService.isLoggedIn() | async) {
+  <div class="grid grid-cols-[auto_1fr] touch-manipulation">
+    <klcs-app-bar></klcs-app-bar>
+    <klcs-side-nav></klcs-side-nav>
+    <div class="overflow-y-auto max-h-[calc(100dvh-3.5rem)]">
+      <router-outlet />
+    </div>
+  </div>
+  <klcs-notification-container />
+} @else {
+  <div class="flex w-screen h-screen justify-center align-middle">
+    <span class="loading loading-dots loading-lg"></span>
+  </div>
+} 
