@@ -32,8 +32,8 @@ Configuration is done via environmental variables. The following variables can b
 | KLCS_DB_NAME | postgres | Database name |
 | KLCS_DB_SSLMODE | verify-full | Database sslmode (disable, require, verify-ca, verify-full)|
 ||||
-| KLCS_UI_MOBILE_DEFAULTPAYMENT | CASH | Default selected Payment Method on Mobile UI |
-| KLCS_UI_MOBILE_DESCRIPTIONREQUIRED | false | Checkout mobile discription required (e.g. for table numbers) |
+| KLCS_UI_MOBILE_DEFAULTPAYMENT | CASH | Default selected Payment Method on Mobile UI (CASH or CARD) |
+| KLCS_UI_MOBILE_DESCRIPTIONREQUIRED | false | Checkout mobile discription required (e.g. for table numbers) - true or false |
 
 
 ## POS-Printer Support
