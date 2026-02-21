@@ -11,23 +11,29 @@ Configuration is done via environmental variables. The following variables can b
 ### Environment variables
 | Variable | Default | Description |
 |----------|---------|-------------|
-| LOGLVL | INFO | DEBUG, INFO, WARN, ERROR |
-| API | :80 | Interface of API (default is port 80) |
-| CORS_ORIGINS | | List of allowed Origins (CORS) - CSV Syntax |
-| CORS_HEADERS | Content-Type, Content-Length, Accept-Encoding, Authorization, accept, origin, Cache-Control | Allowed Headers |
-| CORS_METHODS | POST,OPTIONS,GET,PUT,DELETE,PATCH | Allowed Methods |
-| OIDC_JWKSURL | | Jwks URL of identity provider (Keycloak) |
-| OIDC_AUTHORITY | | Oidc Authority |
-| OIDC_CLIENTID | | Oidc ClientId |
-| OIDC_ROLES_SYSADMIN | ADMIN | Role for Sysadmin |
-| OIDC_ROLES_ACCOUNTMANAGER | ACCOUNT_MANAGER | Role for AccountManager |
-| OIDC_ROLES_NOPRINT | NO_PRINT | User having this role will print no orders |
-| DB_HOST | localhost | Database host (Postgres) |
-| DB_PORT | 5432 | Database port |
-| DB_USER | | Database user |
-| DB_PASSWORD | | Database password |
-| DB_NAME | postgres | Database name |
-| DB_SSLMODE | verify-full | Database sslmode (disable, require, verify-ca, verify-full)|
+| KLCS_LOGLVL | INFO | DEBUG, INFO, WARN, ERROR |
+| KLCS_API | :80 | Interface of API (default is port 80) |
+||||
+| KLCS_CORS_ORIGINS | | List of allowed Origins (CORS) - CSV Syntax |
+| KLCS_CORS_HEADERS | Content-Type, Content-Length, Accept-Encoding, Authorization, accept, origin, Cache-Control | Allowed Headers |
+| KLCS_CORS_METHODS | POST,OPTIONS,GET,PUT,DELETE,PATCH | Allowed Methods |
+||||
+| KLCS_OIDC_JWKSURL | | Jwks URL of identity provider (Keycloak) |
+| KLCS_OIDC_AUTHORITY | | Oidc Authority |
+| KLCS_OIDC_CLIENTID | | Oidc ClientId |
+| KLCS_OIDC_ROLES_SYSADMIN | ADMIN | Role for Sysadmin |
+| KLCS_OIDC_ROLES_ACCOUNTMANAGER | ACCOUNT_MANAGER | Role for AccountManager |
+| KLCS_OIDC_ROLES_NOPRINT | NO_PRINT | User having this role will print no orders |
+||||
+| KLCS_DB_HOST | localhost | Database host (Postgres) |
+| KLCS_DB_PORT | 5432 | Database port |
+| KLCS_DB_USER | | Database user |
+| KLCS_DB_PASSWORD | | Database password |
+| KLCS_DB_NAME | postgres | Database name |
+| KLCS_DB_SSLMODE | verify-full | Database sslmode (disable, require, verify-ca, verify-full)|
+||||
+| KLCS_UI_MOBILE_DEFAULTPAYMENT | CASH | Default selected Payment Method on Mobile UI |
+| KLCS_UI_MOBILE_DESCRIPTIONREQUIRED | false | Checkout mobile discription required (e.g. for table numbers) |
 
 
 ## POS-Printer Support

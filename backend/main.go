@@ -55,6 +55,7 @@ func main() {
 		VERSION,
 		cfg.Cors,
 		cfg.Oidc,
+		cfg.Ui,
 		logic,
 		authenticator,
 		printService,

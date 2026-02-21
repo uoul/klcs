@@ -11,6 +11,7 @@ type AppConfig struct {
 	Cors     CorsConfig
 	Oidc     OidcConfig
 	Database DatabaseConfig `gonfig:"db"`
+	Ui       UiConfig
 }
 
 func (c *AppConfig) SlogLvl() slog.Level {

@@ -9,10 +9,12 @@ import (
 
 func (a *Api) getUiSettings(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, struct {
-		Version string
-		Oidc    config.OidcConfig
+		Version    string
+		Oidc       config.OidcConfig
+		UiSettings config.UiConfig
 	}{
-		Version: a.version,
-		Oidc:    a.oidc,
+		Version:    a.version,
+		Oidc:       a.oidc,
+		UiSettings: a.uiConfig,
 	})
 }

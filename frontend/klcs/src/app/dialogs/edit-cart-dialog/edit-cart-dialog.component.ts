@@ -1,4 +1,4 @@
-import { Component, input, output, signal, WritableSignal } from '@angular/core';
+import { Component, input, OnInit, output, signal, WritableSignal } from '@angular/core';
 import { ShoppingCartComponent } from "../../components/shopping-cart/shopping-cart.component";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +11,7 @@ import { ErrorResponse } from '../../domain/ErrorResponse';
 import { FocusDirective } from '../../directives/focus/focus.directive';
 import { Article } from '../../domain/Article';
 import { PaymentItemListComponent } from "../../components/payment-item-list/payment-item-list.component";
+import { PublicApiService } from '../../services/public-api/public-api.service';
 
 @Component({
   selector: 'klcs-edit-cart-dialog',
@@ -25,7 +26,7 @@ import { PaymentItemListComponent } from "../../components/payment-item-list/pay
   templateUrl: './edit-cart-dialog.component.html',
   styleUrl: './edit-cart-dialog.component.css'
 })
-export class EditCartDialogComponent {
+export class EditCartDialogComponent implements OnInit {
   dialogId = input.required<string>()
   dialogClosed = output<void>()
 
@@ -38,10 +39,18 @@ export class EditCartDialogComponent {
   public paymentItems: WritableSignal<Article[]> = signal([])
 
   constructor(
+    protected publicApi: PublicApiService,
     protected shoppingCart: ShoppingCartService,
     private sellerApi: SellerApiService,
     private notify: NotificationService,
   ){}
+
+  ngOnInit(): void {
+    // Set Default Payment Method
+    if(this.publicApi.settings()?.UiSettings.Mobile.DefaultPayment == "CARD") {
+      this.paymentMethod.set(2)
+    }
+  }
 
   checkout() {
     if(this.paymentMethod() == 2){

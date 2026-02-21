@@ -1,12 +1,18 @@
 export interface AppSettings {
-  Version: string,
+  Version: string
   Oidc: {
-    JwksUrl: string;
-    Authority: string;
-    ClientId: string;
+    JwksUrl: string
+    Authority: string
+    ClientId: string
     Roles: {
-      SysAdmin: string;
-      AccountManager: string;
-    };
-  };
+      SysAdmin: string
+      AccountManager: string
+    }
+  }
+  UiSettings: {
+    Mobile: {
+      DefaultPayment: "CARD" | "CASH"  
+      DescriptionRequired: boolean
+    }
+  }
 }

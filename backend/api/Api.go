@@ -23,6 +23,7 @@ type Api struct {
 	wwwRootDir string
 	cors       config.CorsConfig
 	oidc       config.OidcConfig
+	uiConfig   config.UiConfig
 }
 
 type ErrorResponse struct {
@@ -153,7 +154,7 @@ func WithCorsHeaders(v []string) func(*Api) {
 	}
 }
 
-func NewApi(version string, corsCfg config.CorsConfig, oidcCfg config.OidcConfig, logic *logic.Logic, authenticator auth.IAuthenticator[domain.OidcUser], printService *services.PrintService, opts ...func(*Api)) *Api {
+func NewApi(version string, corsCfg config.CorsConfig, oidcCfg config.OidcConfig, uiConfig config.UiConfig, logic *logic.Logic, authenticator auth.IAuthenticator[domain.OidcUser], printService *services.PrintService, opts ...func(*Api)) *Api {
 	// Create Instance
 	a := &Api{
 		logic:         logic,
@@ -162,6 +163,7 @@ func NewApi(version string, corsCfg config.CorsConfig, oidcCfg config.OidcConfig
 		cors:          corsCfg,
 		oidc:          oidcCfg,
 		version:       version,
+		uiConfig:      uiConfig,
 
 		wwwRootDir: "wwwroot",
 	}
