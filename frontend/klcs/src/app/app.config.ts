@@ -13,7 +13,7 @@ import { OAuthService, provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './interceptors/auth/auth.interceptor';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { catchError, firstValueFrom, from, of, switchMap, tap } from 'rxjs';
+import { catchError, firstValueFrom, from, map, NEVER, of, switchMap, tap } from 'rxjs';
 import { PublicApiService } from './services/public-api/public-api.service';
 import { animate } from '@angular/animations';
 
@@ -31,6 +31,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       const publicApiService = inject(PublicApiService);
       const oauthService = inject(OAuthService);
+
       return firstValueFrom(
         publicApiService.getSettings().pipe(
           tap((appSettings) => {
@@ -40,31 +41,32 @@ export const appConfig: ApplicationConfig = {
               redirectUri: window.location.origin,
               scope: 'openid profile email',
               responseType: 'code',
-              sessionChecksEnabled: false, // avoids iframe issues with Keycloak
+              sessionChecksEnabled: false,
             });
             oauthService.setStorage(localStorage);
           }),
           switchMap(() => oauthService.loadDiscoveryDocumentAndTryLogin()),
           switchMap(() => {
             if (oauthService.hasValidAccessToken()) {
-              // Token still valid — start refresh timer
               oauthService.setupAutomaticSilentRefresh();
               return of(true);
             }
+
             if (oauthService.getRefreshToken()) {
-              // Access token expired but refresh token exists — try to recover silently
               return from(oauthService.refreshToken()).pipe(
                 tap(() => oauthService.setupAutomaticSilentRefresh()),
+                map(() => true),
                 catchError(() => {
-                  // Refresh token also expired — force re-login
                   oauthService.initLoginFlow();
-                  return of(false);
+                  // Return NEVER so the app never bootstraps — redirect will take over
+                  return NEVER;
                 }),
               );
             }
-            // No tokens at all — redirect to login
+
+            // Redirect to login and never resolve — redirect takes over
             oauthService.initLoginFlow();
-            return of(false);
+            return NEVER;
           }),
         ),
       );
