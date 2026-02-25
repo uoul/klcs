@@ -13,9 +13,17 @@ import { OAuthService, provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './interceptors/auth/auth.interceptor';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { catchError, firstValueFrom, from, map, NEVER, of, switchMap, tap } from 'rxjs';
+import {
+  catchError,
+  firstValueFrom,
+  from,
+  map,
+  NEVER,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { PublicApiService } from './services/public-api/public-api.service';
-import { animate } from '@angular/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -39,13 +47,15 @@ export const appConfig: ApplicationConfig = {
               issuer: appSettings.Oidc.Authority,
               clientId: appSettings.Oidc.ClientId,
               redirectUri: window.location.origin,
-              scope: 'openid profile email',
+              scope: 'openid profile email offline_access',
               responseType: 'code',
               sessionChecksEnabled: false,
             });
             oauthService.setStorage(localStorage);
           }),
-          switchMap(() => oauthService.loadDiscoveryDocumentAndTryLogin()),
+          switchMap(() =>
+            from(oauthService.loadDiscoveryDocumentAndTryLogin()),
+          ),
           switchMap(() => {
             if (oauthService.hasValidAccessToken()) {
               oauthService.setupAutomaticSilentRefresh();
@@ -58,13 +68,11 @@ export const appConfig: ApplicationConfig = {
                 map(() => true),
                 catchError(() => {
                   oauthService.initLoginFlow();
-                  // Return NEVER so the app never bootstraps — redirect will take over
                   return NEVER;
                 }),
               );
             }
 
-            // Redirect to login and never resolve — redirect takes over
             oauthService.initLoginFlow();
             return NEVER;
           }),
