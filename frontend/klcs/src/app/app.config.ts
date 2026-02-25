@@ -24,6 +24,7 @@ import {
   tap,
 } from 'rxjs';
 import { PublicApiService } from './services/public-api/public-api.service';
+import { AuthService } from './services/auth/auth.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -39,6 +40,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       const publicApiService = inject(PublicApiService);
       const oauthService = inject(OAuthService);
+      const authService = inject(AuthService);
 
       return firstValueFrom(
         publicApiService.getSettings().pipe(
@@ -76,6 +78,7 @@ export const appConfig: ApplicationConfig = {
             oauthService.initLoginFlow();
             return NEVER;
           }),
+          tap(() => authService.setReady()),
         ),
       );
     }),

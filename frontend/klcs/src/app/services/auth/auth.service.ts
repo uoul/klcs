@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { Observable, map, startWith } from 'rxjs';
+import { BehaviorSubject, Observable, filter, map, startWith, take } from 'rxjs';
 import { UserIdentity } from '../../domain/UserIdentity';
 
 @Injectable({
@@ -11,6 +11,19 @@ export class AuthService {
   constructor(
     private oauthService: OAuthService
   ) { }
+
+  private ready$ = new BehaviorSubject<boolean>(false);
+
+  setReady(): void {
+    this.ready$.next(true);
+  }
+
+  waitForReady() {
+    return this.ready$.pipe(
+      filter(ready => ready),
+      take(1),
+    );
+  }
 
   login() {
     this.oauthService.initCodeFlow();
