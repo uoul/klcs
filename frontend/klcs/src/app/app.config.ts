@@ -52,6 +52,7 @@ export const appConfig: ApplicationConfig = {
               scope: 'openid profile email offline_access',
               responseType: 'code',
               sessionChecksEnabled: false,
+              clockSkewInSec: 60,
             });
             oauthService.setStorage(localStorage);
           }),
@@ -59,14 +60,15 @@ export const appConfig: ApplicationConfig = {
             from(oauthService.loadDiscoveryDocumentAndTryLogin()),
           ),
           switchMap(() => {
-            if (oauthService.hasValidAccessToken()) {
-              oauthService.setupAutomaticSilentRefresh();
+            const expiresAt = oauthService.getAccessTokenExpiration();
+            const isActuallyValid = oauthService.hasValidAccessToken() && expiresAt > Date.now();
+
+            if (isActuallyValid) {
               return of(true);
             }
 
             if (oauthService.getRefreshToken()) {
               return from(oauthService.refreshToken()).pipe(
-                tap(() => oauthService.setupAutomaticSilentRefresh()),
                 map(() => true),
                 catchError(() => {
                   oauthService.initLoginFlow();
@@ -74,11 +76,13 @@ export const appConfig: ApplicationConfig = {
                 }),
               );
             }
-
             oauthService.initLoginFlow();
             return NEVER;
           }),
-          tap(() => authService.setReady()),
+          tap(() => {
+            oauthService.setupAutomaticSilentRefresh();
+            authService.setReady();                     
+          }),
         ),
       );
     }),
