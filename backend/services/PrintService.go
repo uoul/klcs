@@ -6,9 +6,8 @@ import (
 	"sync"
 
 	"github.com/uoul/go-async"
+	"github.com/uoul/klcs/backend/core/apperror"
 	"github.com/uoul/klcs/backend/core/domain"
-
-	appError "github.com/uoul/klcs/backend/core/error"
 )
 
 // -------------------------------------------------------------------------------
@@ -32,7 +31,7 @@ func (ps *PrintService) PrintJob(printerId string, job domain.PrintJob) error {
 	// Check if printer connected
 	client, exists := ps.printers[printerId]
 	if !exists {
-		return appError.NewErrNotFound("printer(%s) not connected", printerId)
+		return apperror.NewErrPrinterNotConnected(nil, "printer(%s) not connected", printerId)
 	}
 	// Send job to all printers using printerId
 	for _, printer := range client {
