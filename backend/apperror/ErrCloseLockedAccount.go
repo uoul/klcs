@@ -10,11 +10,6 @@ type ErrCloseLockedAccount struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrCloseLockedAccount) ErrorCode() string {
-	return "CANNOT_CLOSE_LOCKED_ACCOUNT"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrCloseLockedAccount) HttpStatus() int {
 	return http.StatusBadRequest

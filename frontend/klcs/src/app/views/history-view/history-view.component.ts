@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
-import { CommonModule } from '@angular/common';
+
 import { HistoryItem } from '../../domain/HistoryItem';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
@@ -9,9 +9,8 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'klcs-history-view',
   imports: [
-    CommonModule,
-    FormsModule,
-  ],
+    FormsModule
+],
   templateUrl: './history-view.component.html',
   styleUrl: './history-view.component.css'
 })

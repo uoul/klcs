@@ -7,6 +7,8 @@ import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-create-printer-dialog',
@@ -27,6 +29,7 @@ export class CreatePrinterDialogComponent {
     private shopAdminApi: ShopAdminApiService,
     private route: ActivatedRoute,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   createPrinter() {
@@ -35,7 +38,7 @@ export class CreatePrinterDialogComponent {
         mergeMap(params => this.shopAdminApi.createPrinterForShop(params.get("shopId") ?? "", this._printer()))
       ).subscribe({
         next: p => this.printerCreated.emit(p),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
         complete: () => sub.unsubscribe(),
       })
     }

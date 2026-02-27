@@ -6,6 +6,8 @@ import { NotificationService } from '../../services/notification/notification.se
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
+import { TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-shop-printers',
@@ -22,6 +24,7 @@ export class ShopPrintersComponent {
     private shopAdminApi: ShopAdminApiService,
     protected sellerApi: SellerApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){
     effect(() => {
       const shopId = this.sellerApi.getShopDetails().Id
@@ -32,7 +35,7 @@ export class ShopPrintersComponent {
   refreshPrinters() {
     const sub = this.shopAdminApi.getPrinters(this.sellerApi.getShopDetails().Id).subscribe({
       next: p =>  this._printers.set(p),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }
@@ -41,7 +44,7 @@ export class ShopPrintersComponent {
     if(confirm(`Do you realy want to delete ${printer.Name}?`)){
       const sub = this.shopAdminApi.deletePrinter(printer.Id).subscribe({
         next: _ => this.refreshPrinters(),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
         complete: () => sub.unsubscribe(),
       })
     }

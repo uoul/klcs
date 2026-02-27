@@ -1,0 +1,52 @@
+{
+  "errors": {
+    "ErrAccountNotFound": "Konto nicht gefunden.",
+    "ErrArticleNotFound": "Artikel nicht gefunden.",
+    "ErrArticlePrinterRelation": "Der Artikel ist keinem Drucker zugeordnet.",
+    "ErrArticleShopRelation": "Der Artikel gehört nicht zu diesem Shop.",
+    "ErrCheckoutLockedAccount": "Checkout nicht möglich – das Konto ist gesperrt.",
+    "ErrCloseLockedAccount": "Abschluss nicht möglich – das Konto ist gesperrt.",
+    "ErrDataAccess": "Fehler beim Zugriff auf die Daten.",
+    "ErrForbidden": "Zugriff verweigert.",
+    "ErrInternal": "Interner Serverfehler. Bitte versuchen Sie es später erneut.",
+    "ErrInvalidDataFormat": "Ungültiges Datenformat.",
+    "ErrLenghtMustBeNumber": "Die Länge muss eine Zahl sein.",
+    "ErrNoAccountIdForCardPayment": "Für die Kartenzahlung ist keine Konto-ID angegeben.",
+    "ErrNoPrinterShopRelation": "Der Drucker ist keinem Shop zugeordnet.",
+    "ErrNotEnoughBalance": "Nicht genügend Guthaben auf dem Konto.",
+    "ErrNotMatchingArticleIds": "Die Artikel-IDs stimmen nicht überein.",
+    "ErrPaymentTypeNotSupported": "Diese Zahlungsart wird nicht unterstützt.",
+    "ErrPostLockedAccount": "Buchung nicht möglich – das Konto ist gesperrt.",
+    "ErrPrinterAndArticleNotSameShop": "Drucker und Artikel gehören nicht zum selben Shop.",
+    "ErrPrinterNotConnected": "Der Drucker ist nicht verbunden.",
+    "ErrPrinterNotFound": "Drucker nicht gefunden.",
+    "ErrShopIdUrlBodyMismatch": "Die Shop-ID in der URL stimmt nicht mit der im Anfrage-Body überein.",
+    "ErrShopNotFound": "Shop nicht gefunden.",
+    "ErrStockAmount": "Ungültige oder nicht ausreichende Lagerbestandsmenge.",
+    "ErrUnauthorized": "Nicht autorisiert. Bitte melden Sie sich an.",
+    "ErrUserForShopCreationNotFound": "Der Benutzer für die Shop-Erstellung wurde nicht gefunden.",
+    "ErrUserNoMemberOfShop": "Der Benutzer ist kein Mitglied dieses Shops.",
+    "ErrUserNotFound": "Benutzer nicht gefunden.",
+    "ErrUserShopPermission": "Der Benutzer hat keine ausreichenden Berechtigungen für diesen Shop."
+  },
+  "warnings": {
+    "WarnChargeTwice": "Konto kann nicht doppelt aufgeladen werden"
+  },
+  "success": {
+    "OrderPlaced": "Bestellung wurde erfolgreich aufgegeben",
+    "ShopDeleted": "Shop wurde erfolgreich gelöscht"
+  },
+  "account-view": {
+    "PromptLock": "Möchtest du den Account wirklich sperren?",
+    "PromptUnlock": "Möchtest du den Account wirklich entsperren?"
+  },
+  "sidebar": {
+    "Shop": "Shops",
+    "History": "Verlauf",
+    "CheckAccount": "Guthaben prüfen",
+    "ChargeAccount": "Guthaben aufladen",
+    "PayoutAccount": "Guthaben auszahlen",
+    "ManageAccounts": "Konten",
+    "Admin": "Admin"
+  }
+}

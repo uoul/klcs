@@ -10,11 +10,6 @@ type ErrAccountNotFound struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrAccountNotFound) ErrorCode() string {
-	return "ACCOUNT_NOT_FOUND"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrAccountNotFound) HttpStatus() int {
 	return http.StatusNotFound

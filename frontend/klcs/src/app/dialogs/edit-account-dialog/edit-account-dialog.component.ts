@@ -6,6 +6,8 @@ import { NotificationService } from '../../services/notification/notification.se
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
 import { QRCodeComponent } from 'angularx-qrcode';
+import { TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-edit-account-dialog',
@@ -26,6 +28,7 @@ export class EditAccountDialogComponent {
   constructor(
     private accountManagerApi: AccountManagerApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   _dialogClosed() {
@@ -35,7 +38,7 @@ export class EditAccountDialogComponent {
   updateAccount(){
     const sub = this.accountManagerApi.updateAccount(this.account()).subscribe({
       next: _ => this.accountUpdated.emit(this.account()),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }

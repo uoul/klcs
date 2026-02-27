@@ -8,6 +8,8 @@ import { EditAccountDialogComponent } from "../../dialogs/edit-account-dialog/ed
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-account-view',
@@ -49,6 +51,7 @@ export class AccountViewComponent implements OnInit {
   constructor(
     private accountManagerApi: AccountManagerApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   ngOnInit(): void {
@@ -58,17 +61,17 @@ export class AccountViewComponent implements OnInit {
   refresh() {
     const sub = this.accountManagerApi.getAccounts().subscribe({
       next: a => this.accounts.set(a),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }
 
   setLocked(account: Account, state: boolean) {
-    if(confirm(`Do you realy want to ${state ? "lock" : "unlock"} account ${account.Id}?`)){
+    if(confirm(state ? this.translate.instant("account-view.PromptLock") : this.translate.instant("account-view.PromptUnlock"))){
       account.Locked = state
       const sub = this.accountManagerApi.updateAccount(account).subscribe({
         next: _ => this.refresh(),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
         complete: () => sub.unsubscribe(),
       })
     }

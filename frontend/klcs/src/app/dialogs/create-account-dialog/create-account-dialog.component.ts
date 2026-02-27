@@ -5,6 +5,8 @@ import { AccountManagerApiService } from '../../services/account-manager-api/acc
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-create-account-dialog',
@@ -25,6 +27,7 @@ export class CreateAccountDialogComponent {
   constructor(
     private accountManagerApi: AccountManagerApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   _dialogClosed() {
@@ -39,7 +42,7 @@ export class CreateAccountDialogComponent {
   createAccount(){
     const sub = this.accountManagerApi.createAccount(this._account()).subscribe({
       next: val => this.accountCreated.emit(val),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }

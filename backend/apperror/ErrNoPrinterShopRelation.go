@@ -10,11 +10,6 @@ type ErrNoPrinterShopRelation struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrNoPrinterShopRelation) ErrorCode() string {
-	return "NO_PRINTER_SHOP_RELATION"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrNoPrinterShopRelation) HttpStatus() int {
 	return http.StatusNotFound

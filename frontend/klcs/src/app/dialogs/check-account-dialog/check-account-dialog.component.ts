@@ -7,6 +7,8 @@ import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-check-account-dialog',
@@ -31,6 +33,7 @@ export class CheckAccountDialogComponent {
   constructor(
     private accountManagerApi: AccountManagerApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   _dialogClosed(){
@@ -54,7 +57,7 @@ export class CheckAccountDialogComponent {
   checkAccount() {
     const sub = this.accountManagerApi.getAccountDetails(this.accountId).subscribe({
       next: details => this.accountData.set(details),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }

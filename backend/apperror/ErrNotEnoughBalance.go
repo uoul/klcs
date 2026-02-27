@@ -10,11 +10,6 @@ type ErrNotEnoughBalance struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrNotEnoughBalance) ErrorCode() string {
-	return "USER_NOT_FOUND"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrNotEnoughBalance) HttpStatus() int {
 	return http.StatusNotFound

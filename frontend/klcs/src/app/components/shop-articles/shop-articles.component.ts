@@ -13,6 +13,8 @@ import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
 import { ShopDetails } from '../../domain/ShopDetails';
+import { TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-shop-articles',
@@ -33,6 +35,7 @@ export class ShopArticlesComponent {
     private shopAdminApi: ShopAdminApiService,
     protected sellerApi: SellerApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   _printers: WritableSignal<Printer[]> = signal([])
@@ -42,7 +45,7 @@ export class ShopArticlesComponent {
     if(confirm(`Do you realy want to delete Article?`)){
       const sub = this.shopAdminApi.deleteArticle(articleId).subscribe({
         next: _ => this.sellerApi.refreshShopDetails(),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
         complete: () => sub.unsubscribe(),
       });
     }
@@ -51,7 +54,7 @@ export class ShopArticlesComponent {
   refreshPrinters(shopId: string) {
     const sub = this.shopAdminApi.getPrinters(shopId).subscribe({
       next: p =>  this._printers.set(p),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }
@@ -70,7 +73,7 @@ export class ShopArticlesComponent {
         const dialog = document.getElementById(this.EDIT_DIALOG_ID) as HTMLDialogElement
         dialog.showModal();
       },
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }

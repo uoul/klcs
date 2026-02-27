@@ -10,11 +10,6 @@ type ErrPrinterNotFound struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrPrinterNotFound) ErrorCode() string {
-	return "USER_NOT_FOUND"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrPrinterNotFound) HttpStatus() int {
 	return http.StatusNotFound

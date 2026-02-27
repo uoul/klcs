@@ -4,19 +4,19 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/uoul/klcs/backend/core/apperror"
 	"github.com/uoul/klcs/backend/core/domain"
-	appError "github.com/uoul/klcs/backend/core/error"
 )
 
 func (e *Api) createShop(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	var body domain.Shop
 	if err := ctx.BindJSON(&body); err != nil {
-		ctx.Error(appError.NewErrValidation("failed to parse shop - %v", err))
+		ctx.Error(apperror.NewErrInvalidDataFormat(err, "failed to parse shop"))
 		return
 	}
 	shop, err := e.logic.CreateShop(
@@ -43,11 +43,11 @@ func (e *Api) getShops(ctx *gin.Context) {
 func (e *Api) updateShop(ctx *gin.Context) {
 	var body domain.Shop
 	if err := ctx.BindJSON(&body); err != nil {
-		ctx.Error(appError.NewErrValidation("failed to parse shop - %v", err))
+		ctx.Error(apperror.NewErrInvalidDataFormat(err, "failed to parse shop"))
 		return
 	}
 	if ctx.Param("shopId") != body.Id {
-		ctx.Error(appError.NewErrValidation("shopId of uri does not match id from body (%s != %s)", ctx.Param("shopId"), body.Id))
+		ctx.Error(apperror.NewErrShopIdUrlBodyMismatch(nil, "shopId of uri does not match id from body (%s != %s)", ctx.Param("shopId"), body.Id))
 		return
 	}
 	shop, err := e.logic.UpdateShop(

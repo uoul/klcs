@@ -1,6 +1,6 @@
 import { Component, input, OnInit, output, signal, WritableSignal } from '@angular/core';
 import { ShoppingCartComponent } from "../../components/shopping-cart/shopping-cart.component";
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { ShoppingCartService } from '../../services/shopping-cart/shopping-cart.service';
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
@@ -12,11 +12,12 @@ import { FocusDirective } from '../../directives/focus/focus.directive';
 import { Article } from '../../domain/Article';
 import { PaymentItemListComponent } from "../../components/payment-item-list/payment-item-list.component";
 import { PublicApiService } from '../../services/public-api/public-api.service';
+import { TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-edit-cart-dialog',
   imports: [
-    CommonModule,
     FormsModule,
     ShoppingCartComponent,
     ZXingScannerModule,
@@ -43,6 +44,7 @@ export class EditCartDialogComponent implements OnInit {
     protected shoppingCart: ShoppingCartService,
     private sellerApi: SellerApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   ngOnInit(): void {
@@ -56,11 +58,11 @@ export class EditCartDialogComponent implements OnInit {
     if(this.paymentMethod() == 2){
       const sub = this.sellerApi.checkoutCard(this.accountId(), this.description()).subscribe({
         next: _ => {
-          this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: "Successfully placed order"})
+          this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: this.translate.instant("success.OrderPlaced")})
           this.sellerApi.refreshShopDetails()
           this.close()
         },
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
         complete: () => sub.unsubscribe()
       })
     }
@@ -68,11 +70,11 @@ export class EditCartDialogComponent implements OnInit {
       this.paymentItems.set(this.shoppingCart.getItems())
       const sub = this.sellerApi.checkoutCash(this.description()).subscribe({
         next: _ => {
-          this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: "Successfully placed order"})
+          this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: this.translate.instant("success.OrderPlaced")})
           this.sellerApi.refreshShopDetails()
           this.step.set("payment")
         },
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
         complete: () => sub.unsubscribe()
       })
     }

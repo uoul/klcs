@@ -1,5 +1,5 @@
 export const KlcsConfig = {
-  BackendRoot: "",
+  BackendRoot: "http://localhost:8085",
 
   ShopRoleAdmin: "ADMIN",
 

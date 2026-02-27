@@ -10,11 +10,6 @@ type ErrStockAmount struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrStockAmount) ErrorCode() string {
-	return "USER_NOT_FOUND"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrStockAmount) HttpStatus() int {
 	return http.StatusNotFound

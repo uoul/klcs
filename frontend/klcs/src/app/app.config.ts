@@ -13,6 +13,8 @@ import { OAuthService, provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './interceptors/auth/auth.interceptor';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import {provideTranslateService, provideTranslateLoader} from "@ngx-translate/core";
+import {provideTranslateHttpLoader} from "@ngx-translate/http-loader";
 import {
   catchError,
   firstValueFrom,
@@ -36,6 +38,13 @@ export const appConfig: ApplicationConfig = {
     }),
     provideOAuthClient(),
     provideHttpClient(withInterceptors([authInterceptor])),
+    provideTranslateService({
+      loader: provideTranslateHttpLoader({
+        prefix: "/i18n/",
+        suffix: ".json"
+      }),
+      fallbackLang: "en",
+    }),
     provideAnimations(),
     provideAppInitializer(() => {
       const publicApiService = inject(PublicApiService);
@@ -49,7 +58,7 @@ export const appConfig: ApplicationConfig = {
               issuer: appSettings.Oidc.Authority,
               clientId: appSettings.Oidc.ClientId,
               redirectUri: window.location.origin,
-              scope: 'openid profile email offline_access',
+              scope: 'openid profile email',
               responseType: 'code',
               sessionChecksEnabled: false,
               clockSkewInSec: 60,

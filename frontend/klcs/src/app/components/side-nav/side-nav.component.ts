@@ -5,24 +5,26 @@ import { SideNavService } from '../../services/side-nav/side-nav.service';
 import { AuthService } from '../../services/auth/auth.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
-import { CommonModule } from '@angular/common';
+
 import { Shop } from '../../domain/Shop';
 import { CheckAccountDialogComponent } from "../../dialogs/check-account-dialog/check-account-dialog.component";
 import { ChargeAccountDialogComponent } from "../../dialogs/charge-account-dialog/charge-account-dialog.component";
 import { CloseAccountDialogComponent } from "../../dialogs/close-account-dialog/close-account-dialog.component";
 import { NotificationService } from '../../services/notification/notification.service';
-import { ErrorResponse } from '../../domain/ErrorResponse';
 import { PublicApiService } from '../../services/public-api/public-api.service';
+import { TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import {TranslatePipe } from "@ngx-translate/core";
 
 @Component({
   selector: 'klcs-side-nav',
   imports: [
-    CommonModule,
     RouterModule,
     NavItemComponent,
     CheckAccountDialogComponent,
     ChargeAccountDialogComponent,
-    CloseAccountDialogComponent
+    CloseAccountDialogComponent,
+    TranslatePipe,
 ],
   templateUrl: './side-nav.component.html',
   styleUrl: './side-nav.component.css'
@@ -34,6 +36,7 @@ export class SideNavComponent implements OnInit, AfterViewInit {
     protected sellerApi: SellerApiService,
     private notify: NotificationService,
     protected publicApi: PublicApiService,
+    protected translate: TranslateService,
   ){}
 
   protected readonly CHECK_CREDIT_DIALOG_ID = "check-credit-dialog"
@@ -50,7 +53,7 @@ export class SideNavComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     const sub = this.sellerApi.getShops().subscribe({
       next: val => this.shops = val,
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }

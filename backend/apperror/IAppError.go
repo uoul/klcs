@@ -7,6 +7,4 @@ type IAppError interface {
 	Unwrap() error
 	// IAppErrors are mapped to http status codes
 	HttpStatus() int
-	// IAppErrors provide an ErrorCode for more detailed error message mapping
-	ErrorCode() string
 }

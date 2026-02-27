@@ -10,11 +10,6 @@ type ErrUnauthorized struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrUnauthorized) ErrorCode() string {
-	return "NOT_AUTHENTICATED"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrUnauthorized) HttpStatus() int {
 	return http.StatusUnauthorized

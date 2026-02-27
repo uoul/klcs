@@ -10,11 +10,6 @@ type ErrUserNoMemberOfShop struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrUserNoMemberOfShop) ErrorCode() string {
-	return "CANNOT_CLOSE_LOCKED_ACCOUNT"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrUserNoMemberOfShop) HttpStatus() int {
 	return http.StatusBadRequest

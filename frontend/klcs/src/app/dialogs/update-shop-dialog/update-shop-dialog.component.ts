@@ -5,6 +5,8 @@ import { KlcsAdminApiService } from '../../services/klcs-admin-api/klcs-admin-ap
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-update-shop-dialog',
@@ -23,12 +25,13 @@ export class UpdateShopDialogComponent {
   constructor(
     private klcsAdminApi: KlcsAdminApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   updateShop() {
     const sub = this.klcsAdminApi.updateShop(this.shop()).subscribe({
       next: val => this.shop.set(val),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }

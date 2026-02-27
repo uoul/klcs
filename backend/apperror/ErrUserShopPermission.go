@@ -10,11 +10,6 @@ type ErrUserShopPermission struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrUserShopPermission) ErrorCode() string {
-	return "NOT_AUTHENTICATED"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrUserShopPermission) HttpStatus() int {
 	return http.StatusUnauthorized

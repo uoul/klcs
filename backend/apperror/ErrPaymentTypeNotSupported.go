@@ -10,11 +10,6 @@ type ErrPaymentTypeNotSupported struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrPaymentTypeNotSupported) ErrorCode() string {
-	return "USER_NOT_FOUND"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrPaymentTypeNotSupported) HttpStatus() int {
 	return http.StatusNotFound

@@ -1,0 +1,52 @@
+{
+  "errors": {
+    "ErrAccountNotFound": "Account not found.",
+    "ErrArticleNotFound": "Article not found.",
+    "ErrArticlePrinterRelation": "The article is not assigned to any printer.",
+    "ErrArticleShopRelation": "The article does not belong to this shop.",
+    "ErrCheckoutLockedAccount": "Checkout not possible – the account is locked.",
+    "ErrCloseLockedAccount": "Closing not possible – the account is locked.",
+    "ErrDataAccess": "An error occurred while accessing the data.",
+    "ErrForbidden": "Access denied.",
+    "ErrInternal": "Internal server error. Please try again later.",
+    "ErrInvalidDataFormat": "Invalid data format.",
+    "ErrLenghtMustBeNumber": "The length must be a number.",
+    "ErrNoAccountIdForCardPayment": "No account ID provided for card payment.",
+    "ErrNoPrinterShopRelation": "The printer is not assigned to any shop.",
+    "ErrNotEnoughBalance": "Insufficient account balance.",
+    "ErrNotMatchingArticleIds": "The article IDs do not match.",
+    "ErrPaymentTypeNotSupported": "This payment type is not supported.",
+    "ErrPostLockedAccount": "Posting not possible – the account is locked.",
+    "ErrPrinterAndArticleNotSameShop": "The printer and article do not belong to the same shop.",
+    "ErrPrinterNotConnected": "The printer is not connected.",
+    "ErrPrinterNotFound": "Printer not found.",
+    "ErrShopIdUrlBodyMismatch": "The shop ID in the URL does not match the one in the request body.",
+    "ErrShopNotFound": "Shop not found.",
+    "ErrStockAmount": "Invalid or insufficient stock amount.",
+    "ErrUnauthorized": "Unauthorized. Please log in.",
+    "ErrUserForShopCreationNotFound": "The user for shop creation was not found.",
+    "ErrUserNoMemberOfShop": "The user is not a member of this shop.",
+    "ErrUserNotFound": "User not found.",
+    "ErrUserShopPermission": "The user does not have sufficient permissions for this shop."
+  },
+  "warnings": {
+    "WarnChargeTwice": "Account cannot be charged twice."
+  },
+  "success": {
+    "OrderPlaced": "Order has been placed successfully.",
+    "ShopDeleted": "Shop has been deleted successfully."
+  },
+  "account-view": {
+    "PromptLock": "Are you sure you want to lock this account?",
+    "PromptUnlock": "Are you sure you want to unlock this account?"
+  },
+  "sidebar": {
+    "Shop": "Shops",
+    "History": "History",
+    "CheckAccount": "Check Balance",
+    "ChargeAccount": "Top Up Balance",
+    "PayoutAccount": "Withdraw Balance",
+    "ManageAccounts": "Accounts",
+    "Admin": "Admin"
+  }
+}

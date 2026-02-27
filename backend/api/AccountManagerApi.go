@@ -5,9 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/uoul/klcs/backend/core/api/dto"
+	"github.com/uoul/klcs/backend/core/apperror"
 	"github.com/uoul/klcs/backend/core/domain"
-
-	appError "github.com/uoul/klcs/backend/core/error"
 )
 
 func (e *Api) getAccounts(ctx *gin.Context) {
@@ -70,7 +69,7 @@ func (e *Api) updateAccount(ctx *gin.Context) {
 func (e *Api) closeAccount(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	accountId := ctx.Param("accountId")
@@ -85,7 +84,7 @@ func (e *Api) closeAccount(ctx *gin.Context) {
 func (e *Api) postToAccount(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	accountId := ctx.Param("accountId")

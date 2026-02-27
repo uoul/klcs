@@ -10,11 +10,6 @@ type ErrShopNotFound struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrShopNotFound) ErrorCode() string {
-	return "USER_NOT_FOUND"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrShopNotFound) HttpStatus() int {
 	return http.StatusNotFound

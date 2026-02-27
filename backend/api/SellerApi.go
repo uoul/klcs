@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/uoul/klcs/backend/core/apperror"
 	"github.com/uoul/klcs/backend/core/domain"
-	appError "github.com/uoul/klcs/backend/core/error"
 )
 
 func (e *Api) reprint(ctx *gin.Context) {
@@ -21,13 +21,13 @@ func (e *Api) reprint(ctx *gin.Context) {
 func (e *Api) getHistoryForUser(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	lengthStr := ctx.DefaultQuery("length", "10")
 	len, err := strconv.Atoi(lengthStr)
 	if err != nil {
-		ctx.Error(appError.NewErrValidation("length(%s) parameter has to be a number", lengthStr))
+		ctx.Error(apperror.NewErrLengthMustBeNumber(err, "length(%s) parameter has to be a number", lengthStr))
 		return
 	}
 	history, err := e.logic.GetHistory(ctx, user.GetUsername(), len)
@@ -41,7 +41,7 @@ func (e *Api) getHistoryForUser(ctx *gin.Context) {
 func (e *Api) getShopsForUser(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	shops, err := e.logic.GetShopsForUser(ctx, user.GetUsername())
@@ -55,7 +55,7 @@ func (e *Api) getShopsForUser(ctx *gin.Context) {
 func (e *Api) getShopdetailsForUser(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	shopId := ctx.Param("shopId")
@@ -70,13 +70,13 @@ func (e *Api) getShopdetailsForUser(ctx *gin.Context) {
 func (e *Api) checkout(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	reqOrder := domain.Order{}
 	err = ctx.BindJSON(&reqOrder)
 	if err != nil {
-		ctx.Error(appError.NewErrValidation("failed to parse order - %v", err))
+		ctx.Error(apperror.NewErrInvalidDataFormat(err, "failed to parse order"))
 		return
 	}
 	resOrder, err := e.logic.Checkout(ctx, user.GetUsername(), user.HasRole(e.oidc.Roles.NoPrint), reqOrder)

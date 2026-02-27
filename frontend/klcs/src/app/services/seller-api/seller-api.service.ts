@@ -9,6 +9,7 @@ import { ShopDetails } from '../../domain/ShopDetails';
 import { NotificationService } from '../notification/notification.service';
 import { HistoryItem } from '../../domain/HistoryItem';
 import { Article } from '../../domain/Article';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class SellerApiService {
     private http: HttpClient,
     private cartService: ShoppingCartService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ) { }
 
   _shopId: WritableSignal<string> = signal("")
@@ -46,7 +48,7 @@ export class SellerApiService {
           }
           this._shopDetails.set(s)
         },
-        error: err => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        error: err => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.Code}`)}),
         complete: () => sub.unsubscribe()
       })
     }

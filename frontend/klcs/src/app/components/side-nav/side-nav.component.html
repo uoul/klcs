@@ -18,7 +18,7 @@
   <klcs-nav-item class="text-xl" (clicked)="updateMenuState()" routerLink="/history">
     <div class="flex items-center">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-6 fill-base-content mr-2"><path d="M480-120q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120v-240h80v94q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/></svg>
-      History
+      {{ "sidebar.History" | translate }}
     </div>
   </klcs-nav-item>
 
@@ -26,7 +26,7 @@
   <klcs-nav-item class="text-xl" (clicked)="_checkAccountDialog?.showModal()">
     <div class="flex items-center">
       <svg xmlns="http://www.w3.org/2000/svg"viewBox="0 -960 960 960" class="h-6 fill-base-content mr-2"><path d="M160-640h640v-80H160v80Zm-80-80q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v240H160v240h164v80H160q-33 0-56.5-23.5T80-240v-480ZM598-80 428-250l56-56 114 112 226-226 56 58L598-80ZM160-720v480-180 113-413Z"/></svg>
-      Check Account
+      {{ "sidebar.CheckAccount" | translate }}
     </div>
   </klcs-nav-item>
   <klcs-check-account-dialog [dialogId]="CHECK_CREDIT_DIALOG_ID" />
@@ -36,7 +36,7 @@
     <klcs-nav-item class="text-xl" (clicked)="_chargeAccountDialog?.showModal()">
       <div class="flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-6 fill-base-content mr-2"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v240H160v240h400v80H160Zm0-480h640v-80H160v80ZM760-80v-120H640v-80h120v-120h80v120h120v80H840v120h-80ZM160-240v-480 480Z"/></svg>
-        Charge Account
+        {{ "sidebar.ChargeAccount" | translate }}
       </div>
     </klcs-nav-item>
     <klcs-charge-account-dialog [dialogId]="CHARGE_CREDIT_DIALOG_ID" />
@@ -47,7 +47,7 @@
     <klcs-nav-item class="text-xl" (clicked)="_closeAccountDialog?.showModal()">
       <div class="flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-6 fill-base-content mr-2"><path d="m871-203-71-71v-206H594L434-640h366v-80H354l-80-80h526q33 0 56.5 23.5T880-720v480q0 10-2 19.5t-7 17.5ZM385-462Zm192-35Zm-211 17H160v240h446L366-480ZM818-28 686-160H160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800l80 80h-80v80h46L26-820l57-57L875-85l-57 57Z"/></svg>
-        Payout Account
+        {{ "sidebar.PayoutAccount" | translate }}
       </div>
     </klcs-nav-item>
     <klcs-close-account-dialog [dialogId]="CLOSE_ACCOUNT_DIALOG_ID" />
@@ -58,7 +58,7 @@
     <klcs-nav-item routerLink="/accounts" class="text-xl" (clicked)="updateMenuState()">
       <div class="flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-6 fill-base-content mr-2"><path d="M200-280v-280h80v280h-80Zm240 0v-280h80v280h-80ZM80-120v-80h800v80H80Zm600-160v-280h80v280h-80ZM80-640v-80l400-200 400 200v80H80Zm178-80h444-444Zm0 0h444L480-830 258-720Z"/></svg>
-        Manage Accounts 
+        {{ "sidebar.ManageAccounts" | translate }}
       </div>
     </klcs-nav-item>
   }
@@ -68,7 +68,7 @@
     <klcs-nav-item routerLink="/admin" class="text-xl" (clicked)="updateMenuState()">
       <div class="flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-6 fill-base-content mr-2"><path d="M680-280q25 0 42.5-17.5T740-340q0-25-17.5-42.5T680-400q-25 0-42.5 17.5T620-340q0 25 17.5 42.5T680-280Zm0 120q31 0 57-14.5t42-38.5q-22-13-47-20t-52-7q-27 0-52 7t-47 20q16 24 42 38.5t57 14.5ZM480-80q-139-35-229.5-159.5T160-516v-244l320-120 320 120v227q-19-8-39-14.5t-41-9.5v-147l-240-90-240 90v188q0 47 12.5 94t35 89.5Q310-290 342-254t71 60q11 32 29 61t41 52q-1 0-1.5.5t-1.5.5Zm200 0q-83 0-141.5-58.5T480-280q0-83 58.5-141.5T680-480q83 0 141.5 58.5T880-280q0 83-58.5 141.5T680-80ZM480-494Z"/></svg>
-        Admin 
+        {{ "sidebar.Admin" | translate }} 
       </div>
     </klcs-nav-item>
   }
