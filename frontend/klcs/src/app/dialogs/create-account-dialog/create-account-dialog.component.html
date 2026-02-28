@@ -1,9 +1,9 @@
 <dialog [id]="dialogId()" class="modal" (close)="_dialogClosed()">
   <div class="modal-box">
-    <h3 class="text-lg font-bold mb-4">Create Account</h3>
+    <h3 class="text-lg font-bold mb-4">{{ "dialogs.create-account.Title" | translate }}</h3>
     <form #f="ngForm" method="dialog" (submit)="createAccount()">
       <div class="flex items-center">
-        <input name="accountName" type="text" placeholder="Holder Name" class="input input-bordered flex-grow" [(ngModel)]="_account().HolderName"/>
+        <input name="accountName" type="text" placeholder="Max Mustermann" class="input input-bordered flex-grow" [(ngModel)]="_account().HolderName"/>
         <div class="flex justify-center">
           <label class="swap swap-rotate mx-4">
             <input name="accountLock" type="checkbox" [(ngModel)]="_account().Locked"/>
@@ -13,9 +13,9 @@
         </div>
       </div>
       <div class="modal-action">
-        <button class="btn btn-secondary" [disabled]="f.invalid">Create</button>
+        <button class="btn btn-secondary" [disabled]="f.invalid">{{ "dialogs.create-account.BtnCreate" | translate }}</button>
         <form method="dialog" (submit)="init()">
-          <button class="btn btn-outline btn-neutral">Close</button>
+          <button class="btn btn-outline btn-neutral">{{ "dialogs.create-account.BtnClose" | translate }}</button>
         </form>
       </div>
     </form>

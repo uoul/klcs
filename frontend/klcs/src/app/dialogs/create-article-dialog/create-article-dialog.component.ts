@@ -6,13 +6,14 @@ import { Printer } from '../../domain/Printer';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-create-article-dialog',
   imports: [
     FormsModule,
+    TranslatePipe,
   ],
   templateUrl: './create-article-dialog.component.html',
   styleUrl: './create-article-dialog.component.css'

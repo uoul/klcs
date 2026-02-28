@@ -4,8 +4,8 @@
     "ErrArticleNotFound": "Artikel nicht gefunden.",
     "ErrArticlePrinterRelation": "Der Artikel ist keinem Drucker zugeordnet.",
     "ErrArticleShopRelation": "Der Artikel gehört nicht zu diesem Shop.",
-    "ErrCheckoutLockedAccount": "Checkout nicht möglich – das Konto ist gesperrt.",
-    "ErrCloseLockedAccount": "Abschluss nicht möglich – das Konto ist gesperrt.",
+    "ErrCheckoutLockedAccount": "Checkout nicht möglich - das Konto ist gesperrt.",
+    "ErrCloseLockedAccount": "Auszahlen nicht möglich - das Konto ist gesperrt.",
     "ErrDataAccess": "Fehler beim Zugriff auf die Daten.",
     "ErrForbidden": "Zugriff verweigert.",
     "ErrInternal": "Interner Serverfehler. Bitte versuchen Sie es später erneut.",
@@ -16,7 +16,7 @@
     "ErrNotEnoughBalance": "Nicht genügend Guthaben auf dem Konto.",
     "ErrNotMatchingArticleIds": "Die Artikel-IDs stimmen nicht überein.",
     "ErrPaymentTypeNotSupported": "Diese Zahlungsart wird nicht unterstützt.",
-    "ErrPostLockedAccount": "Buchung nicht möglich – das Konto ist gesperrt.",
+    "ErrPostLockedAccount": "Buchung nicht möglich - das Konto ist gesperrt.",
     "ErrPrinterAndArticleNotSameShop": "Drucker und Artikel gehören nicht zum selben Shop.",
     "ErrPrinterNotConnected": "Der Drucker ist nicht verbunden.",
     "ErrPrinterNotFound": "Drucker nicht gefunden.",
@@ -36,17 +36,171 @@
     "OrderPlaced": "Bestellung wurde erfolgreich aufgegeben",
     "ShopDeleted": "Shop wurde erfolgreich gelöscht"
   },
-  "account-view": {
-    "PromptLock": "Möchtest du den Account wirklich sperren?",
-    "PromptUnlock": "Möchtest du den Account wirklich entsperren?"
+  "components": {
+    "sidebar": {
+      "Shop": "Shops",
+      "History": "Verlauf",
+      "CheckAccount": "Guthaben prüfen",
+      "ChargeAccount": "Guthaben aufladen",
+      "PayoutAccount": "Guthaben auszahlen",
+      "ManageAccounts": "Konten",
+      "Admin": "Admin"
+    },
+    "cashdesk": {
+      "BtnCheckoutCash": "Bar",
+      "BtnCheckoutCard": "Guthaben",
+      "LblSum": "Summe"
+    },
+    "shop-articles": {
+      "TabName": "Artikel",
+      "TabDescription": "Beschreibung",
+      "TabPrice": "Preis",
+      "TabAmount": "Lagerbestand"
+    },
+    "shop-printers": {
+      "TabId": "ID",
+      "TabName": "Drucker",
+      "TabConnected": "Verbindungsstatus",
+      "StateConnected": "Verbunden",
+      "StateDisconnected": "Getrennt"
+    },
+    "shop-users": {
+      "TabName": "Name",
+      "TabUser": "Benutzer",
+      "TabRoles": "Rollen"
+    },
+    "shopping-cart": {
+      "LblEmptyCart": "Keine Artikel ausgewählt",
+      "LblTotal": "Summe"
+    },
+    "payment-item-list": {
+      "TblArticle": "Artikel",
+      "TblPrice": "Preis",
+      "LblSum": "Summe",
+      "CbSelectAll": "Alle auswählen",
+      "BtnPaid": "Bezahlt"
+    }
   },
-  "sidebar": {
-    "Shop": "Shops",
-    "History": "Verlauf",
-    "CheckAccount": "Guthaben prüfen",
-    "ChargeAccount": "Guthaben aufladen",
-    "PayoutAccount": "Guthaben auszahlen",
-    "ManageAccounts": "Konten",
-    "Admin": "Admin"
+  "dialogs": {
+    "charge-account": {
+      "Title": "Guthaben aufladen",
+      "LblAccountId": "Kontonummer",
+      "LblAmount": "Betrag",
+      "LblLocked": "Gesperrt",
+      "BtnCharge": "Aufladen",
+      "BtnClose": "Schließen"
+    },
+    "check-account": {
+      "Title": "Guthaben abrufen",
+      "LblLocked": "Gesperrt",
+      "BtnCheck": "Prüfen",
+      "BtnClose": "Schließen"
+    },
+    "checkout": {
+      "Title": "Bestellung aufgeben",
+      "TblArticle": "Artikel",
+      "TblAmount": "Anzahl",
+      "TblSum": "Summe",
+      "LblEmptyCart": "Keine Artikel ausgewählt",
+      "LblDescription": "Beschreibung",
+      "LblAccountId": "Kontonummer",
+      "BtnCheckout": "Bestellen",
+      "BtnClose": "Schließen"
+    },
+    "close-account": {
+      "Title": "Guthaben auszahlen",
+      "LblAccountId": "Kontonummer",
+      "BtnConfirm": "Auszahlen",
+      "BtnClose": "Schließen",
+      "LblLocked": "Gesperrt"
+    },
+    "create-account": {
+      "Title": "Konto erstellen",
+      "BtnCreate": "Erstellen",
+      "BtnClose": "Schließen"
+    },
+    "create-article": {
+      "Title": "Artikel erstellen",
+      "LblName": "Name",
+      "LblDescription": "Beschreibung",
+      "LblCategory": "Kategorie",
+      "LblPrice": "Preis",
+      "LblAmount": "Lagerbestand",
+      "LblPrinter": "Drucker",
+      "BtnCreate": "Erstellen",
+      "BtnClose": "Schließen"
+    },
+    "create-printer": {
+      "Title": "Drucker erstellen",
+      "LblName": "Name",
+      "BtnCreate": "Erstellen",
+      "BtnClose": "Schließen"
+    },
+    "create-shop": {
+      "Title": "Shop erstellen",
+      "LblName": "Name",
+      "BtnCreate": "Erstellen",
+      "BtnClose": "Schließen"
+    },
+    "edit-account": {
+      "Title": "Konto bearbeiten",
+      "LblAccountId": "Kontonummer",
+      "LblHolder": "Kontoinhaber",
+      "BtnSave": "Speichern",
+      "BtnClose": "Schließen"
+    },
+    "edit-cart": {
+      "Title": "Warenkorb bearbeiten",
+      "PaymentNone": "Zahlungsart wählen",
+      "PaymentCash": "Bar",
+      "PaymentCard": "Guthaben",
+      "LblDescription": "Beschreibung",
+      "LblAccountId": "Kontonummer",
+      "BtnPlaceOrder": "Bestellen",
+      "BtnClose": "Schließen"
+    },
+    "read-qr": {
+      "Title": "QR Scannen",
+      "BtnClose": "Schließen"
+    },
+    "update-article": {
+      "Title": "Artikel bearbeiten",
+      "LblName": "Name",
+      "LblDescription": "Beschreibung",
+      "LblCategory": "Kategorie",
+      "LblPrice": "Preis",
+      "LblAmount": "Lagerbestand",
+      "LblPrinter": "Drucker",
+      "BtnSave": "Speichern",
+      "BtnClose": "Schließen"
+    },
+    "update-shop": {
+      "Title": "Shop bearbeiten",
+      "LblName": "Name",
+      "BtnSave": "Speichern",
+      "BtnClose": "Schließen"
+    }
+  },
+  "views": {
+    "shop": {
+      "TabHeaderSell": "Verkauf",
+      "TabHeaderArticles": "Artikelstamm",
+      "TabHeaderPrinters": "Drucker",
+      "TabHeaderUsers": "Benutzer"
+    },
+    "history": {
+      "TabArticle": "Artikel",
+      "TabAmount": "Anzahl",
+      "AccountInfo": "Wurde mit Guthaben bezahlt",
+      "BtnReprint": "Druckauftrag erneut senden"
+    },
+    "admin": {
+      "TabName": "Shop"
+    },
+    "account": {
+      "TabAccountId": "Kontonummer",
+      "TabHolder": "Kontoinhaber",
+      "StateLocked": "Gesperrt"
+    }
   }
 }

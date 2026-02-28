@@ -12,7 +12,7 @@ import { FocusDirective } from '../../directives/focus/focus.directive';
 import { Article } from '../../domain/Article';
 import { PaymentItemListComponent } from "../../components/payment-item-list/payment-item-list.component";
 import { PublicApiService } from '../../services/public-api/public-api.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -22,7 +22,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     ShoppingCartComponent,
     ZXingScannerModule,
     FocusDirective,
-    PaymentItemListComponent
+    PaymentItemListComponent,
+    TranslatePipe,
 ],
   templateUrl: './edit-cart-dialog.component.html',
   styleUrl: './edit-cart-dialog.component.css'

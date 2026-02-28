@@ -1,10 +1,10 @@
 <div class="w-full flex flex-col">
   @if (isAdmin()) {
-    <div class="tabs tabs-lg tabs-bordered sticky top-0 z-10 bg-base-100">
-      <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 1" (click)="currentTab.set(1)">Sell</a>
-      <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 2" (click)="currentTab.set(2)">Articles</a>
-      <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 3" (click)="currentTab.set(3)">Printers</a>
-      <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 4" (click)="currentTab.set(4)">Users</a>
+    <div class="tabs tabs-lg tabs-bordered sticky top-0 z-10 bg-base-100 overflow-x-auto">
+      <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 1" (click)="currentTab.set(1)">{{ "views.shop.TabHeaderSell" | translate}}</a>
+      <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 2" (click)="currentTab.set(2)">{{ "views.shop.TabHeaderArticles" | translate}}</a>
+      <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 3" (click)="currentTab.set(3)">{{ "views.shop.TabHeaderPrinters" | translate}}</a>
+      <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 4" (click)="currentTab.set(4)">{{ "views.shop.TabHeaderUsers" | translate}}</a>
     </div>
     <div class="flex-grow">
       <div class="w-full" [hidden]="currentTab() != 1">

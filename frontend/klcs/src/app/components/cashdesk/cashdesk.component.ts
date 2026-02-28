@@ -7,6 +7,7 @@ import { ShoppingCartComponent } from "../shopping-cart/shopping-cart.component"
 import { EditCartDialogComponent } from "../../dialogs/edit-cart-dialog/edit-cart-dialog.component";
 import { CheckoutDialogComponent } from "../../dialogs/checkout-dialog/checkout-dialog.component";
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'klcs-cashdesk',
@@ -15,7 +16,8 @@ import { SellerApiService } from '../../services/seller-api/seller-api.service';
     CashdeskArticleComponent,
     ShoppingCartComponent,
     EditCartDialogComponent,
-    CheckoutDialogComponent
+    CheckoutDialogComponent,
+    TranslatePipe,
 ],
   templateUrl: './cashdesk.component.html',
   styleUrl: './cashdesk.component.css'

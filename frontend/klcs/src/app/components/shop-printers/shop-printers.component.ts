@@ -6,12 +6,15 @@ import { NotificationService } from '../../services/notification/notification.se
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-shop-printers',
-  imports: [CreatePrinterDialogComponent],
+  imports: [
+    CreatePrinterDialogComponent,
+    TranslatePipe,
+  ],
   templateUrl: './shop-printers.component.html',
   styleUrl: './shop-printers.component.css'
 })

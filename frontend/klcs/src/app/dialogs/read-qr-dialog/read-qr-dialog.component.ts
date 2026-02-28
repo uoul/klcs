@@ -1,10 +1,12 @@
 import { AfterViewInit, Component, input, InputSignal, model, OnInit, output, OutputEmitterRef, signal, WritableSignal } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 
 @Component({
   selector: 'klcs-read-qr-dialog',
   imports: [
     ZXingScannerModule,
+    TranslatePipe,
   ],
   templateUrl: './read-qr-dialog.component.html',
   styleUrl: './read-qr-dialog.component.css'

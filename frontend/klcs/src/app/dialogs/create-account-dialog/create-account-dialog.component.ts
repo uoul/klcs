@@ -4,15 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
-import { ErrorResponse } from '../../domain/ErrorResponse';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService, TranslateDirective } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-create-account-dialog',
   imports: [
     FormsModule,
-  ],
+    TranslatePipe,
+],
   templateUrl: './create-account-dialog.component.html',
   styleUrl: './create-account-dialog.component.css'
 })

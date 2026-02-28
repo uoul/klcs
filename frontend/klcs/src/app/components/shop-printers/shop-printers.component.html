@@ -2,9 +2,9 @@
   <table class="table mb-2">
     <thead>
       <tr>
-        <th>Id</th>
-        <th>Name</th>
-        <th>Connected</th>
+        <th>{{ "components.shop-printers.TabId" | translate }}</th>
+        <th>{{ "components.shop-printers.TabName" | translate }}</th>
+        <th>{{ "components.shop-printers.TabConnected" | translate }}</th>
         <th></th>
       </tr>
     </thead>
@@ -15,9 +15,9 @@
         <td>{{ printer.Name }}</td>
         <td>
           @if (printer.Connected) {
-            <div class="badge badge-success text-success-content">Connected</div>
+            <div class="badge badge-success text-success-content">{{ "components.shop-printers.StateConnected" | translate }}</div>
           } @else {
-            <div class="badge badge-error text-error-content">Disconnected</div>
+            <div class="badge badge-error text-error-content">{{ "components.shop-printers.StateDisconnected" | translate }}</div>
           }
         </td>
         <td class="flex justify-end">

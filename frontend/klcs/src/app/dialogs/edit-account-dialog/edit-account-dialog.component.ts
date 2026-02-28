@@ -6,7 +6,7 @@ import { NotificationService } from '../../services/notification/notification.se
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
 import { QRCodeComponent } from 'angularx-qrcode';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -14,6 +14,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   imports: [
     FormsModule,
     QRCodeComponent,
+    TranslatePipe,
   ],
   templateUrl: './edit-account-dialog.component.html',
   styleUrl: './edit-account-dialog.component.css'

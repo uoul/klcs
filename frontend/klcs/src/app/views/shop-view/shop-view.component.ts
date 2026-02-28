@@ -10,7 +10,7 @@ import { ShopPrintersComponent } from "../../components/shop-printers/shop-print
 import { ShopUsersComponent } from "../../components/shop-users/shop-users.component";
 import { NotificationService } from '../../services/notification/notification.service';
 import { ErrorResponse } from '../../domain/ErrorResponse';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -19,7 +19,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     CashdeskComponent,
     ShopArticlesComponent,
     ShopPrintersComponent,
-    ShopUsersComponent
+    ShopUsersComponent,
+    TranslatePipe,
 ],
   templateUrl: './shop-view.component.html',
   styleUrl: './shop-view.component.css'

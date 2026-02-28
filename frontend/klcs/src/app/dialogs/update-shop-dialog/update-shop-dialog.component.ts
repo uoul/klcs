@@ -4,14 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { KlcsAdminApiService } from '../../services/klcs-admin-api/klcs-admin-api.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
-import { ErrorResponse } from '../../domain/ErrorResponse';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-update-shop-dialog',
   imports: [
     FormsModule,
+    TranslatePipe,
   ],
   templateUrl: './update-shop-dialog.component.html',
   styleUrl: './update-shop-dialog.component.css'

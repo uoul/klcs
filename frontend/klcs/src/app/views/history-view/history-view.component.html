@@ -27,8 +27,8 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Article</th>
-              <th>Amount</th>
+              <th>{{ "views.history.TabArticle" | translate }}</th>
+              <th>{{ "views.history.TabAmount" | translate }}</th>
               <th></th>
             </tr>
           </thead>
@@ -60,12 +60,12 @@
                 stroke-width="2"
                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-            <span>Account: {{ item.AccountHolder }}</span>
+            <span>{{ "views.history.AccountInfo" | translate }} {{ item.AccountHolder ? `(${item.AccountHolder})` : "" }}</span>
           </div>
         }
         @if(checkAnyNotPrinted(item)){
           <button class="btn btn-primary btn-outline w-full mt-4" (click)="sendPrintJob(item.TransactionId)" [disabled]="reprintRequestRunning()">
-            Repeat Print Job
+            {{ "views.history.BtnReprint" | translate }}
           </button>
         }
       </div>

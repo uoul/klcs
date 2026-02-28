@@ -5,7 +5,7 @@
     "ErrArticlePrinterRelation": "The article is not assigned to any printer.",
     "ErrArticleShopRelation": "The article does not belong to this shop.",
     "ErrCheckoutLockedAccount": "Checkout not possible – the account is locked.",
-    "ErrCloseLockedAccount": "Closing not possible – the account is locked.",
+    "ErrCloseLockedAccount": "Payout not possible – the account is locked.",
     "ErrDataAccess": "An error occurred while accessing the data.",
     "ErrForbidden": "Access denied.",
     "ErrInternal": "Internal server error. Please try again later.",
@@ -36,17 +36,171 @@
     "OrderPlaced": "Order has been placed successfully.",
     "ShopDeleted": "Shop has been deleted successfully."
   },
-  "account-view": {
-    "PromptLock": "Are you sure you want to lock this account?",
-    "PromptUnlock": "Are you sure you want to unlock this account?"
+  "components": {
+    "sidebar": {
+      "Shop": "Shops",
+      "History": "History",
+      "CheckAccount": "Check Balance",
+      "ChargeAccount": "Charge Account",
+      "PayoutAccount": "Payout Account",
+      "ManageAccounts": "Accounts",
+      "Admin": "Admin"
+    },
+    "cashdesk": {
+      "BtnCheckoutCash": "Cash",
+      "BtnCheckoutCard": "Balance",
+      "LblSum": "Total"
+    },
+    "shop-articles": {
+      "TabName": "Article",
+      "TabDescription": "Description",
+      "TabPrice": "Price",
+      "TabAmount": "Stock"
+    },
+    "shop-printers": {
+      "TabId": "ID",
+      "TabName": "Printer",
+      "TabConnected": "Connection Status",
+      "StateConnected": "Connected",
+      "StateDisconnected": "Disconnected"
+    },
+    "shop-users": {
+      "TabName": "Name",
+      "TabUser": "User",
+      "TabRoles": "Roles"
+    },
+    "shopping-cart": {
+      "LblEmptyCart": "No articles selected",
+      "LblTotal": "Total"
+    },
+    "payment-item-list": {
+      "TblArticle": "Article",
+      "TblPrice": "Price",
+      "LblSum": "Total",
+      "CbSelectAll": "Select all",
+      "BtnPaid": "Paid"
+    }
   },
-  "sidebar": {
-    "Shop": "Shops",
-    "History": "History",
-    "CheckAccount": "Check Balance",
-    "ChargeAccount": "Top Up Balance",
-    "PayoutAccount": "Withdraw Balance",
-    "ManageAccounts": "Accounts",
-    "Admin": "Admin"
+  "dialogs": {
+    "charge-account": {
+      "Title": "Charge Account",
+      "LblAccountId": "Account Number",
+      "LblAmount": "Amount",
+      "LblLocked": "Locked",
+      "BtnCharge": "Charge",
+      "BtnClose": "Close"
+    },
+    "check-account": {
+      "Title": "Check Balance",
+      "LblLocked": "Locked",
+      "BtnCheck": "Check",
+      "BtnClose": "Close"
+    },
+    "checkout": {
+      "Title": "Place Order",
+      "TblArticle": "Article",
+      "TblAmount": "Quantity",
+      "TblSum": "Total",
+      "LblEmptyCart": "No articles selected",
+      "LblDescription": "Description",
+      "LblAccountId": "Account Number",
+      "BtnCheckout": "Order",
+      "BtnClose": "Close"
+    },
+    "close-account": {
+      "Title": "Payout Account",
+      "LblAccountId": "Account Number",
+      "BtnConfirm": "Payout",
+      "BtnClose": "Close",
+      "LblLocked": "Locked"
+    },
+    "create-account": {
+      "Title": "Create Account",
+      "BtnCreate": "Create",
+      "BtnClose": "Close"
+    },
+    "create-article": {
+      "Title": "Create Article",
+      "LblName": "Name",
+      "LblDescription": "Description",
+      "LblCategory": "Category",
+      "LblPrice": "Price",
+      "LblAmount": "Stock",
+      "LblPrinter": "Printer",
+      "BtnCreate": "Create",
+      "BtnClose": "Close"
+    },
+    "create-printer": {
+      "Title": "Create Printer",
+      "LblName": "Name",
+      "BtnCreate": "Create",
+      "BtnClose": "Close"
+    },
+    "create-shop": {
+      "Title": "Create Shop",
+      "LblName": "Name",
+      "BtnCreate": "Create",
+      "BtnClose": "Close"
+    },
+    "edit-account": {
+      "Title": "Edit Account",
+      "LblAccountId": "Account Number",
+      "LblHolder": "Account Holder",
+      "BtnSave": "Save",
+      "BtnClose": "Close"
+    },
+    "edit-cart": {
+      "Title": "Edit Cart",
+      "PaymentNone": "Select payment type",
+      "PaymentCash": "Cash",
+      "PaymentCard": "Balance",
+      "LblDescription": "Description",
+      "LblAccountId": "Account Number",
+      "BtnPlaceOrder": "Order",
+      "BtnClose": "Close"
+    },
+    "read-qr": {
+      "Title": "Scan QR",
+      "BtnClose": "Close"
+    },
+    "update-article": {
+      "Title": "Edit Article",
+      "LblName": "Name",
+      "LblDescription": "Description",
+      "LblCategory": "Category",
+      "LblPrice": "Price",
+      "LblAmount": "Stock",
+      "LblPrinter": "Printer",
+      "BtnSave": "Save",
+      "BtnClose": "Close"
+    },
+    "update-shop": {
+      "Title": "Edit Shop",
+      "LblName": "Name",
+      "BtnSave": "Save",
+      "BtnClose": "Close"
+    }
+  },
+  "views": {
+    "shop": {
+      "TabHeaderSell": "Sales",
+      "TabHeaderArticles": "Articles",
+      "TabHeaderPrinters": "Printers",
+      "TabHeaderUsers": "Users"
+    },
+    "history": {
+      "TabArticle": "Article",
+      "TabAmount": "Quantity",
+      "AccountInfo": "Paid with account balance",
+      "BtnReprint": "Resend print job"
+    },
+    "admin": {
+      "TabName": "Shop"
+    },
+    "account": {
+      "TabAccountId": "Account Number",
+      "TabHolder": "Account Holder",
+      "StateLocked": "Locked"
+    }
   }
 }

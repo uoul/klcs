@@ -6,8 +6,7 @@ import { AccountManagerApiService } from '../../services/account-manager-api/acc
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
-import { ErrorResponse } from '../../domain/ErrorResponse';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -16,6 +15,7 @@ import { HttpErrorResponse } from '@angular/common/http';
     CommonModule,
     FormsModule,
     ZXingScannerModule,
+    TranslatePipe,
   ],
   templateUrl: './check-account-dialog.component.html',
   styleUrl: './check-account-dialog.component.css'

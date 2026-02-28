@@ -6,8 +6,7 @@ import { AccountDetails } from '../../domain/AccountDetails';
 import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
-import { ErrorResponse } from '../../domain/ErrorResponse';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -15,7 +14,8 @@ import { HttpErrorResponse } from '@angular/common/http';
   imports: [
     CommonModule,
     FormsModule,
-    ZXingScannerModule
+    ZXingScannerModule,
+    TranslatePipe,
   ],
   templateUrl: './close-account-dialog.component.html',
   styleUrl: './close-account-dialog.component.css'

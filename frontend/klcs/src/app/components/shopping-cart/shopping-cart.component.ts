@@ -4,13 +4,14 @@ import { OrderPosition } from '../../domain/OrderPosition';
 import { ShoppingCartItemComponent } from "../shopping-cart-item/shopping-cart-item.component";
 import { Article } from '../../domain/Article';
 import { CommonModule } from '@angular/common';
-import { CheckoutDialogComponent } from "../../dialogs/checkout-dialog/checkout-dialog.component";
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'klcs-shopping-cart',
   imports: [
     CommonModule,
     ShoppingCartItemComponent,
+    TranslatePipe,
 ],
   templateUrl: './shopping-cart.component.html',
   styleUrl: './shopping-cart.component.css'

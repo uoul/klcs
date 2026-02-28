@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, input, InputSignal, output, OutputEmitterRef, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ZXingScannerModule } from "@zxing/ngx-scanner";
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { AccountDetails } from '../../domain/AccountDetails';
@@ -15,6 +15,7 @@ import { NotificationService } from '../../services/notification/notification.se
     CommonModule,
     ZXingScannerModule,
     FormsModule,
+    TranslatePipe,
   ],
   templateUrl: './charge-account-dialog.component.html',
   styleUrl: './charge-account-dialog.component.css'

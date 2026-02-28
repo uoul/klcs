@@ -7,8 +7,7 @@ import { ReadQrDialogComponent } from "../../dialogs/read-qr-dialog/read-qr-dial
 import { EditAccountDialogComponent } from "../../dialogs/edit-account-dialog/edit-account-dialog.component";
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
-import { ErrorResponse } from '../../domain/ErrorResponse';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -17,7 +16,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     FormsModule,
     CreateAccountDialogComponent,
     ReadQrDialogComponent,
-    EditAccountDialogComponent
+    EditAccountDialogComponent,
+    TranslatePipe,
 ],
   templateUrl: './account-view.component.html',
   styleUrl: './account-view.component.css'
@@ -64,17 +64,6 @@ export class AccountViewComponent implements OnInit {
       error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
-  }
-
-  setLocked(account: Account, state: boolean) {
-    if(confirm(state ? this.translate.instant("account-view.PromptLock") : this.translate.instant("account-view.PromptUnlock"))){
-      account.Locked = state
-      const sub = this.accountManagerApi.updateAccount(account).subscribe({
-        next: _ => this.refresh(),
-        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-        complete: () => sub.unsubscribe(),
-      })
-    }
   }
 
   showCreateAccountDialog(){

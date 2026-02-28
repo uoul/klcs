@@ -18,14 +18,14 @@
   </div>
   <div class="hidden xl:flex xl:w-1/2 flex-col xl:mx-2">
     <klcs-shopping-cart />
-    <button class="btn btn-secondary btn-outline my-1" (click)="showCheckout(false)">Checkout Cash</button>
-    <button class="btn btn-secondary btn-outline my-1" (click)="showCheckout(true)">Checkout Card</button>
+    <button class="btn btn-secondary btn-outline my-1" (click)="showCheckout(false)">{{ "components.cashdesk.BtnCheckoutCash" | translate }}</button>
+    <button class="btn btn-secondary btn-outline my-1" (click)="showCheckout(true)">{{ "components.cashdesk.BtnCheckoutCard" | translate }}</button>
     <klcs-checkout-dialog [dialogId]="CHECKOUT_DIALOG_ID" [withCard]="checkoutCard()"/>
   </div>
 
   <div class="xl:hidden flex flex-col footer justify-end fixed w-full bottom-0">
     <div class="w-full h-20 bg-secondary text-2xl flex items-center" (click)="showShoppingCartDialog()">
-      <span class="font-bold underline underline-offset-4 ml-4">Total:</span>
+      <span class="font-bold underline underline-offset-4 ml-4">{{ "components.cashdesk.LblSum" | translate }}:</span>
       <span class="flex flex-grow justify-end mr-4">{{ shoppingCart.getSum() / 100 | currency: 'EUR' }}</span>
     </div>
   </div>

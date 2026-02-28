@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../services/notification/notification.service';
 import { ErrorResponse } from '../../domain/ErrorResponse';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 interface _InternalUser {
@@ -26,6 +26,7 @@ interface _InternalUser {
   selector: 'klcs-shop-users',
   imports: [
     CommonModule,
+    TranslatePipe,
   ],
   templateUrl: './shop-users.component.html',
   styleUrl: './shop-users.component.css'

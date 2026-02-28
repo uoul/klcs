@@ -6,14 +6,15 @@ import { UpdateShopDialogComponent } from "../../dialogs/update-shop-dialog/upda
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-admin-view',
   imports: [
     CreateShopDialogComponent,
-    UpdateShopDialogComponent
+    UpdateShopDialogComponent,
+    TranslatePipe,
 ],
   templateUrl: './admin-view.component.html',
   styleUrl: './admin-view.component.css'

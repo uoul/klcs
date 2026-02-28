@@ -13,7 +13,7 @@ import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
 import { ShopDetails } from '../../domain/ShopDetails';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -21,7 +21,8 @@ import { HttpErrorResponse } from '@angular/common/http';
   imports: [
     CommonModule,
     CreateArticleDialogComponent,
-    UpdateArticleDialogComponent
+    UpdateArticleDialogComponent,
+    TranslatePipe,
 ],
   templateUrl: './shop-articles.component.html',
   styleUrl: './shop-articles.component.css'

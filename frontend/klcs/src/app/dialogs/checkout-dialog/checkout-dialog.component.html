@@ -1,14 +1,14 @@
 <dialog [id]="dialogId()" class="modal" (close)="_dialogClosed()">
   <div class="modal-box">
-    <h3 class="text-lg font-bold">Checkout</h3>
+    <h3 class="text-lg font-bold pb-4">{{ "dialogs.checkout.Title" | translate }}</h3>
     @if (!scannerActive()) {
       @if (shoppingCart.getOrderItems().length > 0) {
         <table class="table">
           <thead>
             <tr>
-              <th>Article</th>
-              <th>Count</th>
-              <th class="text-right">Sum</th>
+              <th>{{ "dialogs.checkout.TblArticle" | translate }}</th>
+              <th>{{ "dialogs.checkout.TblAmount" | translate }}</th>
+              <th class="text-right">{{ "dialogs.checkout.TblSum" | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -29,24 +29,34 @@
           </tbody>
         </table>
       } @else {
-        <span class="w-full h-32 flex justify-center text-opacity-30 text-base-content items-center border-neutral border-2 rounded-lg border-opacity-5 my-2">Empty cart</span>
+        <span class="w-full h-32 flex justify-center text-opacity-30 text-base-content items-center border-neutral border-2 rounded-lg border-opacity-5 my-2">{{ "dialogs.checkout.LblEmptyCart" | translate }}</span>
       }
     }
     <form #f="ngForm" (submit)="checkout()" method="dialog">
       @if (!scannerActive()) {
         <fieldset class="flex flex-col" [disabled]="shoppingCart.getOrderItems().length <= 0">
           @if (withCard()) {
-            <div class="join w-full mt-2">
-              <input name="accountId" type="text" placeholder="*AccountID" required klcsFocus class="input input-bordered join-item w-full invalid:border-red-500" pattern="^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$" [(ngModel)]="accountId" />
-              <button class="btn btn-neutral join-item" type="button" (click)="scannerActive.set(true)">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-6 w-6 fill-neutral-content">
-                  <path d="M80-680v-200h200v80H160v120H80Zm0 600v-200h80v120h120v80H80Zm600 0v-80h120v-120h80v200H680Zm120-600v-120H680v-80h200v200h-80ZM700-260h60v60h-60v-60Zm0-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm120-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm240-320v240H520v-240h240ZM440-440v240H200v-240h240Zm0-320v240H200v-240h240Zm-60 500v-120H260v120h120Zm0-320v-120H260v120h120Zm320 0v-120H580v120h120Z"/>
-                </svg>
-              </button>
-            </div>
+            <label class="form-control w-full mt-2">
+              <div class="label">
+                <span class="label-text">{{ "dialogs.checkout.LblAccountId" | translate }}</span>
+              </div>
+              <div class="join w-full mt-2">
+                <input name="accountId" type="text" placeholder="*AccountID" required klcsFocus class="input input-bordered join-item w-full invalid:border-red-500" pattern="^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$" [(ngModel)]="accountId" />
+                <button class="btn btn-neutral join-item" type="button" (click)="scannerActive.set(true)">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-6 w-6 fill-neutral-content">
+                    <path d="M80-680v-200h200v80H160v120H80Zm0 600v-200h80v120h120v80H80Zm600 0v-80h120v-120h80v200H680Zm120-600v-120H680v-80h200v200h-80ZM700-260h60v60h-60v-60Zm0-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm120-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm240-320v240H520v-240h240ZM440-440v240H200v-240h240Zm0-320v240H200v-240h240Zm-60 500v-120H260v120h120Zm0-320v-120H260v120h120Zm320 0v-120H580v120h120Z"/>
+                  </svg>
+                </button>
+              </div>
+            </label>
           }
   
-          <input type="text" name="description" class="input input-bordered mt-2" placeholder="Description" alt="Description" [(ngModel)]="description" tabindex="1"/>
+          <label class="form-control w-full mt-2">
+            <div class="label">
+              <span class="label-text">{{ "dialogs.checkout.LblDescription" | translate }}</span>
+            </div>
+            <input type="text" name="description" class="input input-bordered mt-2" alt="Description" [(ngModel)]="description" tabindex="1"/>
+          </label>
   
         </fieldset>
       } @else {
@@ -54,9 +64,9 @@
       }
       
       <div class="modal-action">
-        <button class="btn btn-secondary" [disabled]="f.invalid || shoppingCart.getOrderItems().length <= 0" type="submit">Checkout</button>
+        <button class="btn btn-secondary" [disabled]="f.invalid || shoppingCart.getOrderItems().length <= 0" type="submit">{{ "dialogs.checkout.BtnCheckout" | translate }}</button>
         <form method="dialog">
-          <button class="btn btn-outline btn-primary">Cancel</button>
+          <button class="btn btn-outline btn-primary">{{ "dialogs.checkout.BtnClose" | translate }}</button>
         </form>
       </div>
     </form>
