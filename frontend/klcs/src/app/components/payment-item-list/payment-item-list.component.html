@@ -2,8 +2,8 @@
   <table class="table table-lg">
     <thead>
       <tr>
-        <th>Article</th>
-        <th>Price</th>
+        <th>{{ "components.payment-item-list.TblArticle" | translate }}</th>
+        <th>{{ "components.payment-item-list.TblPrice" | translate }}</th>
       </tr>
     </thead>
     <tbody>
@@ -17,17 +17,17 @@
   </table>
   <div class="py-4 border-t border-black w-full">
     <span class="pb-2 border-b-4 border-double border-black text-2xl flex justify-between">
-      <span class="font-bold pr-2">Sum:</span>
+      <span class="font-bold pr-2">{{ "components.payment-item-list.LblSum" | translate }}:</span>
       <span>{{ sum() / 100 | currency: 'EUR' }} </span>
     </span>
   </div>
   <div class="flex">
     <label class="label">
     <input type="checkbox" class="checkbox mr-3" (change)="handleMarkCheckbox($event)"/>
-    Select All
+    {{ "components.payment-item-list.CbSelectAll" | translate }}
   </label>
   </div>
   <div class="modal-action">
-    <button class="btn btn-outline btn-primary w-full" [disabled]="selected().length <= 0" (click)="cashed()">Paid</button>
+    <button class="btn btn-outline btn-primary w-full" [disabled]="selected().length <= 0" (click)="cashed()">{{ "components.payment-item-list.BtnPaid" | translate }}</button>
   </div>
 </div>

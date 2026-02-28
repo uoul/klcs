@@ -5,11 +5,14 @@ import { Shop } from '../../domain/Shop';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-create-shop-dialog',
   imports: [
     FormsModule,
+    TranslatePipe,
   ],
   templateUrl: './create-shop-dialog.component.html',
   styleUrl: './create-shop-dialog.component.css'
@@ -24,13 +27,14 @@ export class CreateShopDialogComponent {
   constructor(
     private klcsAdminApi: KlcsAdminApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   createShop() {
     if(this._shop().Name.length > 0) {
       const sub = this.klcsAdminApi.createShop(this._shop()).subscribe({
         next: val => this.shopCreated.emit(val),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
         complete: () => sub.unsubscribe()
       });
     }

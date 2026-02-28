@@ -10,11 +10,6 @@ type ErrPrinterAndArticleNotSameShop struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrPrinterAndArticleNotSameShop) ErrorCode() string {
-	return "CANNOT_CLOSE_LOCKED_ACCOUNT"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrPrinterAndArticleNotSameShop) HttpStatus() int {
 	return http.StatusBadRequest

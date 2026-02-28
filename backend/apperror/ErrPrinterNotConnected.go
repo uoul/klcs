@@ -10,11 +10,6 @@ type ErrPrinterNotConnected struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrPrinterNotConnected) ErrorCode() string {
-	return "ACCOUNT_NOT_FOUND"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrPrinterNotConnected) HttpStatus() int {
 	return http.StatusNotFound

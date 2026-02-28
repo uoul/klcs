@@ -1,12 +1,12 @@
 <dialog [id]="dialogId()" class="modal" (close)="dialogClosed.emit()">
   <div class="modal-box">
-    <h3 class="text-lg font-bold">Scan QR-Code</h3>
+    <h3 class="text-lg font-bold">{{ "dialogs.read-qr.Title" | translate }}</h3>
     @if (_dialog?.open) {
       <zxing-scanner (scanSuccess)="onScanSuccess($event)" (scanError)="onScanError($event)" previewFitMode="scale-down"></zxing-scanner>
     }
     <div class="modal-action">
       <form method="dialog">
-        <button class="btn btn-outline btn-neutral">Close</button>
+        <button class="btn btn-outline btn-neutral">{{ "dialogs.read-qr.BtnClose" | translate }}</button>
       </form>
     </div>
   </div>

@@ -10,11 +10,6 @@ type ErrDataAccess struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrDataAccess) ErrorCode() string {
-	return "DATA_ACCESS_FAILED"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrDataAccess) HttpStatus() int {
 	return http.StatusServiceUnavailable

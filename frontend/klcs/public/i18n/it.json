@@ -1,0 +1,206 @@
+{
+  "errors": {
+    "ErrAccountNotFound": "Account non trovato.",
+    "ErrArticleNotFound": "Articolo non trovato.",
+    "ErrArticlePrinterRelation": "L'articolo non è assegnato a nessuna stampante.",
+    "ErrArticleShopRelation": "L'articolo non appartiene a questo negozio.",
+    "ErrCheckoutLockedAccount": "Checkout non possibile – l'account è bloccato.",
+    "ErrCloseLockedAccount": "Pagamento non possibile – l'account è bloccato.",
+    "ErrDataAccess": "Si è verificato un errore durante l'accesso ai dati.",
+    "ErrForbidden": "Accesso negato.",
+    "ErrInternal": "Errore interno del server. Riprova più tardi.",
+    "ErrInvalidDataFormat": "Formato dati non valido.",
+    "ErrLenghtMustBeNumber": "La lunghezza deve essere un numero.",
+    "ErrNoAccountIdForCardPayment": "Nessun ID account fornito per il pagamento con carta.",
+    "ErrNoPrinterShopRelation": "La stampante non è assegnata a nessun negozio.",
+    "ErrNotEnoughBalance": "Saldo insufficiente.",
+    "ErrNotMatchingArticleIds": "Gli ID degli articoli non corrispondono.",
+    "ErrPaymentTypeNotSupported": "Questo metodo di pagamento non è supportato.",
+    "ErrPostLockedAccount": "Registrazione non possibile – l'account è bloccato.",
+    "ErrPrinterAndArticleNotSameShop": "La stampante e l'articolo non appartengono allo stesso negozio.",
+    "ErrPrinterNotConnected": "La stampante non è connessa.",
+    "ErrPrinterNotFound": "Stampante non trovata.",
+    "ErrShopIdUrlBodyMismatch": "L'ID negozio nell'URL non corrisponde a quello nel corpo della richiesta.",
+    "ErrShopNotFound": "Negozio non trovato.",
+    "ErrStockAmount": "Quantità di magazzino non valida o insufficiente.",
+    "ErrUnauthorized": "Non autorizzato. Effettua il login.",
+    "ErrUserForShopCreationNotFound": "L'utente per la creazione del negozio non è stato trovato.",
+    "ErrUserNoMemberOfShop": "L'utente non è membro di questo negozio.",
+    "ErrUserNotFound": "Utente non trovato.",
+    "ErrUserShopPermission": "L'utente non dispone di autorizzazioni sufficienti per questo negozio."
+  },
+  "warnings": {
+    "WarnChargeTwice": "L'account non può essere ricaricato due volte."
+  },
+  "success": {
+    "OrderPlaced": "L'ordine è stato effettuato con successo.",
+    "ShopDeleted": "Il negozio è stato eliminato con successo."
+  },
+  "components": {
+    "sidebar": {
+      "Shop": "Negozi",
+      "History": "Cronologia",
+      "CheckAccount": "Verifica saldo",
+      "ChargeAccount": "Ricarica account",
+      "PayoutAccount": "Prelievo account",
+      "ManageAccounts": "Account",
+      "Admin": "Amministratore"
+    },
+    "cashdesk": {
+      "BtnCheckoutCash": "Contanti",
+      "BtnCheckoutCard": "Saldo",
+      "LblSum": "Totale"
+    },
+    "shop-articles": {
+      "TabName": "Articolo",
+      "TabDescription": "Descrizione",
+      "TabPrice": "Prezzo",
+      "TabAmount": "Magazzino"
+    },
+    "shop-printers": {
+      "TabId": "ID",
+      "TabName": "Stampante",
+      "TabConnected": "Stato connessione",
+      "StateConnected": "Connessa",
+      "StateDisconnected": "Disconnessa"
+    },
+    "shop-users": {
+      "TabName": "Nome",
+      "TabUser": "Utente",
+      "TabRoles": "Ruoli"
+    },
+    "shopping-cart": {
+      "LblEmptyCart": "Nessun articolo selezionato",
+      "LblTotal": "Totale"
+    },
+    "payment-item-list": {
+      "TblArticle": "Articolo",
+      "TblPrice": "Prezzo",
+      "LblSum": "Totale",
+      "CbSelectAll": "Seleziona tutto",
+      "BtnPaid": "Pagato"
+    }
+  },
+  "dialogs": {
+    "charge-account": {
+      "Title": "Ricarica account",
+      "LblAccountId": "Numero account",
+      "LblAmount": "Importo",
+      "LblLocked": "Bloccato",
+      "BtnCharge": "Ricarica",
+      "BtnClose": "Chiudi"
+    },
+    "check-account": {
+      "Title": "Verifica saldo",
+      "LblLocked": "Bloccato",
+      "BtnCheck": "Verifica",
+      "BtnClose": "Chiudi"
+    },
+    "checkout": {
+      "Title": "Effettua ordine",
+      "TblArticle": "Articolo",
+      "TblAmount": "Quantità",
+      "TblSum": "Totale",
+      "LblEmptyCart": "Nessun articolo selezionato",
+      "LblDescription": "Descrizione",
+      "LblAccountId": "Numero account",
+      "BtnCheckout": "Ordina",
+      "BtnClose": "Chiudi"
+    },
+    "close-account": {
+      "Title": "Prelievo account",
+      "LblAccountId": "Numero account",
+      "BtnConfirm": "Preleva",
+      "BtnClose": "Chiudi",
+      "LblLocked": "Bloccato"
+    },
+    "create-account": {
+      "Title": "Crea account",
+      "BtnCreate": "Crea",
+      "BtnClose": "Chiudi"
+    },
+    "create-article": {
+      "Title": "Crea articolo",
+      "LblName": "Nome",
+      "LblDescription": "Descrizione",
+      "LblCategory": "Categoria",
+      "LblPrice": "Prezzo",
+      "LblAmount": "Magazzino",
+      "LblPrinter": "Stampante",
+      "BtnCreate": "Crea",
+      "BtnClose": "Chiudi"
+    },
+    "create-printer": {
+      "Title": "Crea stampante",
+      "LblName": "Nome",
+      "BtnCreate": "Crea",
+      "BtnClose": "Chiudi"
+    },
+    "create-shop": {
+      "Title": "Crea negozio",
+      "LblName": "Nome",
+      "BtnCreate": "Crea",
+      "BtnClose": "Chiudi"
+    },
+    "edit-account": {
+      "Title": "Modifica account",
+      "LblAccountId": "Numero account",
+      "LblHolder": "Titolare account",
+      "BtnSave": "Salva",
+      "BtnClose": "Chiudi"
+    },
+    "edit-cart": {
+      "Title": "Modifica carrello",
+      "PaymentNone": "Seleziona metodo di pagamento",
+      "PaymentCash": "Contanti",
+      "PaymentCard": "Saldo",
+      "LblDescription": "Descrizione",
+      "LblAccountId": "Numero account",
+      "BtnPlaceOrder": "Ordina",
+      "BtnClose": "Chiudi"
+    },
+    "read-qr": {
+      "Title": "Scansiona QR",
+      "BtnClose": "Chiudi"
+    },
+    "update-article": {
+      "Title": "Modifica articolo",
+      "LblName": "Nome",
+      "LblDescription": "Descrizione",
+      "LblCategory": "Categoria",
+      "LblPrice": "Prezzo",
+      "LblAmount": "Magazzino",
+      "LblPrinter": "Stampante",
+      "BtnSave": "Salva",
+      "BtnClose": "Chiudi"
+    },
+    "update-shop": {
+      "Title": "Modifica negozio",
+      "LblName": "Nome",
+      "BtnSave": "Salva",
+      "BtnClose": "Chiudi"
+    }
+  },
+  "views": {
+    "shop": {
+      "TabHeaderSell": "Vendita",
+      "TabHeaderArticles": "Articoli",
+      "TabHeaderPrinters": "Stampanti",
+      "TabHeaderUsers": "Utenti"
+    },
+    "history": {
+      "TabArticle": "Articolo",
+      "TabAmount": "Quantità",
+      "AccountInfo": "Pagato con saldo account",
+      "BtnReprint": "Invia nuovamente il lavoro di stampa"
+    },
+    "admin": {
+      "TabName": "Negozio"
+    },
+    "account": {
+      "TabAccountId": "Numero account",
+      "TabHolder": "Titolare account",
+      "StateLocked": "Bloccato"
+    }
+  }
+}

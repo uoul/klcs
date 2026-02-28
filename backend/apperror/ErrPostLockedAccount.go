@@ -10,11 +10,6 @@ type ErrPostLockedAccount struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrPostLockedAccount) ErrorCode() string {
-	return "CANNOT_POST_TO_LOCKED_ACCOUNT"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrPostLockedAccount) HttpStatus() int {
 	return http.StatusBadRequest

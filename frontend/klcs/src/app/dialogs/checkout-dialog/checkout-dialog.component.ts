@@ -6,8 +6,9 @@ import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
-import { ErrorResponse } from '../../domain/ErrorResponse';
 import { FocusDirective } from '../../directives/focus/focus.directive';
+import {  TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-checkout-dialog',
@@ -16,6 +17,7 @@ import { FocusDirective } from '../../directives/focus/focus.directive';
     FormsModule,
     ZXingScannerModule,
     FocusDirective,
+    TranslatePipe,
   ],
   templateUrl: './checkout-dialog.component.html',
   styleUrl: './checkout-dialog.component.css'
@@ -34,6 +36,7 @@ export class CheckoutDialogComponent {
     protected shoppingCart: ShoppingCartService,
     private sellerApi: SellerApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   _dialogClosed(){
@@ -47,20 +50,20 @@ export class CheckoutDialogComponent {
     if(this.withCard()){
       const sub = this.sellerApi.checkoutCard(this.accountId(), this.description()).subscribe({
         next: _ => {
-          this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: "Successfully placed order"})
+          this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: this.translate.instant("success.OrderPlaced")})
           this.sellerApi.refreshShopDetails()
         },
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
         complete: () => sub.unsubscribe()
       })
     }
     else {
       const sub = this.sellerApi.checkoutCash(this.description()).subscribe({
         next: _ => {
-          this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: "Successfully placed order"})
+          this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: this.translate.instant("success.OrderPlaced")})
           this.sellerApi.refreshShopDetails()
         },
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
         complete: () => sub.unsubscribe()
       })
     }

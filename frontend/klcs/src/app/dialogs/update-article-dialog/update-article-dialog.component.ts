@@ -6,11 +6,14 @@ import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-update-article-dialog',
   imports: [
     FormsModule,
+    TranslatePipe,
   ],
   templateUrl: './update-article-dialog.component.html',
   styleUrl: './update-article-dialog.component.css'
@@ -35,6 +38,7 @@ export class UpdateArticleDialogComponent {
   constructor(
     private shopAdminApi: ShopAdminApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   updateArticle() {
@@ -42,7 +46,7 @@ export class UpdateArticleDialogComponent {
     this.article().Printer = (!this._uiArticle().Printer || this._uiArticle().Printer!.Id.length <= 0) ? null : this._uiArticle().Printer;
     const sub = this.shopAdminApi.updateArticle(this.article()).subscribe({
       next: a => this.articleUpdated.emit(a),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }

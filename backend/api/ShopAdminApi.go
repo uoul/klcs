@@ -5,14 +5,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/uoul/klcs/backend/core/api/dto"
+	"github.com/uoul/klcs/backend/core/apperror"
 	"github.com/uoul/klcs/backend/core/domain"
-	appError "github.com/uoul/klcs/backend/core/error"
 )
 
 func (e *Api) getArticlesForShop(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	shopId := ctx.Param("shopId")
@@ -27,14 +27,14 @@ func (e *Api) getArticlesForShop(ctx *gin.Context) {
 func (e *Api) createArticle(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	shopId := ctx.Param("shopId")
 	article := domain.ArticleDetails{}
 	err = ctx.BindJSON(&article)
 	if err != nil {
-		ctx.Error(appError.NewErrValidation("failed to parse article - %v", err))
+		ctx.Error(apperror.NewErrInvalidDataFormat(err, "failed to parse article"))
 		return
 	}
 	a, err := e.logic.CreateArticle(
@@ -53,7 +53,7 @@ func (e *Api) createArticle(ctx *gin.Context) {
 func (e *Api) getArticle(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	articleId := ctx.Param("articleId")
@@ -68,18 +68,18 @@ func (e *Api) getArticle(ctx *gin.Context) {
 func (e *Api) updateArticle(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	articleId := ctx.Param("articleId")
 	article := domain.ArticleDetails{}
 	err = ctx.BindJSON(&article)
 	if err != nil {
-		ctx.Error(appError.NewErrValidation("failed to parse article - %v", err))
+		ctx.Error(apperror.NewErrInvalidDataFormat(err, "failed to parse article"))
 		return
 	}
 	if articleId != article.Id {
-		ctx.Error(appError.NewErrValidation("article id's does not match (%s != %s)", articleId, article.Id))
+		ctx.Error(apperror.NewErrNoMatchingArticleIds(nil, "article id's does not match (%s != %s)", articleId, article.Id))
 		return
 	}
 	a, err := e.logic.UpdateArticle(ctx, user.GetUsername(), article)
@@ -93,7 +93,7 @@ func (e *Api) updateArticle(ctx *gin.Context) {
 func (e *Api) deleteArticle(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	articleId := ctx.Param("articleId")
@@ -108,7 +108,7 @@ func (e *Api) deleteArticle(ctx *gin.Context) {
 func (e *Api) getPrintersForShop(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	shopId := ctx.Param("shopId")
@@ -123,14 +123,14 @@ func (e *Api) getPrintersForShop(ctx *gin.Context) {
 func (e *Api) createPrinter(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	shopId := ctx.Param("shopId")
 	printer := domain.Printer{}
 	err = ctx.BindJSON(&printer)
 	if err != nil {
-		ctx.Error(appError.NewErrValidation("failed to parse printer - %v", err))
+		ctx.Error(apperror.NewErrInvalidDataFormat(err, "failed to parse printer"))
 		return
 	}
 	p, err := e.logic.CreatePrinter(ctx, user.GetUsername(), shopId, printer)
@@ -144,7 +144,7 @@ func (e *Api) createPrinter(ctx *gin.Context) {
 func (e *Api) deletePrinter(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	printerId := ctx.Param("printerId")
@@ -168,7 +168,7 @@ func (e *Api) getUsers(ctx *gin.Context) {
 func (e *Api) getShopUsers(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	shopId := ctx.Param("shopId")
@@ -192,7 +192,7 @@ func (e *Api) getShopUsers(ctx *gin.Context) {
 func (e *Api) addUserRoleForShop(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	shopId := ctx.Param("shopId")
@@ -200,7 +200,7 @@ func (e *Api) addUserRoleForShop(ctx *gin.Context) {
 	role := domain.Role{}
 	err = ctx.BindJSON(&role)
 	if err != nil {
-		ctx.Error(appError.NewErrValidation("failed to bind role - %v", err))
+		ctx.Error(apperror.NewErrInvalidDataFormat(err, "failed to bind role"))
 		return
 	}
 	err = e.logic.AddUserRole(ctx, user.GetUsername(), shopId, userId, role.Id)
@@ -214,7 +214,7 @@ func (e *Api) addUserRoleForShop(ctx *gin.Context) {
 func (e *Api) deleteUserRoleFromShop(ctx *gin.Context) {
 	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
 	if err != nil {
-		ctx.Error(appError.NewErrAuthentication("failed to get user identity - %s", err))
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
 		return
 	}
 	shopId := ctx.Param("shopId")

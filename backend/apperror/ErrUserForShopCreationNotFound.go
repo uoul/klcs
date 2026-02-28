@@ -10,11 +10,6 @@ type ErrUserForShopCreationNotFound struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrUserForShopCreationNotFound) ErrorCode() string {
-	return "CANNOT_CLOSE_LOCKED_ACCOUNT"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrUserForShopCreationNotFound) HttpStatus() int {
 	return http.StatusBadRequest

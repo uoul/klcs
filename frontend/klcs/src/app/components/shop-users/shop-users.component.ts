@@ -12,6 +12,8 @@ import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../services/notification/notification.service';
 import { ErrorResponse } from '../../domain/ErrorResponse';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 interface _InternalUser {
   Id: string,
@@ -24,6 +26,7 @@ interface _InternalUser {
   selector: 'klcs-shop-users',
   imports: [
     CommonModule,
+    TranslatePipe,
   ],
   templateUrl: './shop-users.component.html',
   styleUrl: './shop-users.component.css'
@@ -35,6 +38,7 @@ export class ShopUsersComponent {
     private authService: AuthService,
     protected sellerApi: SellerApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){
     effect(() => {
       const shopId = this.sellerApi.getShopDetails().Id
@@ -73,7 +77,7 @@ export class ShopUsersComponent {
   refreshRoles() {
     const sub = this.shopAdminApi.getRoles().subscribe({
       next: r => this.roles.set(r),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }
@@ -81,7 +85,7 @@ export class ShopUsersComponent {
   refreshUsers(shopId: string) {
     const sub = this.shopAdminApi.getUsersForShop(shopId).subscribe({
       next: u => this.klcsUsers.set(u),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }
@@ -100,13 +104,13 @@ export class ShopUsersComponent {
     if (event.target.checked) {
       const sub = this.shopAdminApi.addUserRoleForShop(shopId, userId, role).subscribe({
         next: _ => this.refreshUsers(shopId),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
         complete: () => sub.unsubscribe(),
       })
     } else {
       const sub = this.shopAdminApi.deleteUserRoleForShop(shopId, userId, role.Id).subscribe({
         next: _ => this.refreshUsers(shopId),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
         complete: () => sub.unsubscribe(),
       })
     }

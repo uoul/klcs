@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/uoul/go-auth"
+	"github.com/uoul/klcs/backend/core/api/dto"
+	"github.com/uoul/klcs/backend/core/apperror"
 	"github.com/uoul/klcs/backend/core/config"
 	"github.com/uoul/klcs/backend/core/domain"
 	"github.com/uoul/klcs/backend/core/logic"
@@ -20,15 +22,11 @@ type Api struct {
 	printService  *services.PrintService
 	version       string
 
+	mode       string
 	wwwRootDir string
 	cors       config.CorsConfig
 	oidc       config.OidcConfig
 	uiConfig   config.UiConfig
-}
-
-type ErrorResponse struct {
-	Type    string `json:"type"`
-	Message string `json:"message"`
 }
 
 func (e *Api) Run(api string) error {
@@ -59,9 +57,9 @@ func (e *Api) Run(api string) error {
 	apiV1 := router.Group("/api/v1")
 	// Setup global middleware
 	apiV1.Use(
+		e.errorTranslation(),
 		e.checkUserLoggedIn(),
 		e.updateUserByOidcData(),
-		e.errorTranslation(),
 	)
 	// Setup routergroups
 	e.setupSysAdminRg(apiV1, "/admin")
@@ -154,6 +152,12 @@ func WithCorsHeaders(v []string) func(*Api) {
 	}
 }
 
+func WithReleaseMode() func(*Api) {
+	return func(a *Api) {
+		a.mode = gin.ReleaseMode
+	}
+}
+
 func NewApi(version string, corsCfg config.CorsConfig, oidcCfg config.OidcConfig, uiConfig config.UiConfig, logic *logic.Logic, authenticator auth.IAuthenticator[domain.OidcUser], printService *services.PrintService, opts ...func(*Api)) *Api {
 	// Create Instance
 	a := &Api{
@@ -166,6 +170,7 @@ func NewApi(version string, corsCfg config.CorsConfig, oidcCfg config.OidcConfig
 		uiConfig:      uiConfig,
 
 		wwwRootDir: "wwwroot",
+		mode:       gin.DebugMode,
 	}
 	// Apply Options
 	for _, o := range opts {
@@ -175,9 +180,18 @@ func NewApi(version string, corsCfg config.CorsConfig, oidcCfg config.OidcConfig
 	return a
 }
 
-func NewErrorResponse(err error) *ErrorResponse {
-	return &ErrorResponse{
-		Type:    reflect.TypeOf(err).Name(),
-		Message: err.Error(),
+func (a *Api) NewErrorResponse(err apperror.IAppError) *dto.ErrorResponse {
+	var msg string
+	if a.mode == gin.DebugMode {
+		msg = err.Error()
+	}
+	t := reflect.TypeOf(err)
+	// Handle if Error is a pointer
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	return &dto.ErrorResponse{
+		Code:         t.Name(),
+		DebugMessage: msg,
 	}
 }

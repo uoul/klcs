@@ -10,11 +10,6 @@ type ErrCheckoutLockedAccount struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrCheckoutLockedAccount) ErrorCode() string {
-	return "USER_NOT_FOUND"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrCheckoutLockedAccount) HttpStatus() int {
 	return http.StatusNotFound

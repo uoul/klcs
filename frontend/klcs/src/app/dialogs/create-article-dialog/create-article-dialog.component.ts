@@ -6,11 +6,14 @@ import { Printer } from '../../domain/Printer';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-create-article-dialog',
   imports: [
     FormsModule,
+    TranslatePipe,
   ],
   templateUrl: './create-article-dialog.component.html',
   styleUrl: './create-article-dialog.component.css'
@@ -32,6 +35,7 @@ export class CreateArticleDialogComponent {
   constructor(
     private shopAdminApi: ShopAdminApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   createArticle() {
@@ -39,7 +43,7 @@ export class CreateArticleDialogComponent {
     this.articleDetails.Printer = this.printer.Id === "" ? null : this.printer;
     const sub = this.shopAdminApi.createArticle(this.shopId(), this.articleDetails).subscribe({
       next: a => this.articleCreated.emit(a),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
     this.init()

@@ -1,12 +1,13 @@
+import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, input, InputSignal, output, OutputEmitterRef, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {ZXingScannerModule} from "@zxing/ngx-scanner";
-import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
-import { AccountDetails } from '../../domain/AccountDetails';
-import { CommonModule } from '@angular/common';
-import { NotificationService } from '../../services/notification/notification.service';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ZXingScannerModule } from "@zxing/ngx-scanner";
 import { KlcsConfig } from '../../config/KlcsConfig';
-import { ErrorResponse } from '../../domain/ErrorResponse';
+import { AccountDetails } from '../../domain/AccountDetails';
+import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
+import { NotificationService } from '../../services/notification/notification.service';
 
 @Component({
   selector: 'klcs-charge-account-dialog',
@@ -14,6 +15,7 @@ import { ErrorResponse } from '../../domain/ErrorResponse';
     CommonModule,
     ZXingScannerModule,
     FormsModule,
+    TranslatePipe,
   ],
   templateUrl: './charge-account-dialog.component.html',
   styleUrl: './charge-account-dialog.component.css'
@@ -32,6 +34,7 @@ export class ChargeAccountDialogComponent {
   constructor(
     private accountManagerApi: AccountManagerApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   onScanSuccess(data: string) {
@@ -61,14 +64,14 @@ export class ChargeAccountDialogComponent {
       this.chargeActive.set(true)
       const sub = this.accountManagerApi.postToAccount(this.accountId(), this.amount() * 100).subscribe({
         next: val => this.newAccountDetails.set(val),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
         complete: () => {
           this.chargeActive.set(false)
           sub.unsubscribe()
         },
       })
     } else {
-      this.notify.show({type: "warning", duration: KlcsConfig.durationError, message: "Cannot charge twice"})
+      this.notify.show({type: "warning", duration: KlcsConfig.durationError, message: this.translate.instant("warnings.WarnChargeTwice")})
     }
   }
 }

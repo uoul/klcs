@@ -6,14 +6,16 @@ import { AccountDetails } from '../../domain/AccountDetails';
 import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
-import { ErrorResponse } from '../../domain/ErrorResponse';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-close-account-dialog',
   imports: [
     CommonModule,
     FormsModule,
-    ZXingScannerModule
+    ZXingScannerModule,
+    TranslatePipe,
   ],
   templateUrl: './close-account-dialog.component.html',
   styleUrl: './close-account-dialog.component.css'
@@ -29,6 +31,7 @@ export class CloseAccountDialogComponent {
   constructor(
     private accountManagerApi: AccountManagerApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   showScanner(){
@@ -55,7 +58,7 @@ export class CloseAccountDialogComponent {
   closeAccount(){
     const sub = this.accountManagerApi.closeAccount(this.accountId()).subscribe({
       next: val => this.accountDetails.set(val),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }

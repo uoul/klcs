@@ -8,6 +8,7 @@ import (
 type AppConfig struct {
 	LogLvl   string `default:"INFO"`
 	Api      string `default:":80"`
+	Debug    bool   `default:"false"`
 	Cors     CorsConfig
 	Oidc     OidcConfig
 	Database DatabaseConfig `gonfig:"db"`

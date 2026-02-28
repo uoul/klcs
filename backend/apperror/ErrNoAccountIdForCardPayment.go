@@ -10,11 +10,6 @@ type ErrNoAccountIdForCartPayment struct {
 	message string
 }
 
-// ErrorCode implements [IAppError].
-func (e *ErrNoAccountIdForCartPayment) ErrorCode() string {
-	return "USER_NOT_FOUND"
-}
-
 // HttpStatus implements [IAppError].
 func (e *ErrNoAccountIdForCartPayment) HttpStatus() int {
 	return http.StatusNotFound

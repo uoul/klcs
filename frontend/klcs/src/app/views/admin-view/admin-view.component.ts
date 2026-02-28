@@ -6,12 +6,15 @@ import { UpdateShopDialogComponent } from "../../dialogs/update-shop-dialog/upda
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-admin-view',
   imports: [
     CreateShopDialogComponent,
-    UpdateShopDialogComponent
+    UpdateShopDialogComponent,
+    TranslatePipe,
 ],
   templateUrl: './admin-view.component.html',
   styleUrl: './admin-view.component.css'
@@ -27,6 +30,7 @@ export class AdminViewComponent implements OnInit {
   constructor(
     private klcsAdminApi: KlcsAdminApiService,
     private notify: NotificationService,
+    protected translate: TranslateService,
   ){}
 
   ngOnInit(): void {
@@ -47,8 +51,8 @@ export class AdminViewComponent implements OnInit {
   deleteShop(shop: Shop) {
     if(confirm(`Do you realy want to delete shop ${shop.Name}?`)){
       const sub = this.klcsAdminApi.deleteShop(shop.Id).subscribe({
-        next: _ => this.notify.show({type: "success", duration: KlcsConfig.durationError, message: "Shop deleted successfully"}),
-        error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+        next: _ => this.notify.show({type: "success", duration: KlcsConfig.durationError, message: this.translate.instant("success.ShopDeleted")}),
+        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
         complete: () => {
           this.refresh();
           sub.unsubscribe();
@@ -60,7 +64,7 @@ export class AdminViewComponent implements OnInit {
   refresh(){
     const sub = this.klcsAdminApi.getShops().subscribe({
       next: s => this.shops.set(s),
-      error: (err: ErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: err.error.message}),
+      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
       complete: () => sub.unsubscribe(),
     })
   }

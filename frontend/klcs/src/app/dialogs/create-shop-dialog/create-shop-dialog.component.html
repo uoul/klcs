@@ -1,17 +1,17 @@
 <dialog [id]="dialogId()" class="modal" (close)="dialogClosed.emit()">
   <div class="modal-box">
-    <h3 class="text-lg font-bold">Create Shop</h3>
+    <h3 class="text-lg font-bold">{{ "dialogs.create-shop.Title" | translate }}</h3>
     <form #f="ngForm" method="dialog" (submit)="createShop()">
       <label class="form-control w-full max-w-xs">
         <div class="label">
-          <span class="label-text">Name</span>
+          <span class="label-text">{{ "dialogs.create-shop.LblName" | translate }}</span>
         </div>
-        <input name="shopName" type="text" placeholder="Type here" class="input input-bordered w-full max-w-xs" [(ngModel)]="_shop().Name" required/>
+        <input name="shopName" type="text" class="input input-bordered w-full max-w-xs" [(ngModel)]="_shop().Name" required/>
       </label>
       <div class="modal-action">
-        <button class="btn btn-secondary" [disabled]="f.invalid">Create</button>
+        <button class="btn btn-secondary" [disabled]="f.invalid">{{ "dialogs.create-shop.BtnCreate" | translate }}</button>
         <form method="dialog" (submit)="init()">
-          <button class="btn btn-outline btn-neutral">Close</button>
+          <button class="btn btn-outline btn-neutral">{{ "dialogs.create-shop.BtnClose" | translate }}</button>
         </form>
       </div>
     </form>

@@ -50,6 +50,15 @@ func main() {
 	printService := services.NewPrintService()
 	// Create Logic
 	logic := logic.NewLogic(dbConn, printService)
+	// Create Options for Api
+	apiOpts := []func(*api.Api){
+		api.WithCorsOrigins(cfg.Cors.Origins),
+		api.WithCorsHeaders(cfg.Cors.Headers),
+		api.WithCorsMethods(cfg.Cors.Methods),
+	}
+	if !cfg.Debug {
+		apiOpts = append(apiOpts, api.WithReleaseMode())
+	}
 	// Run Api
 	if err := api.NewApi(
 		VERSION,
@@ -59,9 +68,7 @@ func main() {
 		logic,
 		authenticator,
 		printService,
-		api.WithCorsOrigins(cfg.Cors.Origins),
-		api.WithCorsHeaders(cfg.Cors.Headers),
-		api.WithCorsMethods(cfg.Cors.Methods),
+		apiOpts...,
 	).Run(cfg.Api); err != nil {
 		slog.Error("failed to run api", slog.Any("error", err))
 	}

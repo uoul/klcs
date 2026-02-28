@@ -1,11 +1,13 @@
 import { Component, computed, input, InputSignal, model, ModelSignal, output, Signal, signal, WritableSignal } from '@angular/core';
 import { Article } from '../../domain/Article';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'klcs-payment-item-list',
   imports: [
     CommonModule,
+    TranslatePipe,
   ],
   templateUrl: './payment-item-list.component.html',
   styleUrl: './payment-item-list.component.css'
