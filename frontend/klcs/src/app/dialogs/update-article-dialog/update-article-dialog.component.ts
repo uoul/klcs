@@ -8,6 +8,7 @@ import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-update-article-dialog',
@@ -28,6 +29,8 @@ export class UpdateArticleDialogComponent {
   dialogClosed: OutputEmitterRef<void> = output();
   articleUpdated: OutputEmitterRef<ArticleDetails> = output();
 
+  isActive: WritableSignal<boolean> = signal(false)
+
   _uiArticle = computed(() => {
     const details = this.article()
     details.Price = this.article().Price / 100
@@ -41,14 +44,16 @@ export class UpdateArticleDialogComponent {
     protected translate: TranslateService,
   ){}
 
-  updateArticle() {
-    this.article().Price = Math.floor(this._uiArticle().Price * 100);
-    this.article().Printer = (!this._uiArticle().Printer || this._uiArticle().Printer!.Id.length <= 0) ? null : this._uiArticle().Printer;
-    const sub = this.shopAdminApi.updateArticle(this.article()).subscribe({
-      next: a => this.articleUpdated.emit(a),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+  async updateArticle() {
+    if(!this.isActive()){
+      this.isActive.set(true)
+      this.article().Price = Math.floor(this._uiArticle().Price * 100);
+      this.article().Printer = (!this._uiArticle().Printer || this._uiArticle().Printer!.Id.length <= 0) ? null : this._uiArticle().Printer;
+      try {
+        const article = await firstValueFrom(this.shopAdminApi.updateArticle(this.article()))
+        this.articleUpdated.emit(article)
+      } finally { this.isActive.set(false) }
+    }
   }
 
   comparePriner(p1: Printer, p2: Printer) {

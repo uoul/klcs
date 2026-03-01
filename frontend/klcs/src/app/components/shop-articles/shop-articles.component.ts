@@ -1,20 +1,14 @@
-import { Component, EventEmitter, input, Input, InputSignal, OnInit, output, Output, OutputEmitterRef, signal, Signal, WritableSignal } from '@angular/core';
-import { Article } from '../../domain/Article';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
-import { ActivatedRoute } from '@angular/router';
-import { mergeMap, subscribeOn, take } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ArticleDetails } from '../../domain/ArticleDetails';
 import { CreateArticleDialogComponent } from "../../dialogs/create-article-dialog/create-article-dialog.component";
 import { Printer } from '../../domain/Printer';
 import { UpdateArticleDialogComponent } from "../../dialogs/update-article-dialog/update-article-dialog.component";
 import { NotificationService } from '../../services/notification/notification.service';
-import { KlcsConfig } from '../../config/KlcsConfig';
-import { ErrorResponse } from '../../domain/ErrorResponse';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
-import { ShopDetails } from '../../domain/ShopDetails';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'klcs-shop-articles',
@@ -42,22 +36,20 @@ export class ShopArticlesComponent {
   _printers: WritableSignal<Printer[]> = signal([])
   _articleDetails: WritableSignal<ArticleDetails> = signal(new ArticleDetails());
 
-  deleteArticle(articleId: string) {
-    if(confirm(`Do you realy want to delete Article?`)){
-      const sub = this.shopAdminApi.deleteArticle(articleId).subscribe({
-        next: _ => this.sellerApi.refreshShopDetails(),
-        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-        complete: () => sub.unsubscribe(),
-      });
+  async deleteArticle(articleId: string) {
+    if(confirm(this.translate.instant("components.shop-articles.DeletePrompt"))){
+      try {
+        await firstValueFrom(this.shopAdminApi.deleteArticle(articleId))
+        await this.sellerApi.refreshShopDetails()
+      } catch {}
     }
   }
 
-  refreshPrinters(shopId: string) {
-    const sub = this.shopAdminApi.getPrinters(shopId).subscribe({
-      next: p =>  this._printers.set(p),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+  async refreshPrinters(shopId: string) {
+    try {
+      const printers = await firstValueFrom(this.shopAdminApi.getPrinters(shopId))
+      this._printers.set(printers)
+    } catch {}
   }
 
   showCreateDialog(){
@@ -66,16 +58,13 @@ export class ShopArticlesComponent {
     dialog.showModal();
   }
 
-  showUpdateDialog(articleId: string){
+  async showUpdateDialog(articleId: string){
     this.refreshPrinters(this.sellerApi.getShopDetails().Id)
-    const sub = this.shopAdminApi.getArticle(articleId).subscribe({
-      next: artilce => {
-        this._articleDetails.set(artilce)
-        const dialog = document.getElementById(this.EDIT_DIALOG_ID) as HTMLDialogElement
-        dialog.showModal();
-      },
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+    try {
+      const article = await firstValueFrom(this.shopAdminApi.getArticle(articleId))
+      this._articleDetails.set(article)
+      const dialog = document.getElementById(this.EDIT_DIALOG_ID) as HTMLDialogElement
+      dialog.showModal();
+    } catch {}
   }
 }

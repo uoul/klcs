@@ -2,7 +2,7 @@ import { Component, computed, effect, input, OnInit, signal, untracked, Writable
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
 import { ShopUser } from '../../domain/ShopUser';
 import { ActivatedRoute } from '@angular/router';
-import { mergeMap, take } from 'rxjs';
+import { firstValueFrom, mergeMap, take } from 'rxjs';
 import { Role } from '../../domain/Role';
 import { User } from '../../domain/User';
 import { UserIdentity } from '../../domain/UserIdentity';
@@ -74,20 +74,18 @@ export class ShopUsersComponent {
 
   klcsConfig = KlcsConfig
 
-  refreshRoles() {
-    const sub = this.shopAdminApi.getRoles().subscribe({
-      next: r => this.roles.set(r),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+  async refreshRoles() {
+    try {
+      const roles = await firstValueFrom(this.shopAdminApi.getRoles())
+      this.roles.set(roles)
+    } catch {}
   }
 
-  refreshUsers(shopId: string) {
-    const sub = this.shopAdminApi.getUsersForShop(shopId).subscribe({
-      next: u => this.klcsUsers.set(u),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+  async refreshUsers(shopId: string) {
+    try {
+      const users = await firstValueFrom(this.shopAdminApi.getUsersForShop(shopId))
+      this.klcsUsers.set(users)
+    } catch {}
   }
 
   userHasRole(user: ShopUser, role: Role): boolean {
@@ -100,19 +98,15 @@ export class ShopUsersComponent {
     return a.Username < b.Username ? 1 : -1;
   }
 
-  setUserRole(shopId: string, userId: string, role: Role, event: any) {
+  async setUserRole(shopId: string, userId: string, role: Role, event: any) {
     if (event.target.checked) {
-      const sub = this.shopAdminApi.addUserRoleForShop(shopId, userId, role).subscribe({
-        next: _ => this.refreshUsers(shopId),
-        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-        complete: () => sub.unsubscribe(),
-      })
+      try {
+        await firstValueFrom(this.shopAdminApi.addUserRoleForShop(shopId, userId, role))
+      } catch {}
     } else {
-      const sub = this.shopAdminApi.deleteUserRoleForShop(shopId, userId, role.Id).subscribe({
-        next: _ => this.refreshUsers(shopId),
-        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-        complete: () => sub.unsubscribe(),
-      })
+      try {
+        await firstValueFrom(this.shopAdminApi.deleteUserRoleForShop(shopId, userId, role.Id))
+      } catch {}
     }
   }
 }

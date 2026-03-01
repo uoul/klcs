@@ -1,4 +1,4 @@
-import { Component, input, InputSignal, model, ModelSignal, output, OutputEmitterRef } from '@angular/core';
+import { Component, input, InputSignal, model, ModelSignal, output, OutputEmitterRef, signal, WritableSignal } from '@angular/core';
 import { KlcsAdminApiService } from '../../services/klcs-admin-api/klcs-admin-api.service';
 import { FormsModule } from '@angular/forms';
 import { Shop } from '../../domain/Shop';
@@ -7,6 +7,7 @@ import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-create-shop-dialog',
@@ -24,21 +25,23 @@ export class CreateShopDialogComponent {
 
   _shop: ModelSignal<Shop> = model(new Shop(undefined, ""))
 
+  isActive: WritableSignal<boolean> = signal(false)
+
   constructor(
     private klcsAdminApi: KlcsAdminApiService,
     private notify: NotificationService,
     protected translate: TranslateService,
   ){}
 
-  createShop() {
-    if(this._shop().Name.length > 0) {
-      const sub = this.klcsAdminApi.createShop(this._shop()).subscribe({
-        next: val => this.shopCreated.emit(val),
-        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-        complete: () => sub.unsubscribe()
-      });
+  async createShop() {
+    if(!this.isActive()){
+      this.isActive.set(true)
+      try {
+        const created = await firstValueFrom(this.klcsAdminApi.createShop(this._shop()))
+        this.shopCreated.emit(created)
+      } catch {}
+      finally { this.init(); this.isActive.set(false) }
     }
-    this.init();
   }
 
   init(){

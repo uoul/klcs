@@ -32,7 +32,7 @@
         }
         <div class="modal-action">
           @if (accountDetails() === null) {
-            <button class="btn btn-secondary" [disabled]="f.invalid && !scannerActive()" (click)="closeAccount()">{{ "dialogs.close-account.BtnConfirm" | translate }}</button>
+            <button class="btn btn-secondary" [disabled]="f.invalid && !scannerActive() || isClosing()" (click)="closeAccount()">{{ "dialogs.close-account.BtnConfirm" | translate }}</button>
           }
           <form method="dialog">
             <button class="btn btn-outline btn-neutral">{{ "dialogs.close-account.BtnClose" | translate }}</button>

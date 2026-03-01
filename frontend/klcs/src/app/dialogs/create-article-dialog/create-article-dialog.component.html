@@ -28,7 +28,7 @@
         </select>
         
         <div class="modal-action">
-          <button class="btn btn-secondary" [disabled]="f.invalid">{{ "dialogs.create-article.BtnCreate" | translate }}</button>
+          <button class="btn btn-secondary" [disabled]="f.invalid || isActive()">{{ "dialogs.create-article.BtnCreate" | translate }}</button>
           <form method="dialog" (submit)="init()">
             <button class="btn btn-outline btn-neutral">{{ "dialogs.create-article.BtnClose" | translate }}</button>
           </form>

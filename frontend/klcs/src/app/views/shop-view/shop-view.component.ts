@@ -1,17 +1,14 @@
 import { Component, computed, OnInit, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
-import { ShopDetails } from '../../domain/ShopDetails';
 
 import { CashdeskComponent } from "../../components/cashdesk/cashdesk.component";
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { ShopArticlesComponent } from "../../components/shop-articles/shop-articles.component";
 import { ShopPrintersComponent } from "../../components/shop-printers/shop-printers.component";
 import { ShopUsersComponent } from "../../components/shop-users/shop-users.component";
-import { NotificationService } from '../../services/notification/notification.service';
-import { ErrorResponse } from '../../domain/ErrorResponse';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { HttpErrorResponse } from '@angular/common/http';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'klcs-shop-view',
@@ -32,16 +29,15 @@ export class ShopViewComponent implements OnInit {
 
   constructor(
     protected sellerApi: SellerApiService,
-    private notify: NotificationService,
     private route: ActivatedRoute,
     protected translate: TranslateService,
   ){}
 
   ngOnInit(): void {
-    const sub = this.route.paramMap.subscribe({
+    const sub = this.route.paramMap.pipe(
+      finalize(() => sub.unsubscribe())
+    ).subscribe({
       next: params => this.sellerApi.updateShopId(params.get("shopId") ?? ""),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe()
     })
   }
 }

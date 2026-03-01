@@ -32,7 +32,7 @@
         <span class="w-full h-32 flex justify-center text-opacity-30 text-base-content items-center border-neutral border-2 rounded-lg border-opacity-5 my-2">{{ "dialogs.checkout.LblEmptyCart" | translate }}</span>
       }
     }
-    <form #f="ngForm" (submit)="checkout()" method="dialog">
+    <form #f="ngForm" method="dialog">
       @if (!scannerActive()) {
         <fieldset class="flex flex-col" [disabled]="shoppingCart.getOrderItems().length <= 0">
           @if (withCard()) {
@@ -64,7 +64,7 @@
       }
       
       <div class="modal-action">
-        <button class="btn btn-secondary" [disabled]="f.invalid || shoppingCart.getOrderItems().length <= 0" type="submit">{{ "dialogs.checkout.BtnCheckout" | translate }}</button>
+        <button class="btn btn-secondary" [disabled]="f.invalid || shoppingCart.getOrderItems().length <= 0 || isActiveCheckout()" (click)="checkout()">{{ "dialogs.checkout.BtnCheckout" | translate }}</button>
         <form method="dialog">
           <button class="btn btn-outline btn-primary">{{ "dialogs.checkout.BtnClose" | translate }}</button>
         </form>

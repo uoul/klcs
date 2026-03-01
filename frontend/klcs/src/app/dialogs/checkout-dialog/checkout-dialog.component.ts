@@ -9,6 +9,7 @@ import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import { FocusDirective } from '../../directives/focus/focus.directive';
 import {  TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-checkout-dialog',
@@ -31,6 +32,7 @@ export class CheckoutDialogComponent {
   accountId: WritableSignal<string> = signal("");
   description: WritableSignal<string> = signal("");
   scannerActive: WritableSignal<boolean> = signal(false);
+  isActiveCheckout: WritableSignal<boolean> = signal(false)
 
   constructor(
     protected shoppingCart: ShoppingCartService,
@@ -46,26 +48,23 @@ export class CheckoutDialogComponent {
     this.dialogClosed.emit();
   }
 
-  checkout() {
-    if(this.withCard()){
-      const sub = this.sellerApi.checkoutCard(this.accountId(), this.description()).subscribe({
-        next: _ => {
+  async checkout() {
+    if(!this.isActiveCheckout()) {
+      this.isActiveCheckout.set(true)
+      if(this.withCard()){
+        try {
+          await firstValueFrom(this.sellerApi.checkoutCard(this.accountId(), this.description()))
           this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: this.translate.instant("success.OrderPlaced")})
-          this.sellerApi.refreshShopDetails()
-        },
-        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-        complete: () => sub.unsubscribe()
-      })
-    }
-    else {
-      const sub = this.sellerApi.checkoutCash(this.description()).subscribe({
-        next: _ => {
+          await this.sellerApi.refreshShopDetails()
+        } finally { this.isActiveCheckout.set(false) }
+      }
+      else {
+        try {
+          await firstValueFrom(this.sellerApi.checkoutCash(this.description()))
           this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: this.translate.instant("success.OrderPlaced")})
-          this.sellerApi.refreshShopDetails()
-        },
-        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-        complete: () => sub.unsubscribe()
-      })
+          await  this.sellerApi.refreshShopDetails()
+        } finally { this.isActiveCheckout.set(false) }
+      }
     }
   }
 

@@ -37,7 +37,7 @@
             <zxing-scanner (scanSuccess)="onScanSuccess($event)" (scanError)="onScanError($event)" previewFitMode="scale-down"></zxing-scanner>
           }
           <div class="modal-action">
-            <button class="btn btn-secondary" [disabled]="shoppingCart.getOrderItems().length <= 0 || paymentMethod() <= 0 || f.invalid || scannerActive() != 'none'">{{ "dialogs.edit-cart.BtnPlaceOrder" | translate }}</button>
+            <button class="btn btn-secondary" [disabled]="shoppingCart.getOrderItems().length <= 0 || paymentMethod() <= 0 || f.invalid || scannerActive() != 'none' || isCheckoutActive()">{{ "dialogs.edit-cart.BtnPlaceOrder" | translate }}</button>
             <form method="dialog">
               <button class="btn btn-outline btn-neutral">{{ "dialogs.edit-cart.BtnClose" | translate }}</button>
             </form>

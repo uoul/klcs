@@ -2,7 +2,7 @@ import { Component, input, InputSignal, output, OutputEmitterRef, signal, Writab
 import { Printer } from '../../domain/Printer';
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
 import { ActivatedRoute } from '@angular/router';
-import { mergeMap } from 'rxjs';
+import { finalize, mergeMap } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
@@ -24,6 +24,7 @@ export class CreatePrinterDialogComponent {
   printerCreated: OutputEmitterRef<Printer> = output();
 
   _printer: WritableSignal<Printer> = signal(new Printer())
+  isActive: WritableSignal<boolean> = signal(false)
 
   constructor(
     private shopAdminApi: ShopAdminApiService,
@@ -33,16 +34,18 @@ export class CreatePrinterDialogComponent {
   ){}
 
   createPrinter() {
-    if(this._printer().Name.length > 0) {
-      const sub = this.route.paramMap.pipe(
-        mergeMap(params => this.shopAdminApi.createPrinterForShop(params.get("shopId") ?? "", this._printer()))
-      ).subscribe({
-        next: p => this.printerCreated.emit(p),
-        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-        complete: () => sub.unsubscribe(),
-      })
+    if(!this.isActive()){
+      this.isActive.set(true)
+      if(this._printer().Name.length > 0) {
+        const sub = this.route.paramMap.pipe(
+          mergeMap(params => this.shopAdminApi.createPrinterForShop(params.get("shopId") ?? "", this._printer())),
+          finalize(() => {sub.unsubscribe(); this.isActive.set(false) })
+        ).subscribe({
+          next: p => this.printerCreated.emit(p),
+        })
+      }
+      this.init();
     }
-    this.init();
   }
 
   init(){

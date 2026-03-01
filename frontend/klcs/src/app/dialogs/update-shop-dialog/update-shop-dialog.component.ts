@@ -1,11 +1,9 @@
-import { Component, EventEmitter, input, Input, InputSignal, model, OnInit, output, Output, OutputEmitterRef, Signal } from '@angular/core';
+import { Component, input, InputSignal, model, output, OutputEmitterRef, signal, WritableSignal } from '@angular/core';
 import { Shop } from '../../domain/Shop';
 import { FormsModule } from '@angular/forms';
 import { KlcsAdminApiService } from '../../services/klcs-admin-api/klcs-admin-api.service';
-import { NotificationService } from '../../services/notification/notification.service';
-import { KlcsConfig } from '../../config/KlcsConfig';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-update-shop-dialog',
@@ -22,17 +20,20 @@ export class UpdateShopDialogComponent {
 
   dialogClosed: OutputEmitterRef<void> = output();
 
+  isActive: WritableSignal<boolean> = signal(false)
+
   constructor(
     private klcsAdminApi: KlcsAdminApiService,
-    private notify: NotificationService,
     protected translate: TranslateService,
   ){}
 
-  updateShop() {
-    const sub = this.klcsAdminApi.updateShop(this.shop()).subscribe({
-      next: val => this.shop.set(val),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+  async updateShop() {
+    if(!this.isActive()){
+      this.isActive.set(true)
+      try {
+        const shop = await firstValueFrom(this.klcsAdminApi.updateShop(this.shop()))
+        this.shop.set(shop)
+      } finally { this.isActive.set(false) }
+    }
   }
 }

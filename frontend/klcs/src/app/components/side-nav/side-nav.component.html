@@ -8,7 +8,7 @@
       {{ "components.sidebar.Shop" | translate }}
     </div>
     <div class="collapse-content">
-      @for (shop of (shops); track $index) {
+      @for (shop of (shops()); track $index) {
         <klcs-nav-item (clicked)="updateMenuState()" [routerLink]="'/shops/' + shop.Id" >{{ shop.Name }}</klcs-nav-item>
       }
     </div>

@@ -13,7 +13,7 @@ import { OAuthService, provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './interceptors/auth/auth.interceptor';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import {provideTranslateService, provideTranslateLoader} from "@ngx-translate/core";
+import {provideTranslateService} from "@ngx-translate/core";
 import {provideTranslateHttpLoader} from "@ngx-translate/http-loader";
 import {
   catchError,
@@ -27,6 +27,8 @@ import {
 } from 'rxjs';
 import { PublicApiService } from './services/public-api/public-api.service';
 import { AuthService } from './services/auth/auth.service';
+import { notifyInterceptor } from './interceptors/notify/notify.interceptor';
+import { loadingInterceptor } from './interceptors/loading/loading.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -37,7 +39,7 @@ export const appConfig: ApplicationConfig = {
       registrationStrategy: 'registerWhenStable:30000',
     }),
     provideOAuthClient(),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, notifyInterceptor, loadingInterceptor])),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
         prefix: "/i18n/",

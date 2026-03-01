@@ -55,14 +55,16 @@
       "TabName": "Artikel",
       "TabDescription": "Beschreibung",
       "TabPrice": "Preis",
-      "TabAmount": "Lagerbestand"
+      "TabAmount": "Lagerbestand",
+      "DeletePrompt": "Artikel wirklich löschen?"
     },
     "shop-printers": {
       "TabId": "ID",
       "TabName": "Drucker",
       "TabConnected": "Verbindungsstatus",
       "StateConnected": "Verbunden",
-      "StateDisconnected": "Getrennt"
+      "StateDisconnected": "Getrennt",
+      "DeletePrompt": "Drucker {{name}} wirklich löschen?"
     },
     "shop-users": {
       "TabName": "Name",
@@ -195,7 +197,8 @@
       "BtnReprint": "Druckauftrag erneut senden"
     },
     "admin": {
-      "TabName": "Shop"
+      "TabName": "Shop",
+      "DeletePrompt": "{{name}} wirklich löschen?"
     },
     "account": {
       "TabAccountId": "Kontonummer",

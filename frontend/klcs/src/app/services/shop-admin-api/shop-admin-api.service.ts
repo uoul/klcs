@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {catchError, Observable, of} from "rxjs";
-import { Article } from '../../domain/Article';
+import {Observable} from "rxjs";
 import { ArticleDetails } from '../../domain/ArticleDetails';
 import { Printer } from '../../domain/Printer';
 import { Role } from '../../domain/Role';
@@ -17,10 +16,6 @@ export class ShopAdminApiService {
   constructor(
     private http: HttpClient,
   ) { }
-
-  public getArticlesForShop(shopId: string): Observable<Article[]> {
-    return this.http.get<Article[]>(`${KlcsConfig.BackendRoot}/api/v1/shops/${shopId}/articles`);
-  }
 
   public createArticle(shopId: string, article: ArticleDetails): Observable<ArticleDetails> {
     return this.http.post<ArticleDetails>(`${KlcsConfig.BackendRoot}/api/v1/shops/${shopId}/articles`, article);
@@ -48,10 +43,6 @@ export class ShopAdminApiService {
 
   public deletePrinter(printerId: string): Observable<Object> {
     return this.http.delete(`${KlcsConfig.BackendRoot}/api/v1/printers/${printerId}`)
-  }
-
-  public getUsers(): Observable<User[]> {
-    return  this.http.get<User[]>(`${KlcsConfig.BackendRoot}/api/v1/users`)
   }
 
   public getRoles(): Observable<Role[]> {

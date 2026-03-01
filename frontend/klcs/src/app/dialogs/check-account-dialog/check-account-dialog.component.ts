@@ -4,10 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { AccountDetails } from '../../domain/AccountDetails';
 import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
-import { NotificationService } from '../../services/notification/notification.service';
-import { KlcsConfig } from '../../config/KlcsConfig';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-check-account-dialog',
@@ -27,12 +25,12 @@ export class CheckAccountDialogComponent {
   scannerActive: boolean = false
   accountId: string = ""
   accountData: WritableSignal<AccountDetails|null> = signal(null)
+  isCheckActive: WritableSignal<boolean> = signal(false)
 
   json = JSON;
 
   constructor(
     private accountManagerApi: AccountManagerApiService,
-    private notify: NotificationService,
     protected translate: TranslateService,
   ){}
 
@@ -54,11 +52,13 @@ export class CheckAccountDialogComponent {
     this.scannerActive = false;
   }
 
-  checkAccount() {
-    const sub = this.accountManagerApi.getAccountDetails(this.accountId).subscribe({
-      next: details => this.accountData.set(details),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+  async checkAccount() {
+    if(!this.isCheckActive()){
+      this.isCheckActive.set(true)
+      try {
+        const details = await firstValueFrom(this.accountManagerApi.getAccountDetails(this.accountId))
+        this.accountData.set(details)
+      } finally { this.isCheckActive.set(false) }
+    }
   }
 }

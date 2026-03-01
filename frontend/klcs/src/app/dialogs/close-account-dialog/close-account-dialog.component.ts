@@ -8,6 +8,7 @@ import { NotificationService } from '../../services/notification/notification.se
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-close-account-dialog',
@@ -27,6 +28,7 @@ export class CloseAccountDialogComponent {
   accountId: WritableSignal<string> = signal("")
   scannerActive: WritableSignal<boolean> = signal(false)
   accountDetails: WritableSignal<AccountDetails|null> = signal(null)
+  isClosing: WritableSignal<boolean> = signal(false)
 
   constructor(
     private accountManagerApi: AccountManagerApiService,
@@ -55,11 +57,14 @@ export class CloseAccountDialogComponent {
     this.scannerActive.set(false)
   }
 
-  closeAccount(){
-    const sub = this.accountManagerApi.closeAccount(this.accountId()).subscribe({
-      next: val => this.accountDetails.set(val),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+  async closeAccount(){
+    if(!this.isClosing()){
+      this.isClosing.set(true)
+      try {
+        this.accountDetails.set(
+          await firstValueFrom(this.accountManagerApi.closeAccount(this.accountId()))
+        )
+      } finally { this.isClosing.set(false) }
+    }
   }
 }

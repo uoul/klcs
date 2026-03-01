@@ -8,6 +8,7 @@ import { ErrorResponse } from '../../domain/ErrorResponse';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-shop-printers',
@@ -35,21 +36,19 @@ export class ShopPrintersComponent {
     })
   }
 
-  refreshPrinters() {
-    const sub = this.shopAdminApi.getPrinters(this.sellerApi.getShopDetails().Id).subscribe({
-      next: p =>  this._printers.set(p),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+  async refreshPrinters() {
+    try {
+      const printers = await firstValueFrom(this.shopAdminApi.getPrinters(this.sellerApi.getShopDetails().Id))
+      this._printers.set(printers)
+    } catch {}
   }
 
-  deletePrinter(printer: Printer) {
-    if(confirm(`Do you realy want to delete ${printer.Name}?`)){
-      const sub = this.shopAdminApi.deletePrinter(printer.Id).subscribe({
-        next: _ => this.refreshPrinters(),
-        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-        complete: () => sub.unsubscribe(),
-      })
+  async deletePrinter(printer: Printer) {
+    if(confirm(this.translate.instant("components.shop-printers.DeletePrompt", { name: printer.Name }))){
+      try {
+        await firstValueFrom(this.shopAdminApi.deletePrinter(printer.Id))
+        await this.refreshPrinters()
+      } catch {}
     }
   }
 

@@ -8,6 +8,7 @@ import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-admin-view',
@@ -48,24 +49,20 @@ export class AdminViewComponent implements OnInit {
     dialog.showModal();
   }
 
-  deleteShop(shop: Shop) {
-    if(confirm(`Do you realy want to delete shop ${shop.Name}?`)){
-      const sub = this.klcsAdminApi.deleteShop(shop.Id).subscribe({
-        next: _ => this.notify.show({type: "success", duration: KlcsConfig.durationError, message: this.translate.instant("success.ShopDeleted")}),
-        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-        complete: () => {
-          this.refresh();
-          sub.unsubscribe();
-        },
-      });
+  async deleteShop(shop: Shop) {
+    if(confirm(this.translate.instant("views.admin.DeletePrompt", { name: shop.Name }))){
+      try {
+        await firstValueFrom(this.klcsAdminApi.deleteShop(shop.Id))
+        this.notify.show({type: "success", duration: KlcsConfig.durationError, message: this.translate.instant("success.ShopDeleted")})
+      } catch { }
     }
   }
 
-  refresh(){
-    const sub = this.klcsAdminApi.getShops().subscribe({
-      next: s => this.shops.set(s),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+  async refresh(){
+    try {
+      this.shops.set(
+        await firstValueFrom(this.klcsAdminApi.getShops())
+      )
+    } catch {}
   }
 }

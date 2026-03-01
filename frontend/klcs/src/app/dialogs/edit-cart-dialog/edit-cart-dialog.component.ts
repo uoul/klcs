@@ -14,6 +14,7 @@ import { PaymentItemListComponent } from "../../components/payment-item-list/pay
 import { PublicApiService } from '../../services/public-api/public-api.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-edit-cart-dialog',
@@ -37,6 +38,7 @@ export class EditCartDialogComponent implements OnInit {
   description: WritableSignal<string> = signal("");
   scannerActive: WritableSignal<"none" | "accountId" | "description"> = signal("none");
   step: WritableSignal<"order" | "payment"> = signal("order")
+  isCheckoutActive: WritableSignal<boolean> = signal(false)
 
   public paymentItems: WritableSignal<Article[]> = signal([])
 
@@ -55,29 +57,26 @@ export class EditCartDialogComponent implements OnInit {
     }
   }
 
-  checkout() {
-    if(this.paymentMethod() == 2){
-      const sub = this.sellerApi.checkoutCard(this.accountId(), this.description()).subscribe({
-        next: _ => {
+  async checkout() {
+    if(!this.isCheckoutActive()) {
+      this.isCheckoutActive.set(true)
+      if(this.paymentMethod() == 2){
+        try {
+          await firstValueFrom(this.sellerApi.checkoutCard(this.accountId(), this.description()))
           this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: this.translate.instant("success.OrderPlaced")})
-          this.sellerApi.refreshShopDetails()
+          await this.sellerApi.refreshShopDetails()
           this.close()
-        },
-        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-        complete: () => sub.unsubscribe()
-      })
-    }
-    else if(this.paymentMethod() == 1) {
-      this.paymentItems.set(this.shoppingCart.getItems())
-      const sub = this.sellerApi.checkoutCash(this.description()).subscribe({
-        next: _ => {
+        } finally { this.isCheckoutActive.set(false) }
+      }
+      else if(this.paymentMethod() == 1) {
+        this.paymentItems.set(this.shoppingCart.getItems())
+        try {
+          await firstValueFrom(this.sellerApi.checkoutCash(this.description()))
           this.notify.show({type: "success", duration: KlcsConfig.durationShort, message: this.translate.instant("success.OrderPlaced")})
-          this.sellerApi.refreshShopDetails()
           this.step.set("payment")
-        },
-        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-        complete: () => sub.unsubscribe()
-      })
+          await this.sellerApi.refreshShopDetails()
+        } finally { this.isCheckoutActive.set(false) }
+      }
     }
   }
 

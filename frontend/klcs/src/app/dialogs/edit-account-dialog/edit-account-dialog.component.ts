@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Account } from '../../domain/Account';
 import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
@@ -8,6 +8,7 @@ import { ErrorResponse } from '../../domain/ErrorResponse';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-edit-account-dialog',
@@ -26,6 +27,8 @@ export class EditAccountDialogComponent {
 
   account = input.required<Account>()
 
+  isActive: WritableSignal<boolean> = signal(false)
+
   constructor(
     private accountManagerApi: AccountManagerApiService,
     private notify: NotificationService,
@@ -36,11 +39,12 @@ export class EditAccountDialogComponent {
     this.dialogClosed.emit()
   }
 
-  updateAccount(){
-    const sub = this.accountManagerApi.updateAccount(this.account()).subscribe({
-      next: _ => this.accountUpdated.emit(this.account()),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+  async updateAccount(){
+    if(!this.isActive()) {
+      this.isActive.set(true)
+      try {
+        await firstValueFrom(this.accountManagerApi.updateAccount(this.account()))
+      } finally { this.isActive.set(false) }
+    }
   }
 }

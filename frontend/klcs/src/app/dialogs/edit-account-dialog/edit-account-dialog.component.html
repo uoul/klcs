@@ -28,7 +28,7 @@
         <qrcode [allowEmptyString]="true" [qrdata]="account().Id" [width]="256" [errorCorrectionLevel]="'M'" />
       </div>
       <div class="modal-action">
-        <button class="btn btn-secondary">{{ "dialogs.edit-account.BtnSave" | translate }}</button>
+        <button class="btn btn-secondary" [disabled]="isActive()">{{ "dialogs.edit-account.BtnSave" | translate }}</button>
         <form method="dialog">
           <button class="btn btn-outline btn-neutral">{{ "dialogs.edit-account.BtnClose" | translate }}</button>
         </form>

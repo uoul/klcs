@@ -24,7 +24,7 @@ export class AppComponent {
     protected authService: AuthService,
     protected translate: TranslateService,
   ){
-    translate.addLangs(["de", "en", "it"])
+    translate.addLangs(["de", "en"])
     translate.setFallbackLang("en")
     this.translate.use(this.translate.getBrowserLang() ?? 'en');
   }

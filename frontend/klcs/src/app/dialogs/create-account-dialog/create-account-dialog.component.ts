@@ -6,6 +6,7 @@ import { NotificationService } from '../../services/notification/notification.se
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { TranslatePipe, TranslateService, TranslateDirective } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-create-account-dialog',
@@ -23,6 +24,7 @@ export class CreateAccountDialogComponent {
 
   _account: WritableSignal<Account> = signal(new Account())
   _lockDataTip = computed(()=> this._account().Locked ? "Unlock" : "Lock")
+  isActive: WritableSignal<boolean> = signal(false)
 
   constructor(
     private accountManagerApi: AccountManagerApiService,
@@ -39,11 +41,13 @@ export class CreateAccountDialogComponent {
     this._account.set(new Account())
   }
 
-  createAccount(){
-    const sub = this.accountManagerApi.createAccount(this._account()).subscribe({
-      next: val => this.accountCreated.emit(val),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+  async createAccount(){
+    if(!this.isActive()){
+      this.isActive.set(true)
+      try {
+        const created = await firstValueFrom(this.accountManagerApi.createAccount(this._account()))
+        this.accountCreated.emit(created)
+      } finally { this.isActive.set(false) }
+    }
   }
 }

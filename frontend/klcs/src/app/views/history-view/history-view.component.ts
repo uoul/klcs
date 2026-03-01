@@ -2,12 +2,9 @@ import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
 
 import { HistoryItem } from '../../domain/HistoryItem';
-import { NotificationService } from '../../services/notification/notification.service';
-import { KlcsConfig } from '../../config/KlcsConfig';
 import { FormsModule } from '@angular/forms';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { finalize } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
+import { TranslatePipe } from '@ngx-translate/core';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-history-view',
@@ -20,51 +17,40 @@ export class HistoryViewComponent implements OnInit {
   history: WritableSignal<HistoryItem[]> = signal([]);
 
   reprintRequestRunning: WritableSignal<boolean> = signal(false);
+  refreshActive: WritableSignal<boolean> = signal(false)
 
   constructor(
     private sellerApi: SellerApiService,
-    private notify: NotificationService,
-    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
     this.refresh();
   }
 
-  refresh(): void {
-    const sub = this.sellerApi
-      .getHistory(this.historyLength())
-      .pipe(finalize(() => sub.unsubscribe()))
-      .subscribe({
-        next: (history) => this.history.set(history),
-        error: (err) =>
-          this.notify.show({
-            type: 'error',
-            duration: KlcsConfig.durationError,
-            message: err,
-          }),
-      });
+  async refresh(): Promise<void> {
+    if(!this.refreshActive()){
+      this.refreshActive.set(true)
+      try {
+        const history = await firstValueFrom(this.sellerApi.getHistory(this.historyLength()))
+        this.history.set(history)
+      } finally { this.refreshActive.set(false) }
+    }
+   
   }
 
   checkAnyNotPrinted(entry: HistoryItem): boolean {
     return entry.Articles.find((a) => !!!a.PrinterAck) ? true : false;
   }
 
-  sendPrintJob(transactionId: string) {
+  async sendPrintJob(transactionId: string) {
     if (!this.reprintRequestRunning()) {
-      this.reprintRequestRunning.set(true);
-      const sub = this.sellerApi
-        .reprintOrder(transactionId)
-        .pipe(finalize(() => {this.reprintRequestRunning.set(false); sub.unsubscribe()}))
-        .subscribe({
-          next: (_) => setTimeout(() => this.refresh(), 1000),
-          error: (err: HttpErrorResponse) =>
-            this.notify.show({
-              type: 'error',
-              duration: KlcsConfig.durationError,
-              message: this.translate.instant(`errors.${err.error?.Code}`),
-            }),
-        });
+      this.reprintRequestRunning.set(true)
+      try {
+        await firstValueFrom(this.sellerApi.reprintOrder(transactionId))
+        const t = setTimeout(() => { clearTimeout(t); this.refresh() }, 1000)
+      } finally {
+        this.reprintRequestRunning.set(false)
+      }
     }
   }
 }

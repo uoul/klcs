@@ -1,6 +1,6 @@
 import {Injectable, Signal, signal, WritableSignal} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {finalize, Observable, subscribeOn, tap} from "rxjs";
+import {finalize, firstValueFrom, Observable, subscribeOn, tap} from "rxjs";
 import {ShoppingCartService} from "../shopping-cart/shopping-cart.service";
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { Order } from '../../domain/Order';
@@ -39,18 +39,15 @@ export class SellerApiService {
     this.refreshShopDetails()
   }
 
-  public refreshShopDetails(): void {
+  public async refreshShopDetails(): Promise<void> {
     if(this._shopId().length > 0) {
-      const sub = this.http.get<ShopDetails>(`${KlcsConfig.BackendRoot}/api/v1/shops/${this._shopId()}`).subscribe({
-        next: s => {
-          for(let [name, articles] of Object.entries(s.Categories)){
-            articles.sort((a: Article, b: Article) => a.Name == b.Name  ? 0 : a.Name < b.Name ? -1 : 1 )
-          }
-          this._shopDetails.set(s)
-        },
-        error: err => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.Code}`)}),
-        complete: () => sub.unsubscribe()
-      })
+      try {
+        const s = await firstValueFrom(this.http.get<ShopDetails>(`${KlcsConfig.BackendRoot}/api/v1/shops/${this._shopId()}`))
+        for(let [name, articles] of Object.entries(s.Categories)){
+          articles.sort((a: Article, b: Article) => a.Name == b.Name  ? 0 : a.Name < b.Name ? -1 : 1 )
+        }
+        this._shopDetails.set(s)
+      } catch {}
     }
   }
 

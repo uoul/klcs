@@ -13,7 +13,7 @@
         </div>
       </div>
       <div class="modal-action">
-        <button class="btn btn-secondary" [disabled]="f.invalid">{{ "dialogs.create-account.BtnCreate" | translate }}</button>
+        <button class="btn btn-secondary" [disabled]="f.invalid || isActive()">{{ "dialogs.create-account.BtnCreate" | translate }}</button>
         <form method="dialog" (submit)="init()">
           <button class="btn btn-outline btn-neutral">{{ "dialogs.create-account.BtnClose" | translate }}</button>
         </form>

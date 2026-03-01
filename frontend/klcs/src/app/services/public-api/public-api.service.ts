@@ -13,7 +13,6 @@ export class PublicApiService {
 
   constructor(private http: HttpClient) { }
 
-  // Or even simpler:
   public getSettings(): Observable<AppSettings> {
     return this.http.get<AppSettings>(`${KlcsConfig.BackendRoot}/public/settings`).pipe(
       tap(settings => this.appSettingsSignal.set(settings))

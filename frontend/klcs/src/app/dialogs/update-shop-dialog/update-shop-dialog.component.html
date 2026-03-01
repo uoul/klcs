@@ -9,7 +9,7 @@
         <input name="shopName" type="text" placeholder="Type here" class="input input-bordered w-full max-w-xs" [(ngModel)]="shop().Name" required/>
       </label>
       <div class="modal-action">
-        <button class="btn btn-secondary" [disabled]="f.invalid">{{ "dialogs.update-shop.BtnSave" | translate }}</button>
+        <button class="btn btn-secondary" [disabled]="f.invalid || isActive()">{{ "dialogs.update-shop.BtnSave" | translate }}</button>
         <form method="dialog">
           <button class="btn btn-outline btn-neutral">{{ "dialogs.update-shop.BtnClose" | translate }}</button>
         </form>

@@ -9,6 +9,7 @@ import { NotificationService } from '../../services/notification/notification.se
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-account-view',
@@ -50,20 +51,18 @@ export class AccountViewComponent implements OnInit {
 
   constructor(
     private accountManagerApi: AccountManagerApiService,
-    private notify: NotificationService,
     protected translate: TranslateService,
   ){}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.refresh()
   }
 
-  refresh() {
-    const sub = this.accountManagerApi.getAccounts().subscribe({
-      next: a => this.accounts.set(a),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+  async refresh() {
+    try {
+      const a = await firstValueFrom(this.accountManagerApi.getAccounts())
+      this.accounts.set(a)
+    } catch {}
   }
 
   showCreateAccountDialog(){
@@ -81,6 +80,4 @@ export class AccountViewComponent implements OnInit {
     this.selectedAccount.set(JSON.parse(JSON.stringify(account)))
     dialog.showModal() 
   }
-
-  filter(){}
 }

@@ -8,6 +8,7 @@ import { KlcsConfig } from '../../config/KlcsConfig';
 import { AccountDetails } from '../../domain/AccountDetails';
 import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
 import { NotificationService } from '../../services/notification/notification.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-charge-account-dialog',
@@ -59,17 +60,16 @@ export class ChargeAccountDialogComponent {
     this.scannerActive.set(true)
   }
 
-  chargeAccount(){
+  async chargeAccount(){
     if(!this.chargeActive()){
       this.chargeActive.set(true)
-      const sub = this.accountManagerApi.postToAccount(this.accountId(), this.amount() * 100).subscribe({
-        next: val => this.newAccountDetails.set(val),
-        error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-        complete: () => {
-          this.chargeActive.set(false)
-          sub.unsubscribe()
-        },
-      })
+      try {
+        const details = await firstValueFrom(this.accountManagerApi.postToAccount(this.accountId(), this.amount() * 100))
+        this.newAccountDetails.set(details)
+      } catch {}
+      finally {
+        this.chargeActive.set(false)
+      }
     } else {
       this.notify.show({type: "warning", duration: KlcsConfig.durationError, message: this.translate.instant("warnings.WarnChargeTwice")})
     }

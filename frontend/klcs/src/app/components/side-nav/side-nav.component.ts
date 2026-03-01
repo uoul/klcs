@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NavItemComponent } from "../nav-item/nav-item.component";
 import { SideNavService } from '../../services/side-nav/side-nav.service';
@@ -15,6 +15,7 @@ import { PublicApiService } from '../../services/public-api/public-api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import {TranslatePipe } from "@ngx-translate/core";
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-side-nav',
@@ -47,15 +48,14 @@ export class SideNavComponent implements OnInit, AfterViewInit {
   _chargeAccountDialog: HTMLDialogElement|null = null
   _closeAccountDialog: HTMLDialogElement|null = null
 
-  shops: Shop[] = [];
+  shops: WritableSignal<Shop[]> = signal([]);
   klcsConfig = KlcsConfig;
 
-  ngOnInit(): void {
-    const sub = this.sellerApi.getShops().subscribe({
-      next: val => this.shops = val,
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
+  async ngOnInit(): Promise<void> {
+    try {
+      const shops = await firstValueFrom(this.sellerApi.getShops())
+      this.shops.set(shops)
+    } catch {}
   }
 
   ngAfterViewInit(): void {

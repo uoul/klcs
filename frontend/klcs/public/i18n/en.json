@@ -4,8 +4,8 @@
     "ErrArticleNotFound": "Article not found.",
     "ErrArticlePrinterRelation": "The article is not assigned to any printer.",
     "ErrArticleShopRelation": "The article does not belong to this shop.",
-    "ErrCheckoutLockedAccount": "Checkout not possible – the account is locked.",
-    "ErrCloseLockedAccount": "Payout not possible – the account is locked.",
+    "ErrCheckoutLockedAccount": "Checkout not possible - the account is locked.",
+    "ErrCloseLockedAccount": "Payout not possible - the account is locked.",
     "ErrDataAccess": "An error occurred while accessing the data.",
     "ErrForbidden": "Access denied.",
     "ErrInternal": "Internal server error. Please try again later.",
@@ -16,7 +16,7 @@
     "ErrNotEnoughBalance": "Insufficient account balance.",
     "ErrNotMatchingArticleIds": "The article IDs do not match.",
     "ErrPaymentTypeNotSupported": "This payment type is not supported.",
-    "ErrPostLockedAccount": "Posting not possible – the account is locked.",
+    "ErrPostLockedAccount": "Posting not possible - the account is locked.",
     "ErrPrinterAndArticleNotSameShop": "The printer and article do not belong to the same shop.",
     "ErrPrinterNotConnected": "The printer is not connected.",
     "ErrPrinterNotFound": "Printer not found.",
@@ -55,14 +55,16 @@
       "TabName": "Article",
       "TabDescription": "Description",
       "TabPrice": "Price",
-      "TabAmount": "Stock"
+      "TabAmount": "Stock",
+      "DeletePrompt": "Are you sure you want to delete this article?"
     },
     "shop-printers": {
       "TabId": "ID",
       "TabName": "Printer",
       "TabConnected": "Connection Status",
       "StateConnected": "Connected",
-      "StateDisconnected": "Disconnected"
+      "StateDisconnected": "Disconnected",
+      "DeletePrompt": "Are you sure you want to delete printer {{name}}?"
     },
     "shop-users": {
       "TabName": "Name",
@@ -195,7 +197,8 @@
       "BtnReprint": "Resend print job"
     },
     "admin": {
-      "TabName": "Shop"
+      "TabName": "Shop",
+      "DeletePrompt": "Are you sure you want to delete {{name}}?"
     },
     "account": {
       "TabAccountId": "Account Number",

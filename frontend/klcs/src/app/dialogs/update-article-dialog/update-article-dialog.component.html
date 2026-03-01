@@ -27,7 +27,7 @@
         </select>
         
         <div class="modal-action">
-          <button class="btn btn-secondary" [disabled]="f.invalid">{{ "dialogs.update-article.BtnSave" | translate }}</button>
+          <button class="btn btn-secondary" [disabled]="f.invalid || isActive()">{{ "dialogs.update-article.BtnSave" | translate }}</button>
           <form method="dialog">
             <button class="btn btn-outline btn-neutral">{{ "dialogs.update-article.BtnClose" | translate }}</button>
           </form>

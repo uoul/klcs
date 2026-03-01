@@ -1,4 +1,4 @@
-import { Component, input,  InputSignal, output, OutputEmitterRef } from '@angular/core';
+import { Component, input,  InputSignal, output, OutputEmitterRef, signal, WritableSignal } from '@angular/core';
 import { ArticleDetails } from '../../domain/ArticleDetails';
 import { ShopAdminApiService } from '../../services/shop-admin-api/shop-admin-api.service';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +8,7 @@ import { KlcsConfig } from '../../config/KlcsConfig';
 import { ErrorResponse } from '../../domain/ErrorResponse';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'klcs-create-article-dialog',
@@ -31,6 +32,7 @@ export class CreateArticleDialogComponent {
   articleDetails: ArticleDetails = new ArticleDetails()
   priceUi: number = 0.0;
   printer: Printer = this.nonePrinter;
+  isActive: WritableSignal<boolean> = signal(false)
 
   constructor(
     private shopAdminApi: ShopAdminApiService,
@@ -38,15 +40,19 @@ export class CreateArticleDialogComponent {
     protected translate: TranslateService,
   ){}
 
-  createArticle() {
-    this.articleDetails.Price = Math.floor(this.priceUi * 100);
-    this.articleDetails.Printer = this.printer.Id === "" ? null : this.printer;
-    const sub = this.shopAdminApi.createArticle(this.shopId(), this.articleDetails).subscribe({
-      next: a => this.articleCreated.emit(a),
-      error: (err: HttpErrorResponse) => this.notify.show({type: "error", duration: KlcsConfig.durationError, message: this.translate.instant(`errors.${err.error?.Code}`)}),
-      complete: () => sub.unsubscribe(),
-    })
-    this.init()
+  async createArticle() {
+    if(!this.isActive()){
+      this.isActive.set(true)
+      this.articleDetails.Price = Math.floor(this.priceUi * 100);
+      this.articleDetails.Printer = this.printer.Id === "" ? null : this.printer;
+      try {
+        const createdArticle = await firstValueFrom(this.shopAdminApi.createArticle(this.shopId(), this.articleDetails))
+        this.articleCreated.emit(createdArticle)
+      } finally {
+        this.init()
+        this.isActive.set(false)
+      }
+    }    
   }
 
   init(){
