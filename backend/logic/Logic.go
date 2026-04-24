@@ -647,9 +647,9 @@ func (l *Logic) GetShopUsers(ctx context.Context, username string, shopId string
 			// Create userMapping
 			userMapping := make(map[domain.User][]domain.Role)
 			for _, user := range users {
-				roles, err := l.roleDao.GetUserRolesForShop(ctx, tx, username, shopId)
+				roles, err := l.roleDao.GetUserRolesForShop(ctx, tx, user.Username, shopId)
 				if err != nil {
-					return nil, apperror.NewErrDataAccess(err, "failed to get userroles for %s on shop(%s)", username, shopId)
+					return nil, apperror.NewErrDataAccess(err, "failed to get userroles for %s on shop(%s)", user.Username, shopId)
 				}
 				userMapping[user] = roles
 			}
