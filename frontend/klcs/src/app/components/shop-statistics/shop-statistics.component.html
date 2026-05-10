@@ -34,7 +34,7 @@
           {{ "components.shop-statistics.ChartSellsTitle" | translate }}
         </h2>
         <div class="divider my-0"></div>
-        <div class="relative w-full" style="min-height: 280px;">
+        <div class="relative w-full" [style.min-height]="(revenue()?.length ?? 5) * 40 + 60 + 'px'">
           <canvas #sellsChart></canvas>
         </div>
       </div>
