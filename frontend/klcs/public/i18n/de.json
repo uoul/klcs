@@ -37,6 +37,9 @@
     "ShopDeleted": "Shop wurde erfolgreich gelöscht"
   },
   "components": {
+    "loading-overlay": {
+      "LblLoading": "Bitte warten..."
+    },
     "sidebar": {
       "Shop": "Shops",
       "History": "Verlauf",
@@ -90,7 +93,13 @@
       "ChartStockLblAmount": "Lagerbestand",
       "StockTableTitle": "Lagerübersicht",
       "StockTableArticle": "Artikel",
-      "StockTableAmount": "Menge"
+      "StockTableAmount": "Menge",
+      "StatTotalRevenue": "Gesamtumsatz",
+      "StatTotalRevenueDesc": "Über alle Artikel",
+      "StatTotalSells": "Verkaufte Einheiten",
+      "StatTotalSellsDesc": "Über alle Artikel",
+      "StatTotalStock": "Gesamtlagerbestand",
+      "StatTotalStockDesc": "Aktuell verfügbar"
     }
   },
   "dialogs": {

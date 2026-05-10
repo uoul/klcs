@@ -1,9 +1,34 @@
-<div class="flex flex-col gap-6 p-6 w-full">
+<div class="flex flex-col gap-4 py-4 w-full lg:px-4 px-2">
 
-  <div class="grid grid-cols-1 gap-6">
+  <!-- Summary Stats -->
+  <div class="stats stats-vertical sm:stats-horizontal shadow w-full border border-neutral-300">
+    <div class="stat">
+      <div class="stat-title">{{ "components.shop-statistics.StatTotalRevenue" | translate }}</div>
+      <div class="stat-value text-primary">
+        {{ totalRevenue() | currency:'EUR' }}
+      </div>
+      <div class="stat-desc">{{ "components.shop-statistics.StatTotalRevenueDesc" | translate }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-title">{{ "components.shop-statistics.StatTotalSells" | translate }}</div>
+      <div class="stat-value">
+        {{ (revenue() ?? []).reduce((s, i) => s + i.Amount, 0) }}
+      </div>
+      <div class="stat-desc">{{ "components.shop-statistics.StatTotalSellsDesc" | translate }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-title">{{ "components.shop-statistics.StatTotalStock" | translate }}</div>
+      <div class="stat-value">
+        {{ (stock() ?? []).reduce((s, i) => s + i.Amount, 0) }}
+      </div>
+      <div class="stat-desc">{{ "components.shop-statistics.StatTotalStockDesc" | translate }}</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-4">
 
     <!-- Sales Chart Card -->
-    <div class="card bg-base-100 shadow-md">
+    <div class="card bg-base-100 shadow border border-neutral-300">
       <div class="card-body">
         <h2 class="card-title text-lg">
           {{ "components.shop-statistics.ChartSellsTitle" | translate }}
@@ -16,13 +41,13 @@
     </div>
 
     <!-- Stock Chart Card -->
-    <div class="card bg-base-100 shadow-md">
+    <div class="card bg-base-100 shadow border border-neutral-300">
       <div class="card-body">
         <h2 class="card-title text-lg">
           {{ "components.shop-statistics.ChartStockTitle" | translate }}
         </h2>
         <div class="divider my-0"></div>
-        <div class="relative w-full" style="min-height: 280px;">
+        <div class="relative w-full" [style.min-height]="(stock()?.length ?? 5) * 40 + 60 + 'px'">
           <canvas #stockChart></canvas>
         </div>
       </div>
@@ -30,7 +55,7 @@
 
     <!-- Stock Summary Table -->
     @if (stock()) {
-      <div class="card bg-base-100 shadow-md">
+      <div class="card bg-base-100 shadow border border-neutral-300">
         <div class="card-body">
           <h2 class="card-title text-lg">
             {{ "components.shop-statistics.StockTableTitle" | translate }}

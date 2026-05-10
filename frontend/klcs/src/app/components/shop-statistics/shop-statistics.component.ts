@@ -32,6 +32,10 @@ export class ShopStatisticsComponent implements OnDestroy {
   private sellsChart!: Chart;
   private stockChart!: Chart;
 
+  totalRevenue: Signal<number> = computed(() =>
+    (this.revenue() ?? []).reduce((sum, item) => sum + item.Sum, 0)
+  );
+
   constructor(
     private shopAdminApi: ShopAdminApiService,
     private sellerApi: SellerApiService,
@@ -97,6 +101,7 @@ export class ShopStatisticsComponent implements OnDestroy {
           maintainAspectRatio: false,
           plugins: { legend: { position: 'top' } },
           scales: { y: { beginAtZero: true } },
+          indexAxis: 'y',
         },
       });
     }
@@ -130,6 +135,7 @@ export class ShopStatisticsComponent implements OnDestroy {
           maintainAspectRatio: false,
           plugins: { legend: { position: 'top' } },
           scales: { y: { beginAtZero: true } },
+          indexAxis: 'y',
         },
       });
     }
