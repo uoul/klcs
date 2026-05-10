@@ -5,6 +5,7 @@
       <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 2" (click)="currentTab.set(2)">{{ "views.shop.TabHeaderArticles" | translate}}</a>
       <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 3" (click)="currentTab.set(3)">{{ "views.shop.TabHeaderPrinters" | translate}}</a>
       <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 4" (click)="currentTab.set(4)">{{ "views.shop.TabHeaderUsers" | translate}}</a>
+      <a class="tab whitespace-nowrap" [class.tab-active]="currentTab() == 5" (click)="currentTab.set(5)">{{ "views.shop.TabHeaderStatistics" | translate}}</a>
     </div>
     <div class="flex-grow">
       <div class="w-full" [hidden]="currentTab() != 1">
@@ -18,6 +19,9 @@
       </div>
       <div class="w-full" [hidden]="currentTab() != 4">
         <klcs-shop-users  />
+      </div>
+      <div class="w-full" [hidden]="currentTab() != 5">
+        <klcs-shop-statistics />
       </div>
     </div>
   } @else {

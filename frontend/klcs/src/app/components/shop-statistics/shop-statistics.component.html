@@ -1,0 +1,73 @@
+<div class="flex flex-col gap-6 p-6 w-full">
+
+  <div class="grid grid-cols-1 gap-6">
+
+    <!-- Sales Chart Card -->
+    <div class="card bg-base-100 shadow-md">
+      <div class="card-body">
+        <h2 class="card-title text-lg">
+          {{ "components.shop-statistics.ChartSellsTitle" | translate }}
+        </h2>
+        <div class="divider my-0"></div>
+        <div class="relative w-full" style="min-height: 280px;">
+          <canvas #sellsChart></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock Chart Card -->
+    <div class="card bg-base-100 shadow-md">
+      <div class="card-body">
+        <h2 class="card-title text-lg">
+          {{ "components.shop-statistics.ChartStockTitle" | translate }}
+        </h2>
+        <div class="divider my-0"></div>
+        <div class="relative w-full" style="min-height: 280px;">
+          <canvas #stockChart></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock Summary Table -->
+    @if (stock()) {
+      <div class="card bg-base-100 shadow-md">
+        <div class="card-body">
+          <h2 class="card-title text-lg">
+            {{ "components.shop-statistics.StockTableTitle" | translate }}
+          </h2>
+          <div class="divider my-0"></div>
+          <div class="overflow-x-auto">
+            <table class="table w-full">
+              <thead>
+                <tr>
+                  <th>{{ "components.shop-statistics.StockTableArticle" | translate }}</th>
+                  <th class="text-right">{{ "components.shop-statistics.StockTableAmount" | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of stock()?.sort((a, b) => a.Amount - b.Amount); track item.Article) {
+                  <tr class="hover">
+                    <td>{{ item.Article }}</td>
+                    <td class="text-right">
+                      <span class="badge" [class]="item.Amount < 5 ? 'badge-error' : item.Amount < 20 ? 'badge-warning' : 'badge-success'">
+                        {{ item.Amount }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    }
+
+  </div>
+
+  @if (!revenue()) {
+    <div class="flex justify-center items-center py-12">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+  }
+
+</div>

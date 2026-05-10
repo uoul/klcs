@@ -7,6 +7,7 @@ import { Role } from '../../domain/Role';
 import { ShopUser } from '../../domain/ShopUser';
 import { User } from '../../domain/User';
 import { KlcsConfig } from '../../config/KlcsConfig';
+import { RevenueItem } from '../../domain/RevenueItem';
 
 @Injectable({
   providedIn: 'root'
@@ -59,5 +60,9 @@ export class ShopAdminApiService {
 
   public deleteUserRoleForShop(shopId: string, userId: string, roleId: string): Observable<Object> {
     return this.http.delete(`${KlcsConfig.BackendRoot}/api/v1/shops/${shopId}/users/${userId}/roles/${roleId}`)
+  }
+
+  public getRevenue(shopId: string): Observable<RevenueItem[]>{
+    return this.http.get<RevenueItem[]>(`${KlcsConfig.BackendRoot}/api/v1/shops/${shopId}/statistics/revenue`)
   }
 }

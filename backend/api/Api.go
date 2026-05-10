@@ -124,6 +124,7 @@ func (e *Api) setupUserRg(router *gin.RouterGroup, prefix string) *gin.RouterGro
 	rg.GET("/shops/:shopId/users", e.getShopUsers)
 	rg.POST("/shops/:shopId/users/:userId/roles", e.addUserRoleForShop)
 	rg.DELETE("/shops/:shopId/users/:userId/roles/:roleId", e.deleteUserRoleFromShop)
+	rg.GET("/shops/:shopId/statistics/revenue", e.getShopRevenue)
 	return rg
 }
 

@@ -236,3 +236,23 @@ func (e *Api) getRoles(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, roles)
 }
+
+func (e *Api) getShopRevenue(ctx *gin.Context) {
+	user, err := e.authenticator.GetIdentityFromHeader(ctx.Request.Header, AUTH_HEADER)
+	if err != nil {
+		ctx.Error(apperror.NewErrUnauthorized(err, "failed get user identity"))
+		return
+	}
+	shopId := ctx.Param("shopId")
+	if len(shopId) <= 0 {
+		ctx.Error(apperror.NewErrShopNotFound(nil, "shopId in URL is empty"))
+		return
+	}
+	// Get Revenue
+	revenue, err := e.logic.GetRevenue(ctx, user.UserName, shopId)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+	ctx.JSON(http.StatusOK, revenue)
+}

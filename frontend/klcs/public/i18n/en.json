@@ -81,6 +81,16 @@
       "LblSum": "Total",
       "CbSelectAll": "Select all",
       "BtnPaid": "Paid"
+    },
+    "shop-statistics": {
+      "ChartSellsTitle": "Sales Overview",
+      "ChartSellsLblAmount": "Units Sold",
+      "ChartSellsLblRevenue": "Revenue",
+      "ChartStockTitle": "Current Stock",
+      "ChartStockLblAmount": "Stock Amount",
+      "StockTableTitle": "Stock Summary",
+      "StockTableArticle": "Article",
+      "StockTableAmount": "Amount"
     }
   },
   "dialogs": {
@@ -188,7 +198,8 @@
       "TabHeaderSell": "Sales",
       "TabHeaderArticles": "Articles",
       "TabHeaderPrinters": "Printers",
-      "TabHeaderUsers": "Users"
+      "TabHeaderUsers": "Users",
+      "TabHeaderStatistics": "Statistics"
     },
     "history": {
       "TabArticle": "Article",

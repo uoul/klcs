@@ -780,6 +780,20 @@ func (l *Logic) GetShopsForUser(ctx context.Context, username string) ([]domain.
 	return shops, nil
 }
 
+func (l *Logic) GetRevenue(ctx context.Context, username string, shopId string) ([]domain.RevenueItem, error) {
+	// Check user permissions
+	if err := l.checkUserRole(ctx, l.dbConn, username, shopId, SHOP_ADMIN_ROLE); err != nil {
+		return []domain.RevenueItem{}, err
+	}
+	// Get Revenue
+	revenue, err := l.shopDao.GetRevenue(ctx, l.dbConn, shopId)
+	if err != nil {
+		return []domain.RevenueItem{}, apperror.NewErrDataAccess(err, "failed to get revenue for shop(%s)", shopId)
+	}
+	// Return
+	return revenue, nil
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // Helper functions
 // -----------------------------------------------------------------------------------------------------------
@@ -803,7 +817,7 @@ func convertArticles(articles []domain.Article) map[string][]domain.Article {
 	return r
 }
 
-func (l *Logic) checkUserRole(ctx context.Context, tx *sql.Tx, username string, shopId string, role string) error {
+func (l *Logic) checkUserRole(ctx context.Context, tx db.IDbSession, username string, shopId string, role string) error {
 	// Get User Roles for Shop
 	roles, err := l.roleDao.GetUserRolesForShop(ctx, tx, username, shopId)
 	if err != nil {

@@ -24,6 +24,7 @@
     "@zxing/ngx-scanner": "^21.0.0",
     "angular-oauth2-oidc": "^20.0.0",
     "angularx-qrcode": "^21.0.0",
+    "chart.js": "^4.5.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "vite": "^6.2.6",

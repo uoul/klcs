@@ -121,6 +121,23 @@ func (*ShopDao) UpdateShop(ctx context.Context, s db.IDbSession, shop domain.Sho
 	return err
 }
 
+func (*ShopDao) GetRevenue(ctx context.Context, s db.IDbSession, shopId string) ([]domain.RevenueItem, error) {
+	return db.Query[domain.RevenueItem](
+		ctx,
+		s,
+		`
+			SELECT a.name, SUM(kat.pieces) AS amount, (a.price * SUM(kat.pieces))::FLOAT / 100.0 AS sum
+			FROM klcs.transaction t
+				JOIN klcs.article_transaction kat ON (kat.transaction_id = t.id)
+				JOIN klcs.article a ON (a.id = kat.article_id)
+			WHERE a.shop_id = $1
+			GROUP BY a.name, a.price
+			ORDER BY amount DESC
+		`,
+		shopId,
+	)
+}
+
 func NewShopDao() *ShopDao {
 	return &ShopDao{}
 }

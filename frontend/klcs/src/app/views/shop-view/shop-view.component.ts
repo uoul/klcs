@@ -9,6 +9,7 @@ import { ShopPrintersComponent } from "../../components/shop-printers/shop-print
 import { ShopUsersComponent } from "../../components/shop-users/shop-users.component";
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
+import { ShopStatisticsComponent } from "../../components/shop-statistics/shop-statistics.component";
 
 @Component({
   selector: 'klcs-shop-view',
@@ -18,6 +19,7 @@ import { finalize } from 'rxjs';
     ShopPrintersComponent,
     ShopUsersComponent,
     TranslatePipe,
+    ShopStatisticsComponent
 ],
   templateUrl: './shop-view.component.html',
   styleUrl: './shop-view.component.css'

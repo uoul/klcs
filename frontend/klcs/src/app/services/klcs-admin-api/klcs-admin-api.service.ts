@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Shop } from '../../domain/Shop';
 import { KlcsConfig } from '../../config/KlcsConfig';
+import { RevenueItem } from '../../domain/RevenueItem';
 
 @Injectable({
   providedIn: 'root'
