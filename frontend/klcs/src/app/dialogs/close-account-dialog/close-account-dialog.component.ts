@@ -52,11 +52,6 @@ export class CloseAccountDialogComponent {
     this.closeAccount()
   }
 
-  onScanError(error: Error){
-    console.error(error)
-    this.scannerActive.set(false)
-  }
-
   async closeAccount(){
     if(!this.isClosing()){
       this.isClosing.set(true)

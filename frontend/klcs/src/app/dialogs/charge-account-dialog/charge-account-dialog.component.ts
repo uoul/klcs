@@ -43,11 +43,6 @@ export class ChargeAccountDialogComponent {
     this.scannerActive.set(false)
   }
 
-  onScanError(error: Error){
-    console.error(error)
-    this.scannerActive.set(false)
-  }
-
   _dialogClosed() {
     this.dialogClosed.emit()
     this.scannerActive.set(false)

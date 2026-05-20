@@ -47,11 +47,6 @@ export class CheckAccountDialogComponent {
     this.checkAccount();
   }
 
-  onScanError(error: Error){
-    console.error(error)
-    this.scannerActive = false;
-  }
-
   async checkAccount() {
     if(!this.isCheckActive()){
       this.isCheckActive.set(true)

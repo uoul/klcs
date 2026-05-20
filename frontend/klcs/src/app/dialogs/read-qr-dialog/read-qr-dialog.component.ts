@@ -26,9 +26,4 @@ export class ReadQrDialogComponent implements AfterViewInit {
     this.data.set(data)
     this._dialog?.close()
   }
-
-  onScanError(error: Error){
-    console.error(error)
-    this._dialog?.close()
-  }
 }

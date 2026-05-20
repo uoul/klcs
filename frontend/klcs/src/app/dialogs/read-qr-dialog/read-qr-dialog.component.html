@@ -2,7 +2,7 @@
   <div class="modal-box">
     <h3 class="text-lg font-bold">{{ "dialogs.read-qr.Title" | translate }}</h3>
     @if (_dialog?.open) {
-      <klcs-qr-scanner (scanSuccess)="onScanSuccess($event)" (scanError)="onScanError($event)" previewFitMode="scale-down"></klcs-qr-scanner>
+      <klcs-qr-scanner (scanSuccess)="onScanSuccess($event)" />
     }
     <div class="modal-action">
       <form method="dialog">

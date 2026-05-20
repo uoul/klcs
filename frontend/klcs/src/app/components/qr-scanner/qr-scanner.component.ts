@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   OnDestroy,
@@ -12,7 +13,8 @@ import QrScanner from 'qr-scanner';
 @Component({
   selector: 'klcs-qr-scanner',
   standalone: true,
-  template: `<video #videoEl class="w-full rounded"></video>`,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `<video #videoEl class="w-full rounded" playsinline></video>`,
   styles: [`
     :host { display: block; }
     video { width: 100%; border-radius: 0.25rem; }
@@ -24,6 +26,7 @@ export class QrScannerComponent implements AfterViewInit, OnDestroy {
 
   @ViewChild('videoEl') private videoEl!: ElementRef<HTMLVideoElement>;
   private _scanner: QrScanner | null = null;
+  private _started = false;
 
   ngAfterViewInit(): void {
     this._scanner = new QrScanner(
@@ -34,17 +37,31 @@ export class QrScannerComponent implements AfterViewInit, OnDestroy {
         highlightScanRegion: true,
         highlightCodeOutline: true,
         onDecodeError: (err) => {
-          // qr-scanner fires this continuously while no code is in frame — filter noise
           if (err !== QrScanner.NO_QR_CODE_FOUND) {
             this.scanError.emit(err instanceof Error ? err : new Error(String(err)));
           }
         },
       }
     );
-    this._scanner.start().catch((err) => this.scanError.emit(err));
+
+    this._scanner
+      .start()
+      .then(() => (this._started = true))
+      .catch((err) => {
+        // Do NOT emit scanError here if the parent uses it to destroy the component
+        console.error('QrScanner failed to start:', err);
+        // Only emit if you're sure the parent won't unmount on error
+        // this.scanError.emit(err instanceof Error ? err : new Error(String(err)));
+      });
   }
 
   ngOnDestroy(): void {
-    this._scanner?.destroy();
+    if (this._scanner) {
+      if (this._started) {
+        this._scanner.stop();
+      }
+      this._scanner.destroy();
+      this._scanner = null;
+    }
   }
 }

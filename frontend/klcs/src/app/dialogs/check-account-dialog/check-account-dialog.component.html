@@ -13,7 +13,7 @@
               </button>
             </div>
           } @else {
-            <klcs-qr-scanner (scanSuccess)="onScanSuccess($event)" (scanError)="onScanError($event)" previewFitMode="scale-down"></klcs-qr-scanner>
+            <klcs-qr-scanner (scanSuccess)="onScanSuccess($event)" />
           }
         } @else {
           <div class="flex flex-col justify-between w-full items-center">

@@ -72,9 +72,4 @@ export class CheckoutDialogComponent {
     this.accountId.set(data);
     this.scannerActive.set(false);
   }
-
-  onScanError(error: Error){
-    console.error(error)
-    this.scannerActive.set(false);
-  }
 }

@@ -107,9 +107,4 @@ export class EditCartDialogComponent implements OnInit {
     dialog.close()
   }
 
-  onScanError(error: Error){
-    console.error(error)
-    this.scannerActive.set("none");
-  }
-
 }
