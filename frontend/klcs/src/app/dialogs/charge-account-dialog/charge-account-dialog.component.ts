@@ -3,21 +3,21 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, input, InputSignal, output, OutputEmitterRef, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ZXingScannerModule } from "@zxing/ngx-scanner";
 import { KlcsConfig } from '../../config/KlcsConfig';
 import { AccountDetails } from '../../domain/AccountDetails';
 import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { firstValueFrom } from 'rxjs';
+import { QrScannerComponent } from "../../components/qr-scanner/qr-scanner.component";
 
 @Component({
   selector: 'klcs-charge-account-dialog',
   imports: [
     CommonModule,
-    ZXingScannerModule,
     FormsModule,
     TranslatePipe,
-  ],
+    QrScannerComponent
+],
   templateUrl: './charge-account-dialog.component.html',
   styleUrl: './charge-account-dialog.component.css'
 })

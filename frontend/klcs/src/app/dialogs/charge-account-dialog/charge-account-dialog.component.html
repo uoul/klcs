@@ -26,7 +26,7 @@
               <input name="amount" type="number" step="0.01" min="0" class="input input-bordered w-full" [(ngModel)]="amount"/>
             </label>
           } @else {
-            <zxing-scanner (scanSuccess)="onScanSuccess($event)" (scanError)="onScanError($event)" previewFitMode="scale-down"></zxing-scanner>
+            <klcs-qr-scanner (scanSuccess)="onScanSuccess($event)" (scanError)="onScanError($event)" previewFitMode="scale-down"></klcs-qr-scanner>
           }
         } @else {
           <div class="flex flex-col justify-between w-full items-center">

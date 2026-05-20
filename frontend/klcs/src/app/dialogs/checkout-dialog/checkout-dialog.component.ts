@@ -5,21 +5,21 @@ import { SellerApiService } from '../../services/seller-api/seller-api.service';
 import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
-import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import { FocusDirective } from '../../directives/focus/focus.directive';
 import {  TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { QrScannerComponent } from "../../components/qr-scanner/qr-scanner.component";
 
 @Component({
   selector: 'klcs-checkout-dialog',
   imports: [
     CommonModule,
     FormsModule,
-    ZXingScannerModule,
     FocusDirective,
     TranslatePipe,
-  ],
+    QrScannerComponent
+],
   templateUrl: './checkout-dialog.component.html',
   styleUrl: './checkout-dialog.component.css'
 })

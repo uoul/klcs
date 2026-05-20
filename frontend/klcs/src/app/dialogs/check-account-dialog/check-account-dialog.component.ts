@@ -3,18 +3,18 @@ import { Component, input, InputSignal, output, OutputEmitterRef, signal, Writab
 import { FormsModule } from '@angular/forms';
 import { AccountDetails } from '../../domain/AccountDetails';
 import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
-import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import { QrScannerComponent } from "../../components/qr-scanner/qr-scanner.component";
 
 @Component({
   selector: 'klcs-check-account-dialog',
   imports: [
     CommonModule,
     FormsModule,
-    ZXingScannerModule,
     TranslatePipe,
-  ],
+    QrScannerComponent
+],
   templateUrl: './check-account-dialog.component.html',
   styleUrl: './check-account-dialog.component.css'
 })

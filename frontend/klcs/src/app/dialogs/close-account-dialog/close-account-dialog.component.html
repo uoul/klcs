@@ -19,7 +19,7 @@
               </div>
             </label>
           } @else {
-            <zxing-scanner (scanSuccess)="onScanSuccess($event)" (scanError)="onScanError($event)" previewFitMode="scale-down"></zxing-scanner>
+            <klcs-qr-scanner (scanSuccess)="onScanSuccess($event)" (scanError)="onScanError($event)" previewFitMode="scale-down"></klcs-qr-scanner>
           }
         } @else {
           <div class="flex flex-col justify-between w-full items-center">

@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, input, InputSignal, output, OutputEmitterRef, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import { AccountDetails } from '../../domain/AccountDetails';
 import { AccountManagerApiService } from '../../services/account-manager-api/account-manager-api.service';
 import { NotificationService } from '../../services/notification/notification.service';
@@ -9,15 +8,16 @@ import { KlcsConfig } from '../../config/KlcsConfig';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { QrScannerComponent } from "../../components/qr-scanner/qr-scanner.component";
 
 @Component({
   selector: 'klcs-close-account-dialog',
   imports: [
     CommonModule,
     FormsModule,
-    ZXingScannerModule,
     TranslatePipe,
-  ],
+    QrScannerComponent
+],
   templateUrl: './close-account-dialog.component.html',
   styleUrl: './close-account-dialog.component.css'
 })

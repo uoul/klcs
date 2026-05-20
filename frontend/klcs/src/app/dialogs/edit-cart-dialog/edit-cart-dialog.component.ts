@@ -3,7 +3,6 @@ import { ShoppingCartComponent } from "../../components/shopping-cart/shopping-c
 
 import { FormsModule } from '@angular/forms';
 import { ShoppingCartService } from '../../services/shopping-cart/shopping-cart.service';
-import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import { SellerApiService } from '../../services/seller-api/seller-api.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { KlcsConfig } from '../../config/KlcsConfig';
@@ -15,16 +14,17 @@ import { PublicApiService } from '../../services/public-api/public-api.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { QrScannerComponent } from "../../components/qr-scanner/qr-scanner.component";
 
 @Component({
   selector: 'klcs-edit-cart-dialog',
   imports: [
     FormsModule,
     ShoppingCartComponent,
-    ZXingScannerModule,
     FocusDirective,
     PaymentItemListComponent,
     TranslatePipe,
+    QrScannerComponent
 ],
   templateUrl: './edit-cart-dialog.component.html',
   styleUrl: './edit-cart-dialog.component.css'

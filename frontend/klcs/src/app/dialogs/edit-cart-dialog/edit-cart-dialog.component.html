@@ -34,7 +34,7 @@
               </div>
             }
           } @else {
-            <zxing-scanner (scanSuccess)="onScanSuccess($event)" (scanError)="onScanError($event)" previewFitMode="scale-down"></zxing-scanner>
+            <klcs-qr-scanner (scanSuccess)="onScanSuccess($event)" (scanError)="onScanError($event)" previewFitMode="scale-down"></klcs-qr-scanner>
           }
           <div class="modal-action">
             <button class="btn btn-secondary" [disabled]="shoppingCart.getOrderItems().length <= 0 || paymentMethod() <= 0 || f.invalid || scannerActive() != 'none' || isCheckoutActive()">{{ "dialogs.edit-cart.BtnPlaceOrder" | translate }}</button>
